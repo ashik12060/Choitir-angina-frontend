@@ -1,0 +1,106 @@
+import React from 'react';
+import { Link } from 'react-router-dom';
+
+const Dashboard = () => {
+  const sections = [
+    {
+      title: 'General',
+      items: [
+        { name: 'Counter', path: '/counter' },
+        { name: 'Shop In/Out', path: '/shop-in-out' },
+        { name: 'User Permission', path: '/user-permission' },
+        { name: 'User Management', path: '/user-management' },
+        { name: 'Emp. Attendance', path: '/attendance' },
+        { name: 'Settings', path: '/settings' },
+        { name: 'Group Setup', path: '/group-setup' },
+        { name: 'Brand Setup', path: '/brand-setup' },
+        { name: 'Product Setup', path: '/product-information' },
+        { name: 'Supplier Setup', path: '/supplier-setup' },
+        { name: 'Style Size', path: '/style-size' },
+        { name: 'Sales Man', path: '/sales-man' },
+        { name: 'Weighing Items', path: '/weighing-items' },
+        { name: 'Credit Cards', path: '/credit-cards' },
+      ],
+    },
+    {
+      title: 'Purchasing',
+      items: [
+        { name: 'Purchase Order', path: '/purchase-order' },
+        { name: 'Purchase Receive', path: '/purchase-receive' },
+        { name: 'Price Change', path: '/price-change' },
+        { name: 'Damage/Loss', path: '/damage-loss' },
+        { name: 'Supplier Return', path: '/supplier-return' },
+        { name: 'Promotion', path: '/promotion' },
+        { name: 'Package', path: '/package' },
+        { name: 'Inventory', path: '/inventory' },
+      ],
+    },
+    {
+      title: 'Sales and Reports',
+      items: [
+        { name: 'Sales', path: '/sales' },
+        { name: 'Barcode Print', path: '/barcode-print' },
+        { name: 'Sales Cancel', path: '/sales-cancel' },
+        { name: 'Sales Report', path: '/sales-report' },
+        { name: 'Customer Report', path: '/customer-report' },
+        { name: 'C. Discount Rpt', path: '/c-discount-rpt' },
+        { name: 'P.O. Report', path: '/po-report' },
+        { name: 'Promotion', path: '/promotion-report' },
+        { name: 'Stock Report', path: '/stock-report' },
+        { name: 'Vat Report', path: '/vat-report' },
+        { name: 'Package Report', path: '/package-report' },
+        { name: 'Receive Report', path: '/receive-report' },
+        { name: 'Invoice Report', path: '/invoice-report' },
+        { name: 'Invoice Reprint', path: '/invoice-reprint' },
+      ],
+    },
+    {
+      title: 'Employee Management',
+      items: [
+        { name: 'Employee', path: '/employee' },
+        { name: 'Employee Setup', path: '/employee-setup' },
+        { name: 'Customers Setup', path: '/customer-setup' },
+        { name: 'Cust. Category', path: '/cust-category' },
+        { name: 'Credit Collection', path: '/credit-collection' },
+      ],
+    },
+  ];
+
+  return (
+    <div className="min-h-screen bg-gray-50 p-6">
+      {/* Header */}
+      <header className="flex justify-between items-center bg-white shadow p-4 rounded-lg mb-6">
+        <h1 className="text-lg font-bold">Retail Master</h1>
+        <div className="flex items-center gap-4">
+          <span className="text-gray-700">Welcome Mehedi</span>
+          <div className="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center">
+            <i className="fas fa-user"></i>
+          </div>
+          <button className="w-8 h-8 bg-red-500 text-white rounded-full flex items-center justify-center">
+            <i className="fas fa-power-off"></i>
+          </button>
+        </div>
+      </header>
+
+      {/* Content */}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+        {sections.map((section, index) => (
+          <div key={index} className="bg-white shadow-lg rounded-lg p-4">
+            <ul className="grid grid-cols-2 gap-4">
+              {section.items.map((item, i) => (
+                <li
+                  key={i}
+                  className="bg-blue-500 text-white text-center font-medium py-3 rounded-lg hover:bg-blue-600 transition"
+                >
+                  <Link to={item.path}>{item.name}</Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+export default Dashboard;
