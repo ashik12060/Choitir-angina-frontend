@@ -45,6 +45,27 @@ import Seller from "./components/Seller";
 import Users from "./admin/Users/Users";
 import Bkash from "./pages/Bkash";
 import Dashboard from "./pages/Pos/Dashboard";
+import Sales from "./pages/Pos/Sales/Sales";
+import BarcodePrint from "./pages/Pos/BarcodePrint/BarcodePrint";
+import SalesReport from "./pages/Pos/SalesReport/SalesReport";
+import SalesCancel from "./pages/Pos/SalesCancel/SalesCancel";
+import CustomerReport from "./pages/Pos/CustomerReport/CustomerReport";
+import VatReport from "./pages/Pos/VatReport/VatReport";
+import StockReport from "./pages/Pos/StockReport/StockReport";
+import InvoiceReprint from "./pages/Pos/InvoiceReprint/InvoiceReprint";
+import ShopReceive from "./pages/Pos/ShopReceive/ShopReceive";
+import SupllierReturn from "./pages/Pos/SupllierReturn/SupllierReturn";
+import EmployeeSetup from "./pages/Pos/EmployeeSetup/EmployeeSetup";
+import CustomerSetup from "./pages/Pos/CustomerSetup/CustomerSetup";
+import CustomerCreditCollection from "./pages/Pos/CustomerCreditCollection/CustomerCreditCollection";
+import UserPermission from "./pages/Pos/UserPermission/UserPermission";
+import UserManagement from "./pages/Pos/UserManagement/UserManagement";
+import Attendance from "./pages/Pos/Attendance/Attendance";
+import Counter from "./pages/Pos/Counter/Counter";
+import Settings from "./pages/Pos/Settings/Settings";
+import GroupSetup from "./pages/Pos/GroupSetup/GroupSetup";
+import BrandSetup from "./pages/Pos/BrandSetup/BrandSetup";
+import ProductInformation from "./pages/Pos/ProductInformation/ProductInformation";
 //HOC
 const AdminDashboardHOC = Layout(AdminDashboard);
 
@@ -98,7 +119,30 @@ function App() {
                 <Route path="/bkash-payment" element={<Bkash/>} />
                 <Route path="/dashboard" element={<Dashboard/>} />
 
-              
+              {/* pos start */}
+              <Route path="/pos" element={<Dashboard />} />
+      <Route path="/sales" element={<Sales />} />
+      <Route path="/barcode-print" element={<BarcodePrint />} />
+      <Route path="/sales-report" element={<SalesReport />} />
+      <Route path="/sales-cancel" element={<SalesCancel />} />
+      <Route path="/customer-report" element={<CustomerReport />} />
+      <Route path="/vat-report" element={<VatReport />} />
+      <Route path="/stock-report" element={<StockReport />} />
+      <Route path="/invoice-reprint" element={<InvoiceReprint />} />
+      <Route path="/shop-receive" element={<ShopReceive />} />
+      <Route path="/supplier-return" element={<SupllierReturn />} />
+      <Route path="/employee-setup" element={<EmployeeSetup />} />
+      <Route path="/customer-setup" element={<CustomerSetup />} />
+      <Route path="/credit-collection" element={<CustomerCreditCollection />} />
+      <Route path="/user-permission" element={<UserPermission />} />
+      <Route path="/user-management" element={<UserManagement />} />
+      <Route path="/attendance" element={<Attendance />} />
+      <Route path="/counter" element={<Counter />} />
+      <Route path="/settings" element={<Settings />} />
+      <Route path="/group-setup" element={<GroupSetup />} />
+      <Route path="/brand-setup" element={<BrandSetup />} />
+      <Route path="/product-information" element={<ProductInformation />} />
+              {/* pos end */}
 
                 <Route path="/admin-login" element={<AdminLogin />}></Route>
                 <Route path="/show-users" element={<ShowUsers />}></Route>

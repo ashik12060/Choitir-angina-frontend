@@ -34,7 +34,7 @@ const TopBrands = () => {
       >
         {brands.map((brand) => (
           <SwiperSlide key={brand.id} className="flex items-center justify-center">
-            <div className="bg-white border-2 border-[#d5c085] rounded-lg shadow-md p-4 w-full">
+            <div className="bg-white border-2 border-[#d5c085] rounded-lg shadow-md  w-full">
               <img
                 src={brand.image}
                 alt={brand.name}
