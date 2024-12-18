@@ -67,6 +67,7 @@ import GroupSetup from "./pages/Pos/GroupSetup/GroupSetup";
 import BrandSetup from "./pages/Pos/BrandSetup/BrandSetup";
 import ProductInformation from "./pages/Pos/ProductInformation/ProductInformation";
 import CreateTopBanner from "./admin/CreateTopBanner";
+import SupplierSetup from "./pages/Pos/SupplierSetup/SupplierSetup";
 //HOC
 const AdminDashboardHOC = Layout(AdminDashboard);
 
@@ -145,6 +146,8 @@ function App() {
       <Route path="/group-setup" element={<GroupSetup />} />
       <Route path="/brand-setup" element={<BrandSetup />} />
       <Route path="/product-information" element={<ProductInformation />} />
+      <Route path="/supplier-setup" element={<SupplierSetup />} />
+
               {/* pos end */}
 
                 <Route path="/admin-login" element={<AdminLogin />}></Route>
