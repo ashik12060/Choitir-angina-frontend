@@ -1,61 +1,120 @@
-import React, { useState, useEffect } from 'react';
-import { Swiper, SwiperSlide } from 'swiper/react';
-import { Navigation, Autoplay } from 'swiper/modules';
-import 'swiper/css';
-import 'swiper/css/navigation';
-import 'swiper/css/autoplay';
-
-import aghaNoor from '../../assets/1.jpg';
-import mariaB from '../../assets/1.jpg';
-import iznik from '../../assets/1.jpg';
-import mushq from '../../assets/1.jpg';
-import azure from '../../assets/1.jpg';
+import React, { useState, useEffect } from "react";
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Navigation, Autoplay } from "swiper/modules";
+import axios from "axios";
+import "swiper/css";
+import "swiper/css/navigation";
+import "swiper/css/autoplay";
+import axiosInstance from "../../pages/axiosInstance";
 
 const TopCarousel = () => {
-  const [brands, setBrands] = useState([]);
+  const [banners, setBanners] = useState([]); // Ensure it's initialized as an empty array
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  useEffect(() => {
-    const fetchBrands = async () => {
-      const data = [
-        { id: 1, name: 'Agha Noor', image: aghaNoor },
-        { id: 2, name: 'Maria.B.', image: mariaB },
-        { id: 3, name: 'Iznik', image: iznik },
-        { id: 4, name: 'Mushq', image: mushq },
-        { id: 5, name: 'Azure', image: azure },
-      ];
-      setBrands(data);
+useEffect(() => {
+    const fetchTopBanners = async () => {
+      try {
+        const response = await axiosInstance.get(
+          `${process.env.REACT_APP_API_URL}/api/topBanners/show`
+        );
+        console.log("API Response:", response.data); // Debugging output
+        if (response.data.success) {
+          // Update this line to use the correct property from the response
+          setBanners(response.data.topBanners || []);
+        } else {
+          setError("Failed to load banners.");
+        }
+      } catch (err) {
+        console.error("Error fetching banners:", err);
+        setError("An error occurred while fetching banners.");
+      } finally {
+        setLoading(false);
+      }
     };
-
-    fetchBrands();
+  
+    fetchTopBanners();
   }, []);
+  
+  
+
+  if (loading) {
+    return <div>Loading banners...</div>;
+  }
+
+  if (error) {
+    return <div>Error: {error}</div>;
+  }
 
   return (
-    <div className="container mx-auto px-32 py-6">
-      <h2 className="text-2xl font-bold text-center mb-4">Top Brands</h2>
-      <Swiper
-        modules={[Navigation, Autoplay]}
-        slidesPerView={1} // Always show 1 slide
-        navigation
-        autoplay={{
-          delay: 3000, // Auto-slide every 3 seconds
-          disableOnInteraction: false,
-        }}
-        loop={true}
-      >
-        {brands.map((brand) => (
-          <SwiperSlide key={brand.id}>
-            <div className="bg-white rounded-lg shadow-md p-4 border border-gray-200">
-              <img
-                src={brand.image}
-                alt={brand.name}
-                className="mx-auto w-full h-96 object-contain"
-              />
-              {/* <h3 className="text-center mt-4 text-lg font-medium">{brand.name}</h3> */}
-            </div>
-          </SwiperSlide>
-        ))}
-      </Swiper>
-    </div>
+  //   <div className="container mx-auto px-32 py-6">
+  //   <h2 className="text-2xl font-bold text-center mb-4">Top Banners</h2>
+  //   {loading ? (
+  //     <p>Loading banners...</p>
+  //   ) : error ? (
+  //     <p>{error}</p>
+  //   ) : banners && banners.length > 0 ? (
+  //     <Swiper
+  //       modules={[Navigation, Autoplay]}
+  //       slidesPerView={1}
+  //       navigation
+  //       autoplay={{
+  //         delay: 3000,
+  //         disableOnInteraction: false,
+  //       }}
+  //       loop={true}
+  //     >
+  //       {banners.map((banner) => (
+  //         <SwiperSlide key={banner._id}>
+  //           <div className="bg-white rounded-lg shadow-md p-4 border border-gray-200">
+  //             <img
+  //               src={banner.image && banner.image.url ? banner.image.url : ""}
+  //               alt={banner.title || "Banner"}
+  //               className="mx-auto w-full h-96 object-contain"
+  //             />
+  //           </div>
+  //         </SwiperSlide>
+  //       ))}
+  //     </Swiper>
+  //   ) : (
+  //     <p>No banners available.</p>
+  //   )}
+  // </div>
+
+  <div className="container mx-auto px-4 py-6">
+  <h2 className="text-2xl font-bold text-center mb-4">Top Banners</h2>
+  {loading ? (
+    <p>Loading banners...</p>
+  ) : error ? (
+    <p>{error}</p>
+  ) : banners && banners.length > 0 ? (
+    <Swiper
+      modules={[Navigation, Autoplay]}
+      slidesPerView={1}
+      navigation
+      autoplay={{
+        delay: 3000,
+        disableOnInteraction: false,
+      }}
+      loop={true}
+    >
+      {banners.map((banner) => (
+        <SwiperSlide key={banner._id}>
+          <div className="bg-white rounded-lg shadow-md border border-gray-200">
+            <img
+              src={banner.image && banner.image.url ? banner.image.url : ""}
+              alt={banner.title || "Banner"}
+              className="mx-auto w-full h-[300px] sm:h-[400px] lg:h-[500px] object-cover rounded-lg"
+            />
+          </div>
+        </SwiperSlide>
+      ))}
+    </Swiper>
+  ) : (
+    <p>No banners available.</p>
+  )}
+</div>
+
   );
 };
 

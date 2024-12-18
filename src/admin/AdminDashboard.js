@@ -21,6 +21,7 @@ const AdminDashboard = () => {
   const [items, setItems] = useState([]);
   const [galleries, setGalleries] = useState([]);
   const [products, setProducts] = useState([]);
+  const [topBanners, setTopBanners] = useState([]);
   const [orders, setOrders] = useState([]);
   const [comments, setComments] = useState([]);
 
@@ -86,6 +87,22 @@ const AdminDashboard = () => {
 
   useEffect(() => {
     displayProduct();
+  }, []);
+
+  //display displayTopBanners
+  const displayTopBanners = async () => {
+    try {
+      const { data } = await axiosInstance.get(
+        `${process.env.REACT_APP_API_URL}/api/topBanners/show`
+      );
+      setTopBanners(data.topBanners);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    displayTopBanners();
   }, []);
 
   //   //display gallery
@@ -158,7 +175,28 @@ const AdminDashboard = () => {
       }
     }
   };
-  //delete product by Id
+
+  //delete top banner by Id
+  const deleteTopBannerById = async (e, id) => {
+    console.log(id);
+    if (window.confirm("Are you sure you want to delete this top banner?")) {
+      try {
+        //
+        const { data } = await axiosInstance.delete(
+          `${process.env.REACT_APP_API_URL}/api/delete/topBanner/${id}`
+        );
+        if (data.success === true) {
+          toast.success(data.message);
+          displayTopBanners();
+        }
+      } catch (error) {
+        console.log(error);
+        toast.error(error);
+      }
+    }
+  };
+
+  //delete gallery by Id
   const deleteGalleryById = async (e, id) => {
     console.log(id);
     if (window.confirm("Are you sure you want to delete this image?")) {
@@ -420,6 +458,67 @@ const AdminDashboard = () => {
       ),
     },
   ];
+  //   //top banner columns add extra
+  const TopBannersColumns = [
+    {
+      field: "_id",
+      headerName: "Post ID",
+      width: 150,
+      editable: true,
+    },
+    {
+      field: "title",
+      headerName: "Top banner title",
+      width: 150,
+    },
+
+    {
+      field: "image",
+      headerName: "Image",
+      width: 150,
+      renderCell: (params) => <img width="40%" src={params.row.image.url} />,
+    },
+
+    {
+      field: "postedBy",
+      headerName: "Posted by",
+      width: 150,
+      valueGetter: (data) => data.row.postedBy.name,
+    },
+    {
+      field: "createdAt",
+      headerName: "Create At",
+      width: 150,
+      renderCell: (params) =>
+        moment(params.row.createdAt).format("YYYY-MM-DD HH:MM:SS"),
+    },
+
+    {
+      field: "Actions",
+      width: 100,
+      renderCell: (value) => (
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "space-between",
+            width: "170px",
+          }}
+        >
+          <Link to={`/admin/topBanner/edit/${value.row._id}`}>
+            <IconButton aria-label="edit">
+              <EditIcon sx={{ color: "#1976d2" }} />
+            </IconButton>
+          </Link>
+          <IconButton
+            aria-label="delete"
+            onClick={(e) => deleteTopBannerById(e, value.row._id)}
+          >
+            <DeleteIcon sx={{ color: "red" }} />
+          </IconButton>
+        </Box>
+      ),
+    },
+  ];
 
   //    // Gallery columns
   const GalleryColumns = [
@@ -611,6 +710,19 @@ const AdminDashboard = () => {
 
           <button
             class="nav-link border border-1 mt-3"
+            id="v-pills-topBanner-tab"
+            data-bs-toggle="pill"
+            data-bs-target="#v-pills-topBanner"
+            type="button"
+            role="tab"
+            aria-controls="v-pills-topBanner"
+            aria-selected="false"
+          >
+            Top Banner
+          </button>
+
+          <button
+            class="nav-link border border-1 mt-3"
             id="v-pills-messages-tab"
             data-bs-toggle="pill"
             data-bs-target="#v-pills-messages"
@@ -621,7 +733,7 @@ const AdminDashboard = () => {
           >
             Blog Posts
           </button>
-         
+
           <button
             class="nav-link  border border-1 mt-3"
             id="v-pills-seller-tab"
@@ -649,7 +761,6 @@ const AdminDashboard = () => {
           </button>
         </div>
 
-
         <div className=" w-75 tab-content" id="v-pills-tabContent">
           <div
             class="tab-pane fade show active"
@@ -658,11 +769,8 @@ const AdminDashboard = () => {
             aria-labelledby="v-pills-home-tab"
             tabindex="0"
           >
-            
-            
             <OrderSingle />
           </div>
-
 
           <div
             class="tab-pane fade"
@@ -674,7 +782,9 @@ const AdminDashboard = () => {
             {/* Products  */}
             <Box>
               <h3 className="mt-3">
-                <span className="py-2 px-4 rounded bg-primary text-white ">PRODUCTS</span>
+                <span className="py-2 px-4 rounded bg-primary text-white ">
+                  PRODUCTS
+                </span>
               </h3>
               <Box sx={{ pb: 2, display: "flex", justifyContent: "right" }}>
                 <Button
@@ -714,6 +824,59 @@ const AdminDashboard = () => {
             </Box>
           </div>
 
+{/* Top Banner */}
+          <div
+            class="tab-pane fade"
+            id="v-pills-topBanner"
+            role="tabpanel"
+            aria-labelledby="v-pills-topBanner-tab"
+            tabindex="0"
+          >
+            {/* Top Banner  */}
+            <Box>
+              <h3 className="mt-3">
+                <span className="py-2 px-4 rounded bg-primary text-white ">
+                  Top banner
+                </span>
+              </h3>
+              <Box sx={{ pb: 2, display: "flex", justifyContent: "right" }}>
+                <Button
+                  variant="contained"
+                  color="success"
+                  startIcon={<AddIcon />}
+                >
+                  <Link
+                    style={{ color: "white", textDecoration: "none" }}
+                    to="/admin/topBanner/create"
+                  >
+                    Add Top banner
+                  </Link>{" "}
+                </Button>
+              </Box>
+              <Paper sx={{ bgColor: "white" }}>
+                <Box sx={{ height: 400, width: "100%" }}>
+                  <DataGrid
+                    getRowId={(row) => row._id}
+                    sx={{
+                      "& .MuiTablePagination-displayedRows": {
+                        color: "black",
+                      },
+                      color: "black",
+                      [`& .${gridClasses.row}`]: {
+                        bgColor: "white",
+                      },
+                    }}
+                    rows={topBanners}
+                    columns={TopBannersColumns}
+                    pageSize={3}
+                    rowsPerPageOptions={[3]}
+                    checkboxSelection
+                  />
+                </Box>
+              </Paper>
+            </Box>
+          </div>
+
           <div
             class="tab-pane fade"
             id="v-pills-messages"
@@ -724,8 +887,9 @@ const AdminDashboard = () => {
             {/* post  */}
             <Box className="mt-5">
               <h3>
-                
-                <span className="py-2 px-4 rounded bg-primary text-white ">Blog Posts</span>
+                <span className="py-2 px-4 rounded bg-primary text-white ">
+                  Blog Posts
+                </span>
               </h3>
               <Box sx={{ pb: 2, display: "flex", justifyContent: "right" }}>
                 <Button
@@ -772,8 +936,6 @@ const AdminDashboard = () => {
               </Paper>
             </Box>
           </div>
-          
-
 
           <div
             class="tab-pane fade show "
@@ -783,10 +945,10 @@ const AdminDashboard = () => {
             tabindex="0"
           >
             <div className="container">
-             
               <h3 className="my-3">
-                
-                <span className="py-2 px-4 rounded bg-primary text-white ">Seller Products </span>
+                <span className="py-2 px-4 rounded bg-primary text-white ">
+                  Seller Products{" "}
+                </span>
               </h3>
               <table className="table table-bordered border-1 border border-black">
                 <thead>
@@ -794,7 +956,6 @@ const AdminDashboard = () => {
                     <th>Image</th>
                     <th>Name</th>
                     <th>Price</th>
-                    
                   </tr>
                 </thead>
                 <tbody>
@@ -831,7 +992,6 @@ const AdminDashboard = () => {
             aria-labelledby="v-pills-users-tab"
             tabindex="0"
           >
-            
             <Users />
           </div>
         </div>

@@ -14,8 +14,6 @@ const ProductsLists = ({ searchQuery }) => {
   return (
     <div>
       <div className="">
-        {/* <Carousel /> */}
-        {/* <HomeCarousel className="pb-2" /> */}
         <TopCarousel />
         <ComingSoon />
         <TopBrands />

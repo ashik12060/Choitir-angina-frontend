@@ -66,12 +66,15 @@ import Settings from "./pages/Pos/Settings/Settings";
 import GroupSetup from "./pages/Pos/GroupSetup/GroupSetup";
 import BrandSetup from "./pages/Pos/BrandSetup/BrandSetup";
 import ProductInformation from "./pages/Pos/ProductInformation/ProductInformation";
+import CreateTopBanner from "./admin/CreateTopBanner";
 //HOC
 const AdminDashboardHOC = Layout(AdminDashboard);
 
 const CreatePostHOC = Layout(CreatePost);
 const CreateItemHOC = Layout(CreateItem);
 const CreateProductHOC = Layout(CreateProduct);
+const CreateTopBannerHOC = Layout(CreateTopBanner);
+
 const CreateGalleryHOC = Layout(CreateGallery);
 const EditPostHOC = Layout(EditPost);
 const EditItemHOC = Layout(EditItem);
@@ -235,6 +238,18 @@ function App() {
                     </AdminRoute>
                   }
                 />
+                <Route
+                  path="/admin/topBanner/create"
+                  element={
+                    <AdminRoute>
+                      <CreateTopBannerHOC />
+                    </AdminRoute>
+                  }
+                />
+
+
+
+
                 <Route
                   path="/admin/gallery/create"
                   element={

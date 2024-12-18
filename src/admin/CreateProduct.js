@@ -5,14 +5,10 @@ import Dropzone from "react-dropzone";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import axios from "axios";
 import { toast } from "react-toastify";
-// import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import { useEffect, useRef, useState } from "react";
 import axiosInstance from "../pages/axiosInstance";
-// import axiosInstance from "../pages/axiosInstance";
-// import { modules } from "../components/moduleToolbar";
-// import Parser from "html-react-parser";
-// import DOMPurify from "dompurify";
+
 
 const validationSchema = yup.object({
   title: yup
