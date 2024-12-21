@@ -14,15 +14,17 @@ import i6 from "../../../assets/master-card.png";
 import { Link } from "react-router-dom";
 
 const Footer = () => {
+
+  const currentYear = new Date().getFullYear();
   return (
     <div className="text-black card2-bg">
       <div className="d-flex justify-content-around flex-lg-row flex-md-row flex-sm-column flex-column py-5 px-sm-4 px-3 g-4 gap-4">
         <div>
           <h2 className="fs-1 fw-bold" aria-current="page">
-          Helper<span className="font-color">Hub</span>
+          Chaitir<span className="font-color">Angina</span>
           </h2>
           <br />
-          <p className="">HelperHub is a sample e-commerce website</p>
+          <p className="">Chaitir Angina is a sample e-commerce website</p>
           <p className="">
             <FontAwesomeIcon icon={faLocationDot} /> Dhaka, Bangladesh
           </p>
@@ -72,7 +74,7 @@ const Footer = () => {
       </div>
       <hr className=""/>
       <p className="text-center fw-bold py-3">
-        <i>Copyright © 2024 HelperHub. All Rights Reserved.</i>
+        <i>Copyright ©{currentYear} Chaitir Angina. All Rights Reserved.</i>
       </p>
     </div>
   );

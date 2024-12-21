@@ -1,53 +1,74 @@
-
-
-import React from "react";
+import { useState, useEffect } from "react";
+import { toast } from "react-toastify";
+import axiosInstance from "../../pages/axiosInstance";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay } from "swiper/modules";
 import "swiper/css";
-import "swiper/css/autoplay";
-
-// Example brand data (replace with dynamic data if needed)
-const brands = [
-  { id: 1, name: "Agha Noor", image: require("../../assets/1.jpg") },
-  { id: 2, name: "Maria.B.", image: require("../../assets/2.jpg") },
-  { id: 3, name: "Iznik", image: require("../../assets/3.jpg") },
-  { id: 4, name: "Mushq", image: require("../../assets/4.jpg") },
-  { id: 5, name: "Azure", image: require("../../assets/5.jpg") },
-  { id: 6, name: "Other Brand", image: require("../../assets/photo.jpg") },
-];
+import { Link } from "react-router-dom";
 
 const NewArrival = () => {
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchNewArrivalProducts = async () => {
+      try {
+        const response = await axiosInstance.get(
+          `${process.env.REACT_APP_API_URL}/api/category/New Arrival`
+        );
+        setProducts(response.data.products || []);
+        setLoading(false);
+      } catch (error) {
+        toast.error("Failed to load New Arrival products");
+        setLoading(false);
+      }
+    };
+    fetchNewArrivalProducts();
+  }, []);
+
   return (
     <div className="container mx-auto px-10 py-4 my-20 bg-[#f6fcf8]">
       <h2 className="text-2xl font-bold text-center mb-6">New Arrival</h2>
-      <Swiper
-        modules={[Autoplay]}
-        spaceBetween={20}
-        slidesPerView={5}
-        loop={true}
-        autoplay={{
-          delay: 0,
-          disableOnInteraction: false,
-          pauseOnMouseEnter: false,
-        }}
-        speed={5000} 
-        className="relative"
-      >
-        {brands.map((brand) => (
-          <SwiperSlide key={brand.id} className="flex items-center justify-center">
-            <div className="bg-white border-2 border-[#d5c085] rounded-lg shadow-md w-full h-[350px] flex items-center justify-center">
-              <img
-                src={brand.image}
-                alt={brand.name}
-                className="h-full w-auto  rounded-lg"
-              />
-              
-            </div>
-          </SwiperSlide>
-        ))}
-      </Swiper>
+      {loading ? (
+        <p className="text-center">Loading...</p>
+      ) : products.length === 0 ? (
+        <p className="text-center">No products available in this category.</p>
+      ) : (
+        <Swiper
+          modules={[Autoplay]}
+          spaceBetween={20}
+          slidesPerView={5}
+          loop={true}
+          autoplay={{
+            delay: 0,
+            disableOnInteraction: false,
+            pauseOnMouseEnter: false,
+          }}
+          speed={5000}
+          className="relative"
+        >
+          {products.map((product) => (
+            <SwiperSlide
+              key={product._id}
+              className="flex items-center justify-center"
+            >
+              <div className="bg-white border-2 border-[#d5c085] rounded-lg shadow-md w-full h-[350px] flex items-center justify-center">
+                <Link to={`/product/${product._id}`}>
+                  <img
+                    src={product.image?.url || "placeholder-image-url.jpg"}
+                    alt={product.title}
+                    className="h-full w-auto rounded-lg"
+                  />
+                </Link>
+              </div>
+            </SwiperSlide>
+          ))}
+        </Swiper>
+      )}
     </div>
   );
 };
 
 export default NewArrival;
+
+

@@ -82,7 +82,7 @@ const Contact = () => {
             <h2 className=" mt-4 "><span className="contact-border">Our Contact</span></h2>
             <div className="d-flex mt-5 mb-2">
               <div>
-                <a href="mailto:business@helperhub.com">
+                <a href="mailto:business@chaitirangina.com">
                   <FontAwesomeIcon className="contact-icon" icon={faEnvelope} />
                 </a>
               </div>
@@ -91,9 +91,9 @@ const Contact = () => {
                 <p>
                   <a
                     className="text-black"
-                    href="mailto:business@helperhub.com"
+                    href="mailto:business@chaitirangina.com"
                   >
-                    business@helperhub.com
+                    business@chaitirangina.com
                   </a>{" "}
                 </p>
               </div>
