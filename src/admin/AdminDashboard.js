@@ -695,6 +695,7 @@ const AdminDashboard = () => {
           >
             Total Sales
           </button>
+
           <button
             class="nav-link border border-1 mt-3"
             id="v-pills-profile-tab"
@@ -706,6 +707,19 @@ const AdminDashboard = () => {
             aria-selected="false"
           >
             Products Info
+          </button>
+
+          <button
+            class="nav-link border border-1 mt-3"
+            id="v-pills-barcode-tab"
+            data-bs-toggle="pill"
+            data-bs-target="#v-pills-barcode"
+            type="button"
+            role="tab"
+            aria-controls="v-pills-barcode"
+            aria-selected="false"
+          >
+            Bar Codes
           </button>
 
           <button
@@ -819,6 +833,43 @@ const AdminDashboard = () => {
                     rowsPerPageOptions={[3]}
                     checkboxSelection
                   />
+                </Box>
+              </Paper>
+            </Box>
+          </div>
+
+          <div
+            class="tab-pane fade"
+            id="v-pills-profile"
+            role="tabpanel"
+            aria-labelledby="v-pills-profile-tab"
+            tabindex="0"
+          >
+            {/* Products  */}
+            <Box>
+              <h3 className="mt-3">
+                <span className="py-2 px-4 rounded bg-primary text-white ">
+                  Barcodes
+                </span>
+              </h3>
+              <Box sx={{ pb: 2, display: "flex", justifyContent: "right" }}>
+                <Button
+                  variant="contained"
+                  color="success"
+                  startIcon={<AddIcon />}
+                >
+                  <Link
+                    style={{ color: "white", textDecoration: "none" }}
+                    to="/admin/product/create"
+                  >
+                    Add Products
+                  </Link>{" "}
+                </Button>
+              </Box>
+              <Paper sx={{ bgColor: "white" }}>
+                <Box sx={{ height: 400, width: "100%" }}>
+
+
                 </Box>
               </Paper>
             </Box>

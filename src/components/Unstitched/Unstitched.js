@@ -72,7 +72,7 @@ const Unstitched = () => {
           {products.map((product) => (
             <div
               key={product._id}
-              className="bg-white border-2 border-[#d5c085] rounded-lg shadow-md w-full h-[350px] flex items-center justify-center"
+              className="bg-white border-2 border-[#d5c085] rounded-lg shadow-md w-full h-[380px] flex items-center justify-center"
             >
               <Link to={`/product/${product._id}`}>
                 <img

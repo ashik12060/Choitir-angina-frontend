@@ -5,8 +5,10 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faStar } from "@fortawesome/free-regular-svg-icons";
 import { useEffect, useState } from "react";
 import axiosInstance from "../pages/axiosInstance";
+import ProductBarcode from "./ProductBarcode/ProductBarcode";
 
 const ProductCard = ({
+  productId ,
   id,
   title,
   price,
@@ -22,6 +24,29 @@ const ProductCard = ({
   const [truncatedContent, setTruncatedContent] = useState("");
   const history = useNavigate();
   const isAuthenticated = useSelector((state) => state.signIn.isAuthenticated);
+
+
+  const [product, setProduct] = useState(null);
+
+  useEffect(() => {
+    const fetchProduct = async () => {
+      try {
+        const response = await axiosInstance.get(
+          `${process.env.REACT_APP_API_URL}/api/products/${productId}`
+        );
+        console.log("Product Data:", response.data); // Check the response here
+        setProduct(response.data);
+        // setLoading(false);
+      } catch (error) {
+        console.error("Error fetching product:", error);
+        // setLoading(false);
+      }
+    };
+  
+    fetchProduct();
+  }, [productId]);
+  
+
 
   useEffect(() => {
     const contentArray = content.split("\n");
@@ -99,6 +124,8 @@ const ProductCard = ({
             Buy Now
           </button>
         </Link>
+        
+      <ProductBarcode product={product} />
       </div>
     </div>
   );

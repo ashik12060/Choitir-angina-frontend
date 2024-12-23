@@ -37,16 +37,16 @@ const BlogPro = ({ searchQuery }) => {
     showProducts();
   }, []);
 
-  useEffect(() => {
-    socket.on("add-like", (newPosts) => {
-      setPostAddLike(newPosts);
-      setPostRemoveLike("");
-    });
-    socket.on("remove-like", (newPosts) => {
-      setPostRemoveLike(newPosts);
-      setPostAddLike("");
-    });
-  }, []);
+  // useEffect(() => {
+  //   socket.on("add-like", (newPosts) => {
+  //     setPostAddLike(newPosts);
+  //     setPostRemoveLike("");
+  //   });
+  //   socket.on("remove-like", (newPosts) => {
+  //     setPostRemoveLike(newPosts);
+  //     setPostAddLike("");
+  //   });
+  // }, []);
 
   let uiPosts =
     postAddLike.length > 0
@@ -77,11 +77,20 @@ const BlogPro = ({ searchQuery }) => {
     }
   };
 
+  // Function to print the barcode
+  const handlePrint = (barcode) => {
+    const printWindow = window.open("", "", "width=600,height=400");
+    printWindow.document.write(
+      `<html><body><img src="${barcode}" alt="Product Barcode" style="width: 100%; max-width: 400px;" /></body></html>`
+    );
+    printWindow.document.close();
+    printWindow.print();
+  };
+
   return (
     <div className="bg-gray-50 min-h-screen">
       <h2 className="text-center text-3xl font-bold">Main Catalog</h2>
       <div className="container mx-auto px-4 py-6">
-        
         {/* Products Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-6">
           {loading ? (
@@ -96,14 +105,30 @@ const BlogPro = ({ searchQuery }) => {
                   content={product.content}
                   price={product.price}
                   brand={product.brand}
-                  subheader={moment(product.createdAt).format(
-                    "MMMM DD, YYYY"
-                  )}
+                  subheader={moment(product.createdAt).format("MMMM DD, YYYY")}
                   comments={product.comments.length}
                   likes={product.likes.length}
                   likesId={product.likes}
                   showProducts={showProducts}
                 />
+                {product.barcode && (
+        <div className="mt-4">
+          <h3 className="text-xl">Product Barcode</h3>
+          <img src={product.barcode} alt="Product Barcode" style={{ width: '150px', height: 'auto' }} />
+          {/* Print Barcode Button */}
+          <button
+            onClick={() => handlePrint(product.barcode)}
+            className="mt-2 px-4 py-2 bg-blue-500 text-white rounded"
+          >
+            Print Barcode
+          </button>
+        </div>
+      )}
+
+
+
+
+             
               </div>
             ))
           )}

@@ -19,6 +19,9 @@ const ProductsLists = ({ searchQuery }) => {
         <TopBrands />
         <NewArrival />
         <Unstitched />
+        
+    
+
         <BlogPro searchQuery={searchQuery} />
       </div>
     </div>
