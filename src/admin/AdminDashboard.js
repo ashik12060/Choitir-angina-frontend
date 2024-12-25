@@ -400,12 +400,12 @@ const AdminDashboard = () => {
       width: 150,
     },
 
-    {
-      field: "image",
-      headerName: "Image",
-      width: 150,
-      renderCell: (params) => <img width="40%" src={params.row.image.url} />,
-    },
+    // {
+    //   field: "image",
+    //   headerName: "Image",
+    //   width: 150,
+    //   renderCell: (params) => <img width="40%" src={params.row.image.url} />,
+    // },
     {
       field: "likes",
       headerName: "Likes",

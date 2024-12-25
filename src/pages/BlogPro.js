@@ -99,7 +99,8 @@ const BlogPro = ({ searchQuery }) => {
             uiPosts.map((product, index) => (
               <div key={index} className="col-span-1">
                 <ProductCard
-                  image={product.image ? product.image.url : ""}
+                  // image={product.image ? product.image.url : ""}
+                  images={product.images} // Pass the images array
                   id={product._id}
                   title={product.title}
                   content={product.content}
