@@ -39,6 +39,7 @@ const SinglePro = () => {
   const [comment, setComment] = useState("");
   const [commentsRealTime, setCommentsRealTime] = useState([]);
   const [selectedImage, setSelectedImage] = useState(""); // New state for main image
+  const [selectedSize, setSelectedSize] = useState(null); // New state for size
 
   const navigate = useNavigate();
   const isAuthenticated = useSelector((state) => state.signIn.isAuthenticated);
@@ -114,6 +115,13 @@ const SinglePro = () => {
     navigate("/checkout");
   };
 
+
+ 
+
+  const handleSizeSelect = (size) => {
+    setSelectedSize(size); // Update selected size
+  };
+
   return (
     <div className="bg-white min-h-screen">
       <div className="container mx-auto py-8">
@@ -124,38 +132,54 @@ const SinglePro = () => {
             {/* Product Images */}
             {/* Product Images */}
             <div className="lg:w-1/3 p-4">
-              {product.images && product.images.length > 0 ? (
-                <div className="relative">
-                  {/* Main Image Display */}
-                  <div className="border rounded-md mb-4">
-                    <img
-                      src={selectedImage} // Show the selected image
-                      alt={product.title}
-                      // className="w-full h-auto object-cover rounded-md"
-                      className="w-full h-96 object-cover rounded-md" // Fixed height for square aspect ratio
-                      style={{ aspectRatio: "1 / 1" }} // Ensures a perfect square
-                    />
-                  </div>
+  {product.images && product.images.length > 0 ? (
+    <div className="relative">
+      {/* Main Image Display */}
+      <div className="border rounded-md mb-4">
+        <img
+          src={selectedImage} // Show the selected image
+          alt={product.title}
+          className="w-full h-96 object-cover rounded-md"
+          style={{ aspectRatio: "1 / 1" }} // Ensures a perfect square
+        />
+      </div>
 
-                  {/* Thumbnail Slider */}
-                  <div className="flex space-x-2 overflow-x-auto">
-                    {product.images.map((img, index) => (
-                      <img
-                        key={index}
-                        src={img.url}
-                        className={`w-16 h-16 object-cover rounded-md border cursor-pointer hover:shadow-lg transition ${
-                          selectedImage === img.url ? "border-blue-500" : ""
-                        }`}
-                        alt={`Thumbnail ${index + 1}`}
-                        onClick={() => setSelectedImage(img.url)} // Update selected image
-                      />
-                    ))}
-                  </div>
-                </div>
-              ) : (
-                <p className="text-gray-500">No images available</p>
-              )}
-            </div>
+
+
+ {/* Display Color Name */}
+ <div className="mt-4 text-center">
+        {product.images.map(
+          (img) =>
+            selectedImage === img.url && (
+              <p key={img._id} className="text-sm font-semibold text-gray-700">
+                Color: {img.color || "N/A"}
+              </p>
+            )
+        )}
+      </div>
+      {/* Thumbnail Slider */}
+      <div className="flex space-x-2 overflow-x-auto">
+        
+        {product.images.map((img, index) => (
+          <img
+            key={index}
+            src={img.url}
+            className={`w-16 h-16 object-cover rounded-md border cursor-pointer hover:shadow-lg transition ${
+              selectedImage === img.url ? "border-blue-500" : ""
+            }`}
+            alt={`Thumbnail ${index + 1}`}
+            onClick={() => setSelectedImage(img.url)} // Update selected image
+          />
+        ))}
+      </div>
+
+     
+    </div>
+  ) : (
+    <p className="text-gray-500">No images available</p>
+  )}
+</div>
+
 
             {/* Product Details */}
             <div className="lg:w-2/3 p-4">
@@ -174,22 +198,64 @@ const SinglePro = () => {
               <p className="text-gray-600 text-sm mt-2">
                 <span className="font-bold">Origin:</span> {product.content}
               </p>
+
+              {/* Stock Status with Quantity */}
+              <p
+                className={`mt-4 font-semibold ${
+                  product.quantity > 0 ? "text-green-600" : "text-red-600"
+                }`}
+              >
+                {product.quantity > 0
+                  ? `In Stock: ${product.quantity}`
+                  : `Out of Stock: ${product.quantity}`}
+              </p>
+
               <div className="mt-4">
                 <p className="text-xl font-semibold text-green-600">
                   ${product.price}
                 </p>
                 <p className="line-through text-gray-400">$30</p>
               </div>
+
+               {/* Size Selector */}
+               <div className="mt-4">
+                <h3 className="text-lg font-bold text-gray-700 mb-2">Sizes</h3>
+                <div className="flex space-x-2">
+                  {[36, 38, 40, 42, 44].map((size) => (
+                    <button
+                      key={size}
+                      className={`px-4 py-2 rounded-md border transition ${
+                        selectedSize === size
+                          ? "bg-blue-600 text-white"
+                          : "bg-gray-200 text-gray-800"
+                      }`}
+                      onClick={() => handleSizeSelect(size)}
+                    >
+                      {size}
+                    </button>
+                  ))}
+                </div>
+                {selectedSize && (
+                  <p className="mt-2 text-sm text-gray-600">
+                    Selected Size: <span className="font-bold">{selectedSize}</span>
+                  </p>
+                )}
+              </div>
+
+
+
               <div className="mt-4">
                 <button
                   className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition"
                   onClick={addToCart}
+                  disabled={product.quantity <= 0} // Disable if product is out of stock
                 >
                   Add to Cart
                 </button>
                 <button
                   className="ml-4 bg-yellow-500 text-white px-4 py-2 rounded-md hover:bg-yellow-600 transition"
                   onClick={handleBuyNow}
+                  disabled={product.quantity <= 0} // Disable if product is out of stock
                 >
                   Buy Now
                 </button>
@@ -197,50 +263,6 @@ const SinglePro = () => {
             </div>
           </div>
         )}
-
-        {/* Comments Section */}
-        {/* <div className="mt-8">
-          {userInfo ? (
-            <div className="bg-white p-4 rounded-md shadow-md">
-              <h2 className="text-lg font-bold text-gray-800">Add Your Comment</h2>
-              <form onSubmit={addComment} className="mt-4">
-                <textarea
-                  className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  rows="4"
-                  placeholder="Write your comment here..."
-                  onChange={(e) => setComment(e.target.value)}
-                  value={comment}
-                ></textarea>
-                <button
-                  type="submit"
-                  className="mt-2 bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600 transition"
-                >
-                  Submit
-                </button>
-              </form>
-            </div>
-          ) : (
-            <p className="text-center text-gray-600">
-              <Link to="/login" className="text-blue-600 underline">
-                Log in
-              </Link>{" "}
-              to add a comment.
-            </p>
-          )}
-
-          <div className="mt-6">
-            <h2 className="text-lg font-bold text-gray-800">Comments</h2>
-            <div className="space-y-4 mt-4">
-              {uiCommentUpdate.map((comment) => (
-                <CommentList
-                  key={comment._id}
-                  name={comment.postedBy.name}
-                  text={comment.text}
-                />
-              ))}
-            </div>
-          </div>
-        </div> */}
 
         {/* Comments Section */}
         <div className="mt-8">
