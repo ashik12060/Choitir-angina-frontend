@@ -10,28 +10,59 @@ export const CartProvider = ({ children }) => {
     setCart(storedCart);
   }, []);
 
+  // existing 
+  // const addCartItem = (item) => {
+  //   setCart((prevCart) => {
+  //     const productId = item._id;
+  //     const existingItem = prevCart.find((itm) => itm._id === productId);
+
+  //     let newCart;
+
+  //     if (existingItem) {
+  //       newCart = prevCart.map((itm) => {
+  //         if (itm._id === productId) {
+  //           return { ...itm, quantity: itm.quantity + 1 };
+  //         }
+  //         return itm;
+  //       });
+  //     } else {
+  //       newCart = [...prevCart, { ...item, quantity: 1 }];
+  //     }
+
+  //     localStorage.setItem("cart", JSON.stringify(newCart));
+  //     return newCart;
+  //   });
+  // };
+
+  // new
   const addCartItem = (item) => {
     setCart((prevCart) => {
-      const productId = item._id;
-      const existingItem = prevCart.find((itm) => itm._id === productId);
-
+      // Check for an existing item with the same product ID and size
+      const existingItem = prevCart.find(
+        (itm) => itm._id === item._id && itm.size === item.size
+      );
+  
       let newCart;
-
+  
       if (existingItem) {
+        // If the item exists (same product and size), increment its quantity
         newCart = prevCart.map((itm) => {
-          if (itm._id === productId) {
+          if (itm._id === item._id && itm.size === item.size) {
             return { ...itm, quantity: itm.quantity + 1 };
           }
           return itm;
         });
       } else {
+        // If the item doesn't exist, add it to the cart with the selected size
         newCart = [...prevCart, { ...item, quantity: 1 }];
       }
-
+  
+      // Save the updated cart to localStorage
       localStorage.setItem("cart", JSON.stringify(newCart));
       return newCart;
     });
   };
+  
 
   const incrementItem = (productId) => {
     setCart((prevCart) => {

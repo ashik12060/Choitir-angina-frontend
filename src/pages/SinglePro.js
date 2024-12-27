@@ -107,8 +107,22 @@ const SinglePro = () => {
     }
   };
 
+  // const addToCart = () => {
+  //   addCartItem(product);
+  // };
+
   const addToCart = () => {
-    addCartItem(product);
+    if (!selectedSize) {
+      toast.error("Please select a size before adding to cart");
+      return;
+    }
+  
+    const selectedProduct = {
+      ...product,
+      size: selectedSize, // Add selected size to the product object
+    };
+  
+    addCartItem(selectedProduct);
   };
 
   const handleBuyNow = () => {

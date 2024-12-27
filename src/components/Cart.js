@@ -1,4 +1,5 @@
 const Cart = ({ cartItems }) => {
+
   return (
     <div>
       {cartItems.map((item) => (
