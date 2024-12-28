@@ -15,6 +15,7 @@ import { CartProvider } from "../hooks";
 import OrderSingle from "./OrderSingle";
 import "./AdminDashboard.css";
 import Users from "./Users/Users";
+import Dashboard from "./Dashboard";
 
 const AdminDashboard = () => {
   const [posts, setPosts] = useState([]);
@@ -685,6 +686,18 @@ const AdminDashboard = () => {
         >
           <button
             class="nav-link active border border-1"
+            id="v-pills-dashboard-tab"
+            data-bs-toggle="pill"
+            data-bs-target="#v-pills-dashboard"
+            type="button"
+            role="tab"
+            aria-controls="v-pills-dashboard"
+            aria-selected="true"
+          >
+            Dashboard
+          </button>
+          <button
+            class="nav-link  border border-1"
             id="v-pills-home-tab"
             data-bs-toggle="pill"
             data-bs-target="#v-pills-home"
@@ -778,6 +791,15 @@ const AdminDashboard = () => {
         <div className=" w-75 tab-content" id="v-pills-tabContent">
           <div
             class="tab-pane fade show active"
+            id="v-pills-dashboard"
+            role="tabpanel"
+            aria-labelledby="v-pills-dashboard-tab"
+            tabindex="0"
+          >
+            <Dashboard />
+          </div>
+          <div
+            class="tab-pane fade "
             id="v-pills-home"
             role="tabpanel"
             aria-labelledby="v-pills-home-tab"
