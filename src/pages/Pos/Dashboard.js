@@ -42,7 +42,7 @@ const Dashboard = () => {
         { name: 'Barcode Print Em', path: '/barcode-print' },
         { name: 'Sales Cancel', path: '/sales-cancel' },
         { name: 'Sales Report', path: '/sales-report' },
-        { name: 'Customer Report Emt', path: '/customer-report' },
+        { name: 'Customer Report Emt Done', path: '/customer-report' },
         { name: 'C. Discount Rpt', path: '/c-discount-rpt' },
         { name: 'P.O. Report', path: '/po-report' },
         { name: 'Promotion', path: '/promotion-report' },
