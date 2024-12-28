@@ -1,214 +1,103 @@
-import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import axiosInstance from "../../axiosInstance";
 
 function BarcodePrint() {
-  const [items, setItems] = useState([]);
-  const [barcode, setBarcode] = useState("");
-  const [description, setDescription] = "";
-  const [qty, setQty] = useState("");
-  const [data, setData] = useState([]);
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  const handleAddRow = () => {
-    setData([...data, { barcode: "", product: "", city: "", rpu: "" }]);
-  };
+  // Fetch products from the API
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const { data } = await axiosInstance.get(
+          `${process.env.REACT_APP_API_URL}/api/products/show`
+        );
+        console.log("Fetched products:", data.products); // Log the response
+        setProducts(data.products); // Assuming the response contains the product list
+        setLoading(false);
+      } catch (error) {
+        console.error("Failed to fetch products:", error);
+        setLoading(false);
+      }
+    };
 
-  const handlePrint = () => {
-    window.print();
-  };
+    fetchProducts();
+  }, []);
 
-  const handleClose = () => {
-    console.log("Close button clicked");
-  };
-
-  const handleChange = (index, field, value) => {
-    const updatedData = [...data];
-    updatedData[index][field] = value;
-    setData(updatedData);
-  };
-
-  const addItem = () => {
-    setItems([...items, { barcode, description, qty }]);
-    setBarcode("");
-    setDescription("");
-    setQty("");
-  };
-
-  const deleteItem = (index) => {
-    setItems(items.filter((_, i) => i !== index));
+  // Handle print
+  const handlePrint = (barcode) => {
+    const printWindow = window.open("", "", "width=600,height=400");
+    printWindow.document.write(
+      `<html><body><img src="${barcode}" alt="Barcode" style="width: 100%; max-width: 400px;" /></body></html>`
+    );
+    printWindow.document.close();
+    printWindow.print();
   };
 
   return (
     <div className="container mx-auto p-6 bg-gray-100 min-h-screen">
       <h1 className="text-3xl font-bold mb-6 text-center text-blue-600">
-        Barcode Challan Package
+        Product Barcodes
       </h1>
 
-      {/* Input Form */}
-      <div className="bg-white shadow rounded-lg p-6 space-y-4">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div>
-            <label htmlFor="barcode" className="block text-gray-700">
-              Barcode
-            </label>
-            <input
-              type="text"
-              id="barcode"
-              className="w-full border rounded-lg p-2 mt-1 focus:outline-none focus:ring-2 focus:ring-blue-500"
-              value={barcode}
-              onChange={(e) => setBarcode(e.target.value)}
-            />
-          </div>
-          <div>
-            <label htmlFor="description" className="block text-gray-700">
-              Description
-            </label>
-            <input
-              type="text"
-              id="description"
-              className="w-full border rounded-lg p-2 mt-1 focus:outline-none focus:ring-2 focus:ring-blue-500"
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-            />
-          </div>
-          <div>
-            <label htmlFor="qty" className="block text-gray-700">
-              Quantity
-            </label>
-            <input
-              type="number"
-              id="qty"
-              className="w-full border rounded-lg p-2 mt-1 focus:outline-none focus:ring-2 focus:ring-blue-500"
-              value={qty}
-              onChange={(e) => setQty(e.target.value)}
-            />
-          </div>
-        </div>
-        <button
-          onClick={addItem}
-          className="w-full bg-blue-500 text-white rounded-lg py-2 mt-4 hover:bg-blue-600"
-        >
-          Add Item
-        </button>
-      </div>
+      {/* Products Table */}
+      <div className="bg-white shadow rounded-lg p-6">
+        <h2 className="text-xl font-semibold text-blue-600 mb-4">Products</h2>
 
-      {/* Items List */}
-      <div className="mt-6 bg-white shadow rounded-lg p-6">
-        <h2 className="text-xl font-semibold text-blue-600 mb-4">Items List</h2>
-        {items.length > 0 ? (
-          <ul className="space-y-2">
-            {items.map((item, index) => (
-              <li
-                key={index}
-                className="flex justify-between items-center bg-gray-50 p-2 rounded-lg shadow-sm"
-              >
-                <span className="text-gray-700">
-                  {`${item.barcode} - ${item.description} - ${item.qty}`}
-                </span>
-                <button
-                  onClick={() => deleteItem(index)}
-                  className="text-red-500 hover:text-red-700"
-                >
-                  Delete
-                </button>
-              </li>
-            ))}
-          </ul>
-        ) : (
-          <p className="text-gray-500 text-center">No items added yet.</p>
-        )}
-      </div>
-
-      {/* Barcode Data Table */}
-      <div className="mt-6 bg-white shadow rounded-lg p-6">
-        <div className="flex justify-between items-center mb-4">
-          <h2 className="text-xl font-semibold text-blue-600">Barcode Data</h2>
-          <button
-            className="bg-blue-500 text-white font-bold py-2 px-4 rounded hover:bg-blue-600"
-            onClick={handleAddRow}
-          >
-            Add Row
-          </button>
-        </div>
-        <div className="overflow-x-auto">
-          <table className="table-auto w-full border border-gray-300">
-            <thead className="bg-gray-100">
-              <tr>
-                <th className="px-4 py-2 text-left">Barcode</th>
-                <th className="px-4 py-2 text-left">Product</th>
-                <th className="px-4 py-2 text-left">City</th>
-                <th className="px-4 py-2 text-left">RPU</th>
-                <th className="px-4 py-2 text-left">Delete</th>
+        {loading ? (
+          <p>Loading...</p>
+        ) : products.length > 0 ? (
+          <table className="min-w-full table-auto border-collapse">
+            <thead>
+              <tr className="border-b">
+                <th className="px-4 text-left">Product Name</th>
+                <th className="px-4 text-left">Barcode</th>
+                <th className="px-4 text-left">Action</th>
               </tr>
             </thead>
             <tbody>
-              {data.map((row, index) => (
-                <tr key={index}>
-                  <td className="px-4 py-2">
-                    <input
-                      type="text"
-                      className="w-full border rounded px-2 py-1"
-                      value={row.barcode}
-                      onChange={(e) =>
-                        handleChange(index, "barcode", e.target.value)
-                      }
-                    />
-                  </td>
-                  <td className="px-4 py-2">
-                    <input
-                      type="text"
-                      className="w-full border rounded px-2 py-1"
-                      value={row.product}
-                      onChange={(e) =>
-                        handleChange(index, "product", e.target.value)
-                      }
-                    />
-                  </td>
-                  <td className="px-4 py-2">
-                    <input
-                      type="text"
-                      className="w-full border rounded px-2 py-1"
-                      value={row.city}
-                      onChange={(e) =>
-                        handleChange(index, "city", e.target.value)
-                      }
-                    />
-                  </td>
-                  <td className="px-4 py-2">
-                    <input
-                      type="text"
-                      className="w-full border rounded px-2 py-1"
-                      value={row.rpu}
-                      onChange={(e) => handleChange(index, "rpu", e.target.value)}
-                    />
-                  </td>
-                  <td className="px-4 py-2 text-center">
-                    <button
-                      className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600"
-                    >
-                      Delete
-                    </button>
-                  </td>
-                </tr>
-              ))}
+              {products.map((product) => {
+                return (
+                  <tr key={product._id} className="border-b">
+                    <td className="px-4 ">{product.title}</td>
+                    <td className="px-4 ">
+                      {product.barcode ? (
+                        <img
+                          src={product.barcode}
+                          alt={`${product.title} Barcode`}
+                          className="w-24 h-24 object-contain"
+                        />
+                      ) : (
+                        <p>No barcode available</p>
+                      )}
+                    </td>
+                    <td className="px-4">
+                      {product.barcode && (
+                        <button
+                          onClick={() => handlePrint(product.barcode)}
+                          className="bg-blue-500 text-white py-1 px-3 rounded hover:bg-blue-600"
+                        >
+                          Print Barcode
+                        </button>
+                      )}
+                    </td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
-        </div>
+        ) : (
+          <p className="text-center text-gray-500">No products found.</p>
+        )}
       </div>
 
-      {/* Footer Buttons */}
-      <div className="flex justify-end gap-4 mt-6">
-        <Link
-        to='/pos'
-          className="bg-gray-500 text-white py-2 px-4 rounded hover:bg-gray-600"
-          onClick={handleClose}
-        >
-          Close
-        </Link>
+      {/* Footer Button */}
+      <div className="flex justify-end mt-6">
         <button
-          className="bg-green-500 text-white py-2 px-4 rounded hover:bg-green-600"
-          onClick={handlePrint}
+          className="bg-gray-500 text-white py-2 px-4 rounded hover:bg-gray-600"
+          onClick={() => window.history.back()}
         >
-          Print
+          Go Back
         </button>
       </div>
     </div>
