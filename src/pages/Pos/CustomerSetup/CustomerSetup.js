@@ -1,42 +1,34 @@
+import React, { useState, useEffect } from "react";
+import axiosInstance from "../../axiosInstance";
 
-
-import React, { useState } from 'react';
-
-function CustomerSetup() {
-  const [customers, setCustomers] = useState([
-    {
-      id: 1,
-      category: 'Silver',
-      cusName: 'Alam Dastagr',
-      address: '',
-      phone: '01717707848',
-      email: '',
-      profession: '',
-      birthDt: '01/01/1985',
-    },
-    {
-      id: 2,
-      category: 'Silver',
-      cusName: 'Ava Islam',
-      address: 'hatipur pakupa.dhaka',
-      phone: '01716903435',
-      email: '',
-      profession: '',
-      birthDt: '04/01/1990',
-    },
-  ]);
-
+const CustomerSetup = () => {
+  const [customers, setCustomers] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [isFormVisible, setIsFormVisible] = useState(false);
-  const [newCustomer, setNewCustomer] = useState({
-    category: '',
-    cusName: '',
-    address: '',
-    phone: '',
-    email: '',
-    profession: '',
-    birthDt: '',
+  const [customerData, setCustomerData] = useState({
+    name: "",
+    phone: "",
+    email: "",
+    address: "",
+    profession: "",
   });
+
+  // Fetch customers when the component is mounted
+  useEffect(() => {
+    const fetchCustomers = async () => {
+      try {
+        const response = await axiosInstance.get(
+          `${process.env.REACT_APP_API_URL}/api/customers`
+        );
+        setCustomers(response.data); // Assuming response.data contains the list of customers
+      } catch (error) {
+        console.error("Error fetching customers:", error);
+        alert("Error fetching customer data");
+      }
+    };
+
+    fetchCustomers();
+  }, []);
 
   const handleSearch = (event) => {
     setSearchTerm(event.target.value);
@@ -44,31 +36,48 @@ function CustomerSetup() {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setNewCustomer((prev) => ({ ...prev, [name]: value }));
+    setCustomerData((prevState) => ({
+      ...prevState,
+      [name]: value,
+    }));
   };
 
   const handleNewButtonClick = () => {
     setIsFormVisible(!isFormVisible);
   };
 
-  const handleAddCustomer = (e) => {
+  const handleAddCustomer = async (e) => {
     e.preventDefault();
-    const customerWithId = { id: customers.length + 1, ...newCustomer };
-    setCustomers((prev) => [...prev, customerWithId]);
-    setNewCustomer({
-      category: '',
-      cusName: '',
-      address: '',
-      phone: '',
-      email: '',
-      profession: '',
-      birthDt: '',
-    });
-    setIsFormVisible(false);
+
+    try {
+      const response = await axiosInstance.post(
+        `${process.env.REACT_APP_API_URL}/api/add-customer`,
+        customerData
+      );
+      alert(response.data.message); // Show success message
+      // Optionally reset form fields after success
+      setCustomerData({
+        name: "",
+        phone: "",
+        email: "",
+        address: "",
+        profession: "",
+      });
+
+      // Add the new customer to the list of customers
+      setCustomers((prev) => [
+        ...prev,
+        { id: customers.length + 1, ...customerData },
+      ]);
+
+      setIsFormVisible(false); // Hide form after adding the customer
+    } catch (error) {
+      alert("Error adding customer: " + error.response?.data.message);
+    }
   };
 
   const filteredCustomers = customers.filter((customer) =>
-    customer.cusName.toLowerCase().includes(searchTerm.toLowerCase())
+    customer.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   return (
@@ -94,36 +103,17 @@ function CustomerSetup() {
       </div>
 
       {isFormVisible && (
-        <form className="bg-gray-100 p-4 rounded mb-4" onSubmit={handleAddCustomer}>
+        <form
+          className="bg-gray-100 p-4 rounded mb-4"
+          onSubmit={handleAddCustomer}
+        >
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-gray-700">Category:</label>
+              <label className="block text-gray-700">Name:</label>
               <input
                 type="text"
-                name="category"
-                value={newCustomer.category}
-                onChange={handleInputChange}
-                className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
-                required
-              />
-            </div>
-            <div>
-              <label className="block text-gray-700">Customer Name:</label>
-              <input
-                type="text"
-                name="cusName"
-                value={newCustomer.cusName}
-                onChange={handleInputChange}
-                className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
-                required
-              />
-            </div>
-            <div>
-              <label className="block text-gray-700">Address:</label>
-              <input
-                type="text"
-                name="address"
-                value={newCustomer.address}
+                name="name"
+                value={customerData.name}
                 onChange={handleInputChange}
                 className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
               />
@@ -133,10 +123,9 @@ function CustomerSetup() {
               <input
                 type="text"
                 name="phone"
-                value={newCustomer.phone}
+                value={customerData.phone}
                 onChange={handleInputChange}
                 className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
-                required
               />
             </div>
             <div>
@@ -144,7 +133,17 @@ function CustomerSetup() {
               <input
                 type="email"
                 name="email"
-                value={newCustomer.email}
+                value={customerData.email}
+                onChange={handleInputChange}
+                className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
+              />
+            </div>
+            <div>
+              <label className="block text-gray-700">Address:</label>
+              <input
+                type="text"
+                name="address"
+                value={customerData.address}
                 onChange={handleInputChange}
                 className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
               />
@@ -154,17 +153,7 @@ function CustomerSetup() {
               <input
                 type="text"
                 name="profession"
-                value={newCustomer.profession}
-                onChange={handleInputChange}
-                className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
-              />
-            </div>
-            <div>
-              <label className="block text-gray-700">Birth Date:</label>
-              <input
-                type="date"
-                name="birthDt"
-                value={newCustomer.birthDt}
+                value={customerData.profession}
                 onChange={handleInputChange}
                 className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
               />
@@ -179,36 +168,35 @@ function CustomerSetup() {
         </form>
       )}
 
-      <table className="w-full border-collapse">
-        <thead>
+      <table className="min-w-full border-separate bg-white shadow-md rounded-lg overflow-hidden">
+        <thead className="bg-gray-200">
           <tr>
-            <th className="px-4 py-2 border-b text-left">ID</th>
-            <th className="px-4 py-2 border-b text-left">Category</th>
-            <th className="px-4 py-2 border-b text-left">Customer Name</th>
-            <th className="px-4 py-2 border-b text-left">Address</th>
-            <th className="px-4 py-2 border-b text-left">Phone</th>
-            <th className="px-4 py-2 border-b text-left">Email</th>
-            <th className="px-4 py-2 border-b text-left">Profession</th>
-            <th className="px-4 py-2 border-b text-left">Birth Date</th>
+            <th className="px-6 py-3 text-left text-sm font-medium text-gray-600">ID</th>
+            <th className="px-6 py-3 text-left text-sm font-medium text-gray-600">Name</th>
+            <th className="px-6 py-3 text-left text-sm font-medium text-gray-600">Phone</th>
+            <th className="px-6 py-3 text-left text-sm font-medium text-gray-600">Email</th>
+            <th className="px-6 py-3 text-left text-sm font-medium text-gray-600">Address</th>
+            <th className="px-6 py-3 text-left text-sm font-medium text-gray-600">Profession</th>
           </tr>
         </thead>
         <tbody>
           {filteredCustomers.map((customer) => (
-            <tr key={customer.id}>
-              <td className="px-4 py-2 border-b">{customer.id}</td>
-              <td className="px-4 py-2 border-b">{customer.category}</td>
-              <td className="px-4 py-2 border-b">{customer.cusName}</td>
-              <td className="px-4 py-2 border-b">{customer.address}</td>
-              <td className="px-4 py-2 border-b">{customer.phone}</td>
-              <td className="px-4 py-2 border-b">{customer.email}</td>
-              <td className="px-4 py-2 border-b">{customer.profession}</td>
-              <td className="px-4 py-2 border-b">{customer.birthDt}</td>
+            <tr
+              key={customer.id}
+              className="border-b hover:bg-gray-50 transition-colors"
+            >
+              <td className="px-6 py-4 text-sm text-gray-800">{customer.id}</td>
+              <td className="px-6 py-4 text-sm text-gray-800">{customer.name}</td>
+              <td className="px-6 py-4 text-sm text-gray-800">{customer.phone}</td>
+              <td className="px-6 py-4 text-sm text-gray-800">{customer.email}</td>
+              <td className="px-6 py-4 text-sm text-gray-800">{customer.address}</td>
+              <td className="px-6 py-4 text-sm text-gray-800">{customer.profession}</td>
             </tr>
           ))}
         </tbody>
       </table>
     </div>
   );
-}
+};
 
 export default CustomerSetup;
