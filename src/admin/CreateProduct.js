@@ -115,6 +115,7 @@ const CreateProduct = () => {
       console.log("API response:", result); // Debugging line
       if (result?.data?.success) {
         toast.success("Product created");
+        setImageFields([]); // Clear the image fields here
       } else {
         toast.error("Failed to create product");
       }

@@ -254,7 +254,7 @@ const ProductCard = ({
           </button>
         </Link>
 
-        <ProductBarcode product={product} />
+      
       </div>
     </div>
   );

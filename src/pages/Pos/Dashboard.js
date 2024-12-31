@@ -13,7 +13,7 @@ const Dashboard = () => {
         { name: 'Emp. Attendance Done', path: '/attendance' },
         { name: 'Settings', path: '/settings' },
         { name: 'Group Setup Em', path: '/group-setup' },
-        { name: 'Brand Setup Em', path: '/brand-setup' },
+        { name: 'Brand Setup Em Done', path: '/brand-setup' },
         { name: 'Product Setup from Admin panel', path: '/product-information' },
         { name: 'Supplier Setup Em Done', path: '/supplier-setup' },
         { name: 'Style Size Em', path: '/style-size' },

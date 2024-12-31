@@ -112,24 +112,7 @@ const BlogPro = ({ searchQuery }) => {
                   likesId={product.likes}
                   showProducts={showProducts}
                 />
-                {product.barcode && (
-        <div className="mt-4">
-          <h3 className="text-xl">Product Barcode</h3>
-          <img src={product.barcode} alt="Product Barcode" style={{ width: '150px', height: 'auto' }} />
-          {/* Print Barcode Button */}
-          <button
-            onClick={() => handlePrint(product.barcode)}
-            className="mt-2 px-4 py-2 bg-blue-500 text-white rounded"
-          >
-            Print Barcode
-          </button>
-        </div>
-      )}
-
-
-
-
-             
+               
               </div>
             ))
           )}
