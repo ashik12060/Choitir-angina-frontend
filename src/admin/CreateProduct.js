@@ -28,6 +28,8 @@ const validationSchema = yup.object({
   quantity: yup.number("Add quantity").required("quantity is required"),
   brand: yup.string("Add brand name").required("Brand name is required"),
   supplier: yup.string("Select a supplier").required("Supplier is required"),
+  sizes: yup.array().min(1, "At least one size is required").required("Sizes are required"),
+
   categories: yup
     .array()
     .of(yup.string().required("Category is required"))
@@ -36,6 +38,7 @@ const validationSchema = yup.object({
     .string("Add a barcode")
     .min(6, "Barcode must be at least 6 characters"),
 });
+
 
 const CreateProduct = () => {
   const [suppliers, setSuppliers] = useState([]);
@@ -46,6 +49,8 @@ const CreateProduct = () => {
   const [brands, setBrands] = useState([]);
   const [subcategories, setSubcategories] = useState([]); // Add subcategories state
   const [filteredSubcategories, setFilteredSubcategories] = useState([]); // State for filtered subcategories
+  const [sizes, setSizes] = useState([]);
+
 
   const categoriesList = ["All", "Top Brands", "New Arrival", "Unstitched"];
 
@@ -65,6 +70,7 @@ const CreateProduct = () => {
       quantity: "",
       brand: "",
       supplier: "",
+      sizes: [],
       categories: [],
       barcode: "",
       subcategory: "", // Add subcategory to form values
@@ -76,6 +82,21 @@ const CreateProduct = () => {
       actions.resetForm();
     },
   });
+
+    // Add a new size to the list
+    const handleAddSize = (size) => {
+      if (size && !sizes.includes(size)) {
+        setSizes([...sizes, size]);
+        setFieldValue("sizes", [...sizes, size]); // Update Formik values
+      }
+    };
+  
+    // Remove a size from the list
+    const handleRemoveSize = (sizeToRemove) => {
+      const updatedSizes = sizes.filter((size) => size !== sizeToRemove);
+      setSizes(updatedSizes);
+      setFieldValue("sizes", updatedSizes); // Update Formik values
+    };
 
   useEffect(() => {
     const fetchBrands = async () => {
@@ -108,21 +129,17 @@ const CreateProduct = () => {
     fetchSubcategories();
   }, []);
 
- // Filter subcategories based on the selected brand
- const handleBrandChange = (event) => {
-  const selectedBrand = event.target.value;
-  setFieldValue("brand", selectedBrand);
+  // Filter subcategories based on the selected brand
+  const handleBrandChange = (event) => {
+    const selectedBrand = event.target.value;
+    setFieldValue("brand", selectedBrand);
 
-  // Filter subcategories based on selected brand
-  const filtered = subcategories.filter(
-    (subcategory) => subcategory.brand === selectedBrand
-  );
-  setFilteredSubcategories(filtered);
-};
-
-
-
-
+    // Filter subcategories based on selected brand
+    const filtered = subcategories.filter(
+      (subcategory) => subcategory.brand === selectedBrand
+    );
+    setFilteredSubcategories(filtered);
+  };
 
   useEffect(() => {
     const fetchSuppliers = async () => {
@@ -273,8 +290,6 @@ const CreateProduct = () => {
               helperText={touched.quantity && errors.quantity}
             />
 
-           
-
             {/* Brand selection */}
 
             <TextField
@@ -296,7 +311,7 @@ const CreateProduct = () => {
                 </MenuItem>
               ))}
             </TextField>
-            
+
             {/* Subcategory selection */}
             <TextField
               sx={{ mb: 3 }}
@@ -318,8 +333,38 @@ const CreateProduct = () => {
               ))}
             </TextField>
 
+            {/* Size Input Field */}
+        <TextField
+          fullWidth
+          label="Add Size (e.g., S, M, 32, 34)"
+          value={values.sizeInput || ""}
+          onBlur={handleBlur}
+          onChange={(e) => setFieldValue("sizeInput", e.target.value)}
+          name="sizeInput"
+        />
+        <Button
+          onClick={() => {
+            handleAddSize(values.sizeInput);
+            setFieldValue("sizeInput", ""); // Clear input after adding
+          }}
+        >
+          Add Size
+        </Button>
 
-           
+        {/* Display Added Sizes */}
+        <Box sx={{ mt: 3 }}>
+          <Typography variant="subtitle1">Selected Sizes</Typography>
+          <div>
+            {sizes.map((size) => (
+              <Chip
+                key={size}
+                label={size}
+                onDelete={() => handleRemoveSize(size)}
+                sx={{ margin: 0.5 }}
+              />
+            ))}
+          </div>
+        </Box>
 
             <TextField
               sx={{ mb: 3 }}
@@ -367,6 +412,8 @@ const CreateProduct = () => {
                 </MenuItem>
               ))}
             </Select>
+
+
             <TextField
               sx={{ mb: 3 }}
               fullWidth
