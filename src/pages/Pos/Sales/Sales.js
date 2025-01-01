@@ -1,11 +1,10 @@
-
-
 import React, { useState, useEffect } from "react";
 import axiosInstance from "../../axiosInstance";
+import { Link } from "react-router-dom";
 
 const Sales = () => {
   const [products, setProducts] = useState([]);
-  const [selectedProduct, setSelectedProduct] = useState(null);
+  const [selectedProducts, setSelectedProducts] = useState([]); // Array to store selected products
   const [qty, setQty] = useState(1);
   const [customerInfo, setCustomerInfo] = useState({
     id: "",
@@ -18,6 +17,9 @@ const Sales = () => {
   const [discountRate, setDiscountRate] = useState(0); // Discount rate in percentage
   const [vatAmount, setVatAmount] = useState(0.0); // VAT amount
   const [discountAmount, setDiscountAmount] = useState(0.0); // Discount amount
+  const [paymentMethod, setPaymentMethod] = useState(""); // New state for payment method
+  const [amountGiven, setAmountGiven] = useState(0.0); // Amount customer gave
+  const [changeReturned, setChangeReturned] = useState(0.0); // Change to return
 
   // Fetch products from the API
   useEffect(() => {
@@ -25,59 +27,143 @@ const Sales = () => {
       .get(`${process.env.REACT_APP_API_URL}/api/products/show`)
       .then((response) => {
         setProducts(response.data.products);
-        console.log(products);
-        console.log(response.data.products);
+       
       });
   }, []);
+
+
 
   // Handle product selection
   const handleProductSelect = (productId) => {
     const product = products.find((p) => p._id === productId);
-    setSelectedProduct(product);
-    setTotalPrice(Number(product.price) * qty);
+    if (!product) return;
+
+    // Add product to selectedProducts array
+    setSelectedProducts((prevSelected) => {
+      const updatedProducts = [...prevSelected];
+      const existingProduct = updatedProducts.find((p) => p._id === productId);
+      if (existingProduct) {
+        // If product already exists, update quantity
+        existingProduct.qty = existingProduct.qty + 1; // Add 1 to qty
+      } else {
+        // Add the product with quantity 1
+        updatedProducts.push({ ...product, qty: 1 });
+      }
+      return updatedProducts;
+    });
   };
 
-  // Handle quantity change
-  const handleQtyChange = (e) => {
-    const newQty = parseInt(e.target.value, 10);
-    setQty(newQty);
-    if (selectedProduct) {
-      setTotalPrice(Number(selectedProduct.price) * newQty);
+  // new
+  useEffect(() => {
+    if (amountGiven >= netPayable) {
+      setChangeReturned(amountGiven - netPayable);
+    } else {
+      setChangeReturned(0.0); // If the amount given is less than net payable, no change
     }
+  }, [amountGiven, netPayable]);
+
+  // Handle quantity change for a specific product
+  const handleQtyChange = (productId, newQty) => {
+    setSelectedProducts((prevSelected) =>
+      prevSelected.map((product) =>
+        product._id === productId ? { ...product, qty: newQty } : product
+      )
+    );
   };
 
   // Handle VAT and Discount calculations
   const calculateNetPayable = () => {
-    const discount = (totalPrice * discountRate) / 100;
-    const vat = (totalPrice * vatRate) / 100;
+    let subtotal = 0;
+    let vat = 0;
+    let discount = 0;
 
-    setDiscountAmount(discount);
+    selectedProducts.forEach((product) => {
+      const productTotal = parseFloat(product.price) * product.qty;
+      subtotal += productTotal;
+      vat += (productTotal * vatRate) / 100;
+      discount += (productTotal * discountRate) / 100;
+    });
+
+    const finalAmount = subtotal - discount + vat;
+    setTotalPrice(subtotal);
     setVatAmount(vat);
-    const finalAmount = totalPrice - discount + vat;
+    setDiscountAmount(discount);
     setNetPayable(finalAmount);
   };
 
   // Update net payable whenever total price, VAT or discount changes
   useEffect(() => {
     calculateNetPayable();
-  }, [totalPrice, vatRate, discountRate]);
+  }, [selectedProducts, vatRate, discountRate]);
 
   // Handle sale submission
+  // const handleSubmit = () => {
+  //   const saleData = {
+  //     products: selectedProducts.map((product) => ({
+  //       productId: product._id,
+  //       quantity: product.qty,
+  //     })),
+  //     customerInfo,
+  //     totalPrice,
+  //     vatAmount,
+  //     discountAmount,
+  //     netPayable,
+  //     paymentMethod,
+  //   };
+
+  //   axiosInstance.post(`${process.env.REACT_APP_API_URL}/api/sales/create`, saleData).then((response) => {
+  //     alert("Sale submitted successfully!");
+  //     // Reset fields after submission
+  //     setSelectedProducts([]);
+  //     setQty(1);
+  //     setCustomerInfo({ id: "", name: "", mobile: "" });
+  //     setTotalPrice(0.0);
+  //     setNetPayable(0.0);
+  //     setVatAmount(0.0);
+  //     setDiscountAmount(0.0);
+  //     setVatRate(0);
+  //     setDiscountRate(0);
+  //   });
+  // };
+
   const handleSubmit = () => {
+    // const saleData = {
+    //   products: selectedProducts.map((product) => ({
+    //     productId: product._id,
+    //     quantity: product.qty,
+    //     price: product.price, // Add price to product data
+    //   })),
+    //   // Only add customerInfo if it's not empty
+    //   customerInfo: customerInfo.id || customerInfo.name || customerInfo.mobile
+    //     ? customerInfo
+    //     : undefined, // If customer info is empty, don't include it in the request
+    //     totalPrice,
+    //   vatAmount,
+    //   discountAmount,
+    //   netPayable,
+    //   paymentMethod,
+    // };
     const saleData = {
-      productId: selectedProduct._id,
-      quantity: qty,
-      customerInfo,
-      totalPrice,
+      products: selectedProducts.map((product) => ({
+        productId: product._id,
+        title: product.title,
+        quantity: product.qty, // Change `qty` to `quantity`
+        price: product.price, 
+      })),
+      customerInfo: customerInfo.id || customerInfo.name || customerInfo.mobile ? customerInfo : undefined,
+      totalPrice, // Change `totalPrice` to `totalAmount`
       vatAmount,
       discountAmount,
       netPayable,
+      paymentMethod,
     };
-
-    axiosInstance.post("/api/sales/create", saleData).then((response) => {
+    
+    
+  
+    axiosInstance.post(`${process.env.REACT_APP_API_URL}/api/sales/create`, saleData).then((response) => {
       alert("Sale submitted successfully!");
       // Reset fields after submission
-      setSelectedProduct(null);
+      setSelectedProducts([]);
       setQty(1);
       setCustomerInfo({ id: "", name: "", mobile: "" });
       setTotalPrice(0.0);
@@ -88,12 +174,23 @@ const Sales = () => {
       setDiscountRate(0);
     });
   };
+  
+
+
+
+
+  // Remove product from selected products
+  const handleRemoveProduct = (productId) => {
+    setSelectedProducts((prevSelected) =>
+      prevSelected.filter((product) => product._id !== productId)
+    );
+  };
 
   return (
     <div className="min-h-screen bg-gray-100 p-4">
       {/* Header */}
       <div className="bg-white shadow-md p-4 rounded-md flex justify-between items-center">
-        <h1 className="text-lg font-bold">Point Of Sales</h1>
+        <Link to='/' className="text-xl font-bold">Chaityr Angina</Link>
         <p className="font-bold">
           <i>Green Software Technology</i>
         </p>
@@ -125,28 +222,9 @@ const Sales = () => {
               </select>
             </div>
 
+            {/* Customer Details */}
             <div>
-              <label className="text-sm text-gray-700">Barcode</label>
-              <input
-                type="text"
-                className="w-full border border-gray-300 rounded-md p-2"
-                value={selectedProduct?.barcode || ""}
-                readOnly
-              />
-            </div>
-
-            <div>
-              <label className="text-sm text-gray-700">Qty</label>
-              <input
-                type="number"
-                className="w-full border border-gray-300 rounded-md p-2"
-                value={qty}
-                onChange={handleQtyChange}
-              />
-            </div>
-
-            <div>
-              <label className="text-sm text-gray-700">Customer ID</label>
+              <label className="text-sm text-gray-700">Customer ID(Optional)</label>
               <input
                 type="text"
                 className="w-full border border-gray-300 rounded-md p-2"
@@ -156,9 +234,8 @@ const Sales = () => {
                 }
               />
             </div>
-
             <div>
-              <label className="text-sm text-gray-700">Customer Name</label>
+              <label className="text-sm text-gray-700">Customer Name(Optional)</label>
               <input
                 type="text"
                 className="w-full border border-gray-300 rounded-md p-2"
@@ -168,9 +245,8 @@ const Sales = () => {
                 }
               />
             </div>
-
             <div>
-              <label className="text-sm text-gray-700">Mobile</label>
+              <label className="text-sm text-gray-700">Mobile(Optional)</label>
               <input
                 type="text"
                 className="w-full border border-gray-300 rounded-md p-2"
@@ -212,71 +288,164 @@ const Sales = () => {
                   <th className="border border-gray-300 p-2">Price</th>
                   <th className="border border-gray-300 p-2">Qty</th>
                   <th className="border border-gray-300 p-2">Total</th>
+                  <th className="border border-gray-300 p-2">Action</th>{" "}
+                  {/* Added Action column */}
                 </tr>
               </thead>
               <tbody>
-                {selectedProduct && (
-                  <tr>
-                    <td className="border border-gray-300 p-2">1</td>
+                {selectedProducts.map((product, index) => (
+                  <tr key={product._id}>
+                    <td className="border border-gray-300 p-2">{index + 1}</td>
                     <td className="border border-gray-300 p-2">
-                      {selectedProduct.title}
+                      {product.title}
                     </td>
                     <td className="border border-gray-300 p-2">
-                      ${Number(selectedProduct?.price).toFixed(2) || "0.00"}
+                      ${parseFloat(product.price).toFixed(2) || "0.00"}
                     </td>
-                    <td className="border border-gray-300 p-2">{qty}</td>
                     <td className="border border-gray-300 p-2">
-                      ${totalPrice.toFixed(2)}
+                      <input
+                        type="number"
+                        value={product.qty}
+                        onChange={(e) =>
+                          handleQtyChange(
+                            product._id,
+                            parseInt(e.target.value, 10)
+                          )
+                        }
+                      />
+                    </td>
+                    <td className="border border-gray-300 p-2">
+                      $
+                      {parseFloat(product.price * product.qty).toFixed(2) ||
+                        "0.00"}
+                    </td>
+                    <td className="border border-gray-300 p-2">
+                      <button
+                        onClick={() => handleRemoveProduct(product._id)}
+                        className="bg-red-500 text-white px-2 py-1 "
+                      >
+                        Remove
+                      </button>
                     </td>
                   </tr>
-                )}
+                ))}
               </tbody>
             </table>
           </div>
         </div>
 
         {/* Right Section */}
-        {/* <div className="col-span-3 bg-white shadow-md p-4 rounded-md">
-          <h2 className="text-xl font-bold">৳ Net Payable</h2>
-          <div className="mt-4">
-            <p>Total Price: ${totalPrice.toFixed(2)}</p>
-            <p>Discount: -${discountAmount.toFixed(2)}</p>
-            <p>VAT: +${vatAmount.toFixed(2)}</p>
-            <p>Net Payable: ${netPayable.toFixed(2)}</p>
+        <div className="col-span-3 bg-white shadow-md p-4 rounded-md">
+         
+            <div className="col-span-3 bg-white  p-4 rounded-md">
+              <h1 className="bg-green-600 text-white text-left text-lg font-bold p-4">Payable Amount: {`৳ ${netPayable.toFixed(2)}`}</h1>
+              <h2 className="text-xl font-bold">৳ Net Payable</h2>
+              <div className="mt-4">
+                {/* Total Price input */}
+                <div className="flex items-center">
+                  <label className="text-sm py-2 w-1/5 text-gray-700">
+                    Total Price
+                  </label>
+                  <input
+                    type="text"
+                    value={`৳ ${totalPrice.toFixed(2)}`}
+                    readOnly
+                    className="w-2/3 border border-gray-300 rounded-md p-2"
+                  />
+                </div>
+
+                {/* Discount input */}
+                <div className="mt-2 flex items-center">
+                  <label className="text-sm py-2 w-1/5 text-gray-700">
+                    Discount
+                  </label>
+                  <input
+                    type="text"
+                    value={`-৳ ${discountAmount.toFixed(2)}`}
+                    readOnly
+                    className="w-2/3 border border-gray-300 rounded-md p-2"
+                  />
+                </div>
+
+                {/* VAT input */}
+                <div className="mt-2 flex items-center">
+                  <label className="text-sm py-2 w-1/5 text-gray-700">
+                    VAT
+                  </label>
+                  <input
+                    type="text"
+                    value={`+৳ ${vatAmount.toFixed(2)}`}
+                    readOnly
+                    className="w-2/3 border border-gray-300 rounded-md p-2"
+                  />
+                </div>
+
+                {/* Net Payable input */}
+                <div className="mt-2 flex items-center">
+                  <label className="text-sm py-2 w-1/5 text-gray-700 font-bold">
+                    Net Payable
+                  </label>
+                  <input
+                    type="text"
+                    value={`৳ ${netPayable.toFixed(2)}`}
+                    readOnly
+                    className="w-2/3 border border-gray-300 font-bold rounded-md p-2"
+                  />
+                </div>
+
+                {/* Amount Given input */}
+                <div className="mt-2 flex items-center">
+                  <label className="text-sm py-2 w-1/5 text-gray-700">
+                    Amount Given
+                  </label>
+                  <input
+                    type="number"
+                    value={amountGiven}
+                    onChange={(e) =>
+                      setAmountGiven(parseFloat(e.target.value) || 0.0)
+                    }
+                    className="w-2/3 border border-gray-300 rounded-md p-2"
+                  />
+                </div>
+
+                {/* Change to Return input */}
+                <div className="mt-2 flex items-center">
+                  <label className="text-sm py-2 w-1/5 text-gray-700 font-bold" >
+                    Change to Return
+                  </label>
+                  <input
+                    type="text"
+                    value={`৳ ${changeReturned.toFixed(2)}`}
+                    readOnly
+                    className="w-2/3 border border-gray-300 rounded-md p-2"
+                  />
+                </div>
+              </div>
+
+              {/* Payment Method Dropdown */}
+              <div className="mt-4">
+                <label className="text-sm text-gray-700">Payment Method</label>
+                <select
+                  className="w-full border border-gray-300 rounded-md p-2"
+                  value={paymentMethod}
+                  onChange={(e) => setPaymentMethod(e.target.value)}
+                >
+                  <option value="">Select Payment Method</option>
+                  <option value="Cash">Cash</option>
+                  <option value="Card">Card</option>
+                </select>
+              </div>
+
+              {/* Submit Button */}
+              <button
+                onClick={handleSubmit}
+                className="mt-4 bg-green-500 text-white py-2 px-4 rounded-md"
+              >
+                Print & Submit
+              </button>
+            </div>
           </div>
-          <button
-            onClick={handleSubmit}
-            className="mt-4 bg-green-500 text-white py-2 px-4 rounded-md"
-          >
-            Print & Submit
-          </button>
-        </div> */}
-
-<div className="col-span-3 bg-white shadow-md p-4 rounded-md">
-  <h2 className="text-xl font-bold">৳ Net Payable</h2>
-  <div className="mt-4">
-    {/* Display total price */}
-    <p>Total Price: ৳ {totalPrice.toFixed(2)}</p>
-    
-    {/* Display discount amount */}
-    <p>Discount: -৳ {discountAmount.toFixed(2)}</p>
-    
-    {/* Display VAT amount */}
-    <p>VAT: +৳ {vatAmount.toFixed(2)}</p>
-    
-    {/* Display the net payable amount */}
-    <p>Net Payable: ৳ {netPayable.toFixed(2)}</p>
-  </div>
-  
-  {/* Submit Button */}
-  <button
-    onClick={handleSubmit}
-    className="mt-4 bg-green-500 text-white py-2 px-4 rounded-md"
-  >
-    Print & Submit
-  </button>
-</div>
-
+        {/* </div> */}
       </div>
     </div>
   );

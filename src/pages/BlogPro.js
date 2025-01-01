@@ -92,7 +92,7 @@ const BlogPro = ({ searchQuery }) => {
       <h2 className="text-center text-3xl font-bold">Main Catalog</h2>
       <div className="container mx-auto px-4 py-6">
         {/* Products Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-6">
+        <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-6">
           {loading ? (
             <Loader />
           ) : (

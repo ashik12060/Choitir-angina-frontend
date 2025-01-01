@@ -111,26 +111,25 @@ const SinglePro = () => {
   //   addCartItem(product);
   // };
 
+
+  
   const addToCart = () => {
     if (!selectedSize) {
       toast.error("Please select a size before adding to cart");
       return;
     }
-  
+
     const selectedProduct = {
       ...product,
       size: selectedSize, // Add selected size to the product object
     };
-  
+
     addCartItem(selectedProduct);
   };
 
   const handleBuyNow = () => {
     navigate("/checkout");
   };
-
-
- 
 
   const handleSizeSelect = (size) => {
     setSelectedSize(size); // Update selected size
@@ -146,54 +145,51 @@ const SinglePro = () => {
             {/* Product Images */}
             {/* Product Images */}
             <div className="lg:w-1/3 p-4">
-  {product.images && product.images.length > 0 ? (
-    <div className="relative">
-      {/* Main Image Display */}
-      <div className="border rounded-md mb-4">
-        <img
-          src={selectedImage} // Show the selected image
-          alt={product.title}
-          className="w-full h-96 object-cover rounded-md"
-          style={{ aspectRatio: "1 / 1" }} // Ensures a perfect square
-        />
-      </div>
+              {product.images && product.images.length > 0 ? (
+                <div className="relative">
+                  {/* Main Image Display */}
+                  <div className="border rounded-md mb-4">
+                    <img
+                      src={selectedImage} // Show the selected image
+                      alt={product.title}
+                      className="w-full h-96 object-cover rounded-md"
+                      style={{ aspectRatio: "1 / 1" }} // Ensures a perfect square
+                    />
+                  </div>
 
-
-
- {/* Display Color Name */}
- <div className="mt-4 text-center">
-        {product.images.map(
-          (img) =>
-            selectedImage === img.url && (
-              <p key={img._id} className="text-sm font-semibold text-gray-700">
-                Color: {img.color || "N/A"}
-              </p>
-            )
-        )}
-      </div>
-      {/* Thumbnail Slider */}
-      <div className="flex space-x-2 overflow-x-auto">
-        
-        {product.images.map((img, index) => (
-          <img
-            key={index}
-            src={img.url}
-            className={`w-16 h-16 object-cover rounded-md border cursor-pointer hover:shadow-lg transition ${
-              selectedImage === img.url ? "border-blue-500" : ""
-            }`}
-            alt={`Thumbnail ${index + 1}`}
-            onClick={() => setSelectedImage(img.url)} // Update selected image
-          />
-        ))}
-      </div>
-
-     
-    </div>
-  ) : (
-    <p className="text-gray-500">No images available</p>
-  )}
-</div>
-
+                  {/* Display Color Name */}
+                  <div className="mt-4 text-center">
+                    {product.images.map(
+                      (img) =>
+                        selectedImage === img.url && (
+                          <p
+                            key={img._id}
+                            className="text-sm font-semibold text-gray-700"
+                          >
+                            Color: {img.color || "N/A"}
+                          </p>
+                        )
+                    )}
+                  </div>
+                  {/* Thumbnail Slider */}
+                  <div className="flex space-x-2 overflow-x-auto">
+                    {product.images.map((img, index) => (
+                      <img
+                        key={index}
+                        src={img.url}
+                        className={`w-16 h-16 object-cover rounded-md border cursor-pointer hover:shadow-lg transition ${
+                          selectedImage === img.url ? "border-blue-500" : ""
+                        }`}
+                        alt={`Thumbnail ${index + 1}`}
+                        onClick={() => setSelectedImage(img.url)} // Update selected image
+                      />
+                    ))}
+                  </div>
+                </div>
+              ) : (
+                <p className="text-gray-500">No images available</p>
+              )}
+            </div>
 
             {/* Product Details */}
             <div className="lg:w-2/3 p-4">
@@ -214,6 +210,15 @@ const SinglePro = () => {
               </p>
 
               {/* Stock Status with Quantity */}
+              {/* <p
+                className={`mt-4 font-semibold ${
+                  product.quantity > 0 ? "text-green-600" : "text-red-600"
+                }`}
+              >
+                {product.quantity > 0
+                  ? `In Stock: ${product.quantity}`
+                  : `Out of Stock: ${product.quantity}`}
+              </p> */}
               <p
                 className={`mt-4 font-semibold ${
                   product.quantity > 0 ? "text-green-600" : "text-red-600"
@@ -231,8 +236,8 @@ const SinglePro = () => {
                 <p className="line-through text-gray-400">$30</p>
               </div>
 
-               {/* Size Selector */}
-               <div className="mt-4">
+              {/* Size Selector */}
+              <div className="mt-4">
                 <h3 className="text-lg font-bold text-gray-700 mb-2">Sizes</h3>
                 <div className="flex space-x-2">
                   {[36, 38, 40, 42, 44].map((size) => (
@@ -251,12 +256,11 @@ const SinglePro = () => {
                 </div>
                 {selectedSize && (
                   <p className="mt-2 text-sm text-gray-600">
-                    Selected Size: <span className="font-bold">{selectedSize}</span>
+                    Selected Size:{" "}
+                    <span className="font-bold">{selectedSize}</span>
                   </p>
                 )}
               </div>
-
-
 
               <div className="mt-4">
                 <button

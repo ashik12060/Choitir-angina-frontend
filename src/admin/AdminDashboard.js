@@ -16,6 +16,8 @@ import OrderSingle from "./OrderSingle";
 import "./AdminDashboard.css";
 import Users from "./Users/Users";
 import Dashboard from "./Dashboard";
+import SalesPos from "./SalesPos";
+import AttendanceReport from "./AttendanceReport";
 
 const AdminDashboard = () => {
   const [posts, setPosts] = useState([]);
@@ -672,14 +674,13 @@ const AdminDashboard = () => {
       <CartProvider>
         <Header />
       </CartProvider>
-
       {/* seller info */}
 
       {/* end */}
 
       <div class="d-flex align-items-start mt-3 ">
         <div
-          className="nav flex-column nav-pills w-25 border border-1 rounded me-4 dashboard-nav-size 5 px-2  pt-4"
+          className="nav flex-column nav-pills w-1/5 border border-1 rounded me-4 dashboard-nav-size 5 px-2  pt-4"
           id="v-pills-tab"
           role="tablist"
           aria-orientation="vertical"
@@ -706,7 +707,19 @@ const AdminDashboard = () => {
             aria-controls="v-pills-home"
             aria-selected="true"
           >
-            Total Sales
+            Website Sales
+          </button>
+          <button
+            class="nav-link  border border-1"
+            id="v-pills-pos-tab"
+            data-bs-toggle="pill"
+            data-bs-target="#v-pills-pos"
+            type="button"
+            role="tab"
+            aria-controls="v-pills-pos"
+            aria-selected="true"
+          >
+            POS Sales
           </button>
 
           <button
@@ -763,15 +776,15 @@ const AdminDashboard = () => {
 
           <button
             class="nav-link  border border-1 mt-3"
-            id="v-pills-seller-tab"
+            id="v-pills-attendance-tab"
             data-bs-toggle="pill"
-            data-bs-target="#v-pills-seller"
+            data-bs-target="#v-pills-attendance"
             type="button"
             role="tab"
-            aria-controls="v-pills-seller"
+            aria-controls="v-pills-attendance"
             aria-selected="true"
           >
-            Seller Products
+            Attendance Report
           </button>
 
           <button
@@ -806,6 +819,15 @@ const AdminDashboard = () => {
             tabindex="0"
           >
             <OrderSingle />
+          </div>
+          <div
+            class="tab-pane fade "
+            id="v-pills-pos"
+            role="tabpanel"
+            aria-labelledby="v-pills-pos-tab"
+            tabindex="0"
+          >
+            <SalesPos />
           </div>
 
           <div
@@ -1010,54 +1032,18 @@ const AdminDashboard = () => {
             </Box>
           </div>
 
+
+
+
           <div
-            class="tab-pane fade show "
-            id="v-pills-seller"
+            class="tab-pane fade show"
+            id="v-pills-attendance"
             role="tabpanel"
-            aria-labelledby="v-pills-seller-tab"
+            aria-labelledby="v-pills-attendance-tab"
             tabindex="0"
           >
-            <div className="container">
-              <h3 className="my-3">
-                <span className="py-2 px-4 rounded bg-primary text-white ">
-                  Seller Products{" "}
-                </span>
-              </h3>
-              <table className="table table-bordered border-1 border border-black">
-                <thead>
-                  <tr>
-                    <th>Image</th>
-                    <th>Name</th>
-                    <th>Price</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {/* Check if sellers array is defined and not empty */}
-                  {sellers && sellers.length > 0 ? (
-                    sellers.map((seller) => (
-                      <tr key={seller._id}>
-                        <td>
-                          <img
-                            src={seller.image?.url}
-                            alt={seller.name}
-                            style={{ width: "100px", height: "100px" }}
-                          />
-                        </td>
-                        <td>{seller.name}</td>
-                        <td>${seller.price}</td>
-                      </tr>
-                    ))
-                  ) : (
-                    // Show a message if sellers array is empty or undefined
-                    <tr>
-                      <td colSpan="4">No products available</td>
-                    </tr>
-                  )}
-                </tbody>
-              </table>
-            </div>
+            <AttendanceReport />
           </div>
-
           <div
             class="tab-pane fade show"
             id="v-pills-users"
@@ -1067,6 +1053,9 @@ const AdminDashboard = () => {
           >
             <Users />
           </div>
+
+
+
         </div>
       </div>
     </>

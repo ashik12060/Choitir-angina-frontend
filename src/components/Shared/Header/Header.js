@@ -23,6 +23,7 @@ const Header = ({ totalServices, name, searchQuery, setSearchQuery }) => {
   const logOutUser = () => {
     logout(() => {
       dispatch(userLogoutAction());
+      navigate('/')
     });
   };
 
@@ -32,6 +33,8 @@ const Header = ({ totalServices, name, searchQuery, setSearchQuery }) => {
         <Link to="/" className="text-2xl font-bold text-black">
           Chaitir<span className="text-green-600">Angina</span>
         </Link>
+
+        
         <button
           className="text-gray-700 focus:outline-none md:hidden"
           aria-controls="navbarSupportedContent"
@@ -43,16 +46,14 @@ const Header = ({ totalServices, name, searchQuery, setSearchQuery }) => {
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16"></path>
           </svg>
         </button>
+
+        
         <div
           className={`w-full md:flex md:w-auto ${navCollapsed ? "block" : "hidden"}`}
           id="navbarSupportedContent"
         >
-          <ul className="flex flex-col md:flex-row md:items-center md:gap-6">
-            <li className="font-bold">
-              <Link className="hover:text-green-600" to="/seller-login">
-                Become a Seller
-              </Link>
-            </li>
+          <ul className="flex flex-col md:flex-row md:items-center md:gap-6 pt-4 me-3">
+            
             <li className="font-bold">
               <Link className="hover:text-green-600" to="/dashboard">
                 POS
@@ -91,14 +92,14 @@ const Header = ({ totalServices, name, searchQuery, setSearchQuery }) => {
             <div className="relative">
               <Link to="/cart" className="flex items-center">
                 <FontAwesomeIcon className="text-gray-600 text-xl" icon={faCartShopping} />
-                <span className="ml-1 text-sm font-bold text-gray-800">{cart?.length}</span>
+                <span className="ml-1 my-2 text-sm font-bold text-gray-800">{cart?.length}</span>
               </Link>
             </div>
             <div>
               {isAuthenticated ? (
                 <button
                   onClick={logOutUser}
-                  className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
+                  className="bg-green-600 text-white px-4 py-2 mt-2 rounded hover:bg-green-700"
                 >
                   Log Out
                 </button>
