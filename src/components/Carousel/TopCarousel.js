@@ -100,11 +100,11 @@ useEffect(() => {
     >
       {banners.map((banner) => (
         <SwiperSlide key={banner._id}>
-          <div className="bg-white rounded-lg shadow-md border border-gray-200">
+          <div className="bg-white rounded-lg shadow-md border lg:w-[800px] lg:h-[400] mx-auto  border-gray-200">
             <img
               src={banner.image && banner.image.url ? banner.image.url : ""}
               alt={banner.title || "Banner"}
-              className="mx-auto w-full h-[300px] sm:h-[400px] lg:h-[500px] object-cover rounded-lg"
+              className=" mx-auto w-full  h-[300px] sm:h-[400px] lg:h-[400px] object-cover rounded-lg"
             />
           </div>
         </SwiperSlide>

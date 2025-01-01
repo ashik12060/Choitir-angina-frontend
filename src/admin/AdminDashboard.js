@@ -18,12 +18,13 @@ import Users from "./Users/Users";
 import Dashboard from "./Dashboard";
 import SalesPos from "./SalesPos";
 import AttendanceReport from "./AttendanceReport";
+import ProductsInfo from "./ProductsInfo";
 
 const AdminDashboard = () => {
   const [posts, setPosts] = useState([]);
   const [items, setItems] = useState([]);
   const [galleries, setGalleries] = useState([]);
-  const [products, setProducts] = useState([]);
+  // const [products, setProducts] = useState([]);
   const [topBanners, setTopBanners] = useState([]);
   const [orders, setOrders] = useState([]);
   const [comments, setComments] = useState([]);
@@ -77,20 +78,20 @@ const AdminDashboard = () => {
   }, []);
 
   //display products
-  const displayProduct = async () => {
-    try {
-      const { data } = await axiosInstance.get(
-        `${process.env.REACT_APP_API_URL}/api/products/show`
-      );
-      setProducts(data.products);
-    } catch (error) {
-      console.log(error);
-    }
-  };
+  // const displayProduct = async () => {
+  //   try {
+  //     const { data } = await axiosInstance.get(
+  //       `${process.env.REACT_APP_API_URL}/api/products/show`
+  //     );
+  //     setProducts(data.products);
+  //   } catch (error) {
+  //     console.log(error);
+  //   }
+  // };
 
-  useEffect(() => {
-    displayProduct();
-  }, []);
+  // useEffect(() => {
+  //   displayProduct();
+  // }, []);
 
   //display displayTopBanners
   const displayTopBanners = async () => {
@@ -160,24 +161,24 @@ const AdminDashboard = () => {
   };
 
   //delete product by Id
-  const deleteProductById = async (e, id) => {
-    console.log(id);
-    if (window.confirm("Are you sure you want to delete this product?")) {
-      try {
-        //
-        const { data } = await axiosInstance.delete(
-          `${process.env.REACT_APP_API_URL}/api/delete/product/${id}`
-        );
-        if (data.success === true) {
-          toast.success(data.message);
-          displayProduct();
-        }
-      } catch (error) {
-        console.log(error);
-        toast.error(error);
-      }
-    }
-  };
+  // const deleteProductById = async (e, id) => {
+  //   console.log(id);
+  //   if (window.confirm("Are you sure you want to delete this product?")) {
+  //     try {
+  //       //
+  //       const { data } = await axiosInstance.delete(
+  //         `${process.env.REACT_APP_API_URL}/api/delete/product/${id}`
+  //       );
+  //       if (data.success === true) {
+  //         toast.success(data.message);
+  //         displayProduct();
+  //       }
+  //     } catch (error) {
+  //       console.log(error);
+  //       toast.error(error);
+  //     }
+  //   }
+  // };
 
   //delete top banner by Id
   const deleteTopBannerById = async (e, id) => {
@@ -390,77 +391,77 @@ const AdminDashboard = () => {
   // // items end
 
   //   //products columns add extra
-  const ProductColumns = [
-    {
-      field: "_id",
-      headerName: "Post ID",
-      width: 150,
-      editable: true,
-    },
-    {
-      field: "title",
-      headerName: "Post title",
-      width: 150,
-    },
+  // const ProductColumns = [
+  //   {
+  //     field: "_id",
+  //     headerName: "Post ID",
+  //     width: 150,
+  //     editable: true,
+  //   },
+  //   {
+  //     field: "title",
+  //     headerName: "Post title",
+  //     width: 150,
+  //   },
 
-    // {
-    //   field: "image",
-    //   headerName: "Image",
-    //   width: 150,
-    //   renderCell: (params) => <img width="40%" src={params.row.image.url} />,
-    // },
-    {
-      field: "likes",
-      headerName: "Likes",
-      width: 150,
-      renderCell: (params) => params.row.likes.length,
-    },
-    {
-      field: "comments",
-      headerName: "Comments",
-      width: 150,
-      renderCell: (params) => params.row.comments.length,
-    },
-    {
-      field: "postedBy",
-      headerName: "Posted by",
-      width: 150,
-      valueGetter: (data) => data.row.postedBy.name,
-    },
-    {
-      field: "createdAt",
-      headerName: "Create At",
-      width: 150,
-      renderCell: (params) =>
-        moment(params.row.createdAt).format("YYYY-MM-DD HH:MM:SS"),
-    },
+  //   // {
+  //   //   field: "image",
+  //   //   headerName: "Image",
+  //   //   width: 150,
+  //   //   renderCell: (params) => <img width="40%" src={params.row.image.url} />,
+  //   // },
+  //   {
+  //     field: "likes",
+  //     headerName: "Likes",
+  //     width: 150,
+  //     renderCell: (params) => params.row.likes.length,
+  //   },
+  //   {
+  //     field: "comments",
+  //     headerName: "Comments",
+  //     width: 150,
+  //     renderCell: (params) => params.row.comments.length,
+  //   },
+  //   {
+  //     field: "postedBy",
+  //     headerName: "Posted by",
+  //     width: 150,
+  //     valueGetter: (data) => data.row.postedBy.name,
+  //   },
+  //   {
+  //     field: "createdAt",
+  //     headerName: "Create At",
+  //     width: 150,
+  //     renderCell: (params) =>
+  //       moment(params.row.createdAt).format("YYYY-MM-DD HH:MM:SS"),
+  //   },
 
-    {
-      field: "Actions",
-      width: 100,
-      renderCell: (value) => (
-        <Box
-          sx={{
-            display: "flex",
-            justifyContent: "space-between",
-            width: "170px",
-          }}
-        >
-          <Link to={`/admin/product/edit/${value.row._id}`}>
-            <IconButton aria-label="edit">
-              <EditIcon sx={{ color: "#1976d2" }} />
-            </IconButton>
-          </Link>
-          <IconButton
-            aria-label="delete"
-            onClick={(e) => deleteProductById(e, value.row._id)}
-          >
-            <DeleteIcon sx={{ color: "red" }} />
-          </IconButton>
-        </Box>
-      ),
-    },
-  ];
+  //   {
+  //     field: "Actions",
+  //     width: 100,
+  //     renderCell: (value) => (
+  //       <Box
+  //         sx={{
+  //           display: "flex",
+  //           justifyContent: "space-between",
+  //           width: "170px",
+  //         }}
+  //       >
+  //         <Link to={`/admin/product/edit/${value.row._id}`}>
+  //           <IconButton aria-label="edit">
+  //             <EditIcon sx={{ color: "#1976d2" }} />
+  //           </IconButton>
+  //         </Link>
+  //         <IconButton
+  //           aria-label="delete"
+  //           onClick={(e) => deleteProductById(e, value.row._id)}
+  //         >
+  //           <DeleteIcon sx={{ color: "red" }} />
+  //         </IconButton>
+  //       </Box>
+  //     ),
+  //   },
+  // ];
   //   //top banner columns add extra
   const TopBannersColumns = [
     {
@@ -722,7 +723,7 @@ const AdminDashboard = () => {
             POS Sales
           </button>
 
-          <button
+          {/* <button
             class="nav-link border border-1 mt-3"
             id="v-pills-profile-tab"
             data-bs-toggle="pill"
@@ -733,6 +734,19 @@ const AdminDashboard = () => {
             aria-selected="false"
           >
             Products Info
+          </button> */}
+
+          <button
+            class="nav-link border border-1 mt-3"
+            id="v-pills-test-tab"
+            data-bs-toggle="pill"
+            data-bs-target="#v-pills-test"
+            type="button"
+            role="tab"
+            aria-controls="v-pills-test"
+            aria-selected="false"
+          >
+            Products
           </button>
 
           <button
@@ -830,14 +844,14 @@ const AdminDashboard = () => {
             <SalesPos />
           </div>
 
-          <div
+          {/* <div
             class="tab-pane fade"
             id="v-pills-profile"
             role="tabpanel"
             aria-labelledby="v-pills-profile-tab"
             tabindex="0"
           >
-            {/* Products  */}
+           
             <Box>
               <h3 className="mt-3">
                 <span className="py-2 px-4 rounded bg-primary text-white ">
@@ -880,7 +894,20 @@ const AdminDashboard = () => {
                 </Box>
               </Paper>
             </Box>
+          </div> */}
+
+
+          <div
+            class="tab-pane fade"
+            id="v-pills-test"
+            role="tabpanel"
+            aria-labelledby="v-pills-test-tab"
+            tabindex="0"
+          >
+           <ProductsInfo />
           </div>
+
+
 
           <div
             class="tab-pane fade"

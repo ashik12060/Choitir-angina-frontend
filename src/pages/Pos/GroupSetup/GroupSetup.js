@@ -1,159 +1,249 @@
-import { useState } from 'react';
+// import React, { useState, useEffect } from "react";
+// import axios from "axios";
+// import axiosInstance from "../../axiosInstance";
 
-function GroupSetup() {
-  const [groupData, setGroupData] = useState([
-    {
-      groupId: '03',
-      groupName: 'Inden',
-      floorId: '7.5000',
-      vat: '0.0000',
-      discount: '0.0000',
-      costOnSale: '0.0000',
-    },
-    {
-      groupId: '01',
-      groupName: 'Pakistani Dress Unatlich',
-      floorId: '7.5000',
-      vat: '0.0000',
-      discount: '0.0000',
-      costOnSale: '0.0000',
-    },
-    {
-      groupId: '02',
-      groupName: 'Pasthani Stitch',
-      floorId: '7.5000',
-      vat: '0.0000',
-      discount: '0.0000',
-      costOnSale: '0.0000',
-    },
-  ]);
+// const GroupSetup = () => {
+//   const [brands, setBrands] = useState([]); // List of brands
+//   const [selectedBrand, setSelectedBrand] = useState(""); // Selected brand ID
+//   const [subcategories, setSubcategories] = useState([]); // Subcategories for the selected brand
+//   const [newSubcategory, setNewSubcategory] = useState(""); // Input for new subcategory name
 
-  const [newGroup, setNewGroup] = useState({
-    groupId: '',
-    groupName: '',
-    floorId: '',
-    vat: 0.0,
-    discount: 0.0,
-    costOnSale: 0.0,
-  });
+//   // Fetch all brands
+//   useEffect(() => {
+//     const fetchBrands = async () => {
+//       try {
+//         const response = await axiosInstance.get(`${process.env.REACT_APP_API_URL}/api/brands`);
+//         setBrands(response.data);
+//       } catch (error) {
+//         console.error("Error fetching brands:", error.message);
+//       }
+//     };
 
-  const handleChange = (event) => {
-    setNewGroup({
-      ...newGroup,
-      [event.target.name]: event.target.value,
-    });
-  };
+//     fetchBrands();
+//   }, []);
 
-  const handleSubmit = (event) => {
-    event.preventDefault();
-    setGroupData([...groupData, newGroup]);
-    setNewGroup({
-      groupId: '',
-      groupName: '',
-      floorId: '',
-      vat: 0.0,
-      discount: 0.0,
-      costOnSale: 0.0,
-    });
-  };
+//   // Fetch subcategories for the selected brand
+//   useEffect(() => {
+//     if (selectedBrand) {
+//       const fetchSubcategories = async () => {
+//         try {
+//           const response = await axiosInstance.get(`${process.env.REACT_APP_API_URL}/api/subcategories/${selectedBrand}`);
+//           // const response = await axios.get(`/api/subcategories/${selectedBrand}`);
+//           setSubcategories(response.data);
+//         } catch (error) {
+//           console.error("Error fetching subcategories:", error.message);
+//         }
+//       };
 
-  const handleDelete = (groupId) => {
-    setGroupData(groupData.filter((group) => group.groupId !== groupId));
+//       fetchSubcategories();
+//     } else {
+//       setSubcategories([]);
+//     }
+//   }, [selectedBrand]);
+
+//   // Handle creating a new subcategory
+//   const handleCreateSubcategory = async () => {
+//     if (!newSubcategory || !selectedBrand) {
+//       alert("Please select a brand and enter a subcategory name.");
+//       return;
+//     }
+
+//     try {
+//       const response = await axios.post(`${process.env.REACT_APP_API_URL}/api/subcategories`, {
+//       // const response = await axios.post("/api/subcategories", {
+//         name: newSubcategory,
+//         brandId: selectedBrand,
+//       });
+
+//       // Add the new subcategory to the list without reloading
+//       setSubcategories([...subcategories, response.data]);
+//       setNewSubcategory(""); // Clear the input field
+//       alert("Subcategory created successfully!");
+//     } catch (error) {
+//       console.error("Error creating subcategory:", error.message);
+//     }
+//   };
+
+//   return (
+//     <div>
+//       <h2>Group Setup</h2>
+
+//       {/* Select Brand */}
+//       <div>
+//         <label htmlFor="brandSelect">Select a Brand:</label>
+//         <select
+//           id="brandSelect"
+//           value={selectedBrand}
+//           onChange={(e) => setSelectedBrand(e.target.value)}
+//         >
+//           <option value="">-- Select a Brand --</option>
+//           {brands.map((brand) => (
+//             <option key={brand._id} value={brand._id}>
+//               {brand.brandName}
+//             </option>
+//           ))}
+//         </select>
+//       </div>
+
+//       {/* Subcategories */}
+//       {selectedBrand && (
+//         <div>
+//           <h3>Subcategories for Selected Brand:</h3>
+//           {subcategories.length > 0 ? (
+//             <ul>
+//               {subcategories.map((subcategory) => (
+//                 <li key={subcategory._id}>{subcategory.name}</li>
+//               ))}
+//             </ul>
+//           ) : (
+//             <p>No subcategories found for this brand.</p>
+//           )}
+//         </div>
+//       )}
+
+//       {/* Add Subcategory */}
+//       {selectedBrand && (
+//         <div>
+//           <h3>Add a New Subcategory</h3>
+//           <input
+//             type="text"
+//             value={newSubcategory}
+//             onChange={(e) => setNewSubcategory(e.target.value)}
+//             placeholder="Enter subcategory name"
+//           />
+//           <button onClick={handleCreateSubcategory}>Create Subcategory</button>
+//         </div>
+//       )}
+//     </div>
+//   );
+// };
+
+// export default GroupSetup;
+
+
+
+import React, { useState, useEffect } from "react";
+import axiosInstance from "../../axiosInstance";
+
+const GroupSetup = () => {
+  const [brands, setBrands] = useState([]); // List of brands
+  const [selectedBrand, setSelectedBrand] = useState(""); // Selected brand ID
+  const [subcategories, setSubcategories] = useState([]); // Subcategories for the selected brand
+  const [newSubcategory, setNewSubcategory] = useState(""); // Input for new subcategory name
+
+  // Fetch all brands
+  useEffect(() => {
+    const fetchBrands = async () => {
+      try {
+        const response = await axiosInstance.get(`${process.env.REACT_APP_API_URL}/api/brands`);
+        setBrands(response.data);
+      } catch (error) {
+        console.error("Error fetching brands:", error.message);
+      }
+    };
+
+    fetchBrands();
+  }, []);
+
+  // Fetch subcategories for the selected brand
+  useEffect(() => {
+    if (selectedBrand) {
+      const fetchSubcategories = async () => {
+        try {
+          const response = await axiosInstance.get(`${process.env.REACT_APP_API_URL}/api/subcategories/${selectedBrand}`);
+          setSubcategories(response.data);
+        } catch (error) {
+          console.error("Error fetching subcategories:", error.message);
+        }
+      };
+
+      fetchSubcategories();
+    } else {
+      setSubcategories([]);
+    }
+  }, [selectedBrand]);
+
+  // Handle creating a new subcategory
+  const handleCreateSubcategory = async () => {
+    if (!newSubcategory || !selectedBrand) {
+      alert("Please select a brand and enter a subcategory name.");
+      return;
+    }
+
+    try {
+      const response = await axiosInstance.post(`${process.env.REACT_APP_API_URL}/api/subcategories`, {
+        name: newSubcategory,
+        brandId: selectedBrand,
+      });
+
+      // Add the new subcategory to the list without reloading
+      setSubcategories([...subcategories, response.data]);
+      setNewSubcategory(""); // Clear the input field
+      alert("Subcategory created successfully!");
+    } catch (error) {
+      console.error("Error creating subcategory:", error.message);
+    }
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 flex items-center justify-center p-4">
-      <div className="bg-white shadow-lg rounded-lg w-full max-w-3xl p-6">
-        {/* Header */}
-        <h1 className="text-2xl font-bold text-gray-800 text-center mb-6">Group Setup</h1>
+    <div className="max-w-4xl mx-auto p-6 bg-white rounded-lg shadow-md">
+      <h2 className="text-3xl font-semibold text-center text-gray-800 mb-6">Group Setup</h2>
 
-        {/* Form */}
-        <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+      {/* Select Brand */}
+      <div className="mb-4">
+        <label htmlFor="brandSelect" className="block text-lg font-medium text-gray-700">Select a Brand:</label>
+        <select
+          id="brandSelect"
+          value={selectedBrand}
+          onChange={(e) => setSelectedBrand(e.target.value)}
+          className="mt-2 block w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-600"
+        >
+          <option value="">-- Select a Brand --</option>
+          {brands.map((brand) => (
+            <option key={brand._id} value={brand._id}>
+              {brand.brandName}
+            </option>
+          ))}
+        </select>
+      </div>
+
+      {/* Subcategories */}
+      {selectedBrand && (
+        <div className="mb-6">
+          <h3 className="text-2xl font-medium text-gray-800 mb-4">Subcategories for Selected Brand:</h3>
+          {subcategories.length > 0 ? (
+            <ul className="space-y-2">
+              {subcategories.map((subcategory) => (
+                <li key={subcategory._id} className="p-2 bg-gray-100 rounded-lg">{subcategory.name}</li>
+              ))}
+            </ul>
+          ) : (
+            <p className="text-gray-600">No subcategories found for this brand.</p>
+          )}
+        </div>
+      )}
+
+      {/* Add Subcategory */}
+      {selectedBrand && (
+        <div className="mt-6">
+          <h3 className="text-2xl font-medium text-gray-800 mb-4">Add a New Subcategory</h3>
           <input
             type="text"
-            name="groupId"
-            value={newGroup.groupId}
-            onChange={handleChange}
-            placeholder="Group ID"
-            className="border rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
-            required
-          />
-          <input
-            type="text"
-            name="groupName"
-            value={newGroup.groupName}
-            onChange={handleChange}
-            placeholder="Group Name"
-            className="border rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
-            required
-          />
-          <input
-            type="text"
-            name="floorId"
-            value={newGroup.floorId}
-            onChange={handleChange}
-            placeholder="Floor ID"
-            className="border rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
-            required
-          />
-          <input
-            type="number"
-            name="vat"
-            value={newGroup.vat}
-            onChange={handleChange}
-            placeholder="VAT"
-            className="border rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
-            required
-          />
-          <input
-            type="number"
-            name="discount"
-            value={newGroup.discount}
-            onChange={handleChange}
-            placeholder="Discount"
-            className="border rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
-            required
-          />
-          <input
-            type="number"
-            name="costOnSale"
-            value={newGroup.costOnSale}
-            onChange={handleChange}
-            placeholder="Cost on Sale"
-            className="border rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
-            required
+            value={newSubcategory}
+            onChange={(e) => setNewSubcategory(e.target.value)}
+            placeholder="Enter subcategory name"
+            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-600 mb-4"
           />
           <button
-            type="submit"
-            className="col-span-full bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-all duration-300"
+            onClick={handleCreateSubcategory}
+            className="w-full py-2 px-4 bg-indigo-600 text-white font-semibold rounded-lg hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-600"
           >
-            Add Group
+            Create Subcategory
           </button>
-        </form>
-
-        {/* List of Groups */}
-        <ul className="space-y-4">
-          {groupData.map((group) => (
-            <li
-              key={group.groupId}
-              className="flex justify-between items-center bg-gray-50 p-4 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-300"
-            >
-              <div>
-                <h2 className="font-medium text-gray-700">{group.groupName}</h2>
-                <p className="text-sm text-gray-500">ID: {group.groupId}</p>
-              </div>
-              <button
-                onClick={() => handleDelete(group.groupId)}
-                className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition-all duration-300"
-              >
-                Delete
-              </button>
-            </li>
-          ))}
-        </ul>
-      </div>
+        </div>
+      )}
     </div>
   );
-}
+};
 
 export default GroupSetup;

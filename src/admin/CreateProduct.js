@@ -44,6 +44,8 @@ const CreateProduct = () => {
   const observedElementRef = useRef(null);
   const [barcode, setBarcode] = useState(null);
   const [brands, setBrands] = useState([]);
+  const [subcategories, setSubcategories] = useState([]); // Add subcategories state
+  const [filteredSubcategories, setFilteredSubcategories] = useState([]); // State for filtered subcategories
 
   const categoriesList = ["All", "Top Brands", "New Arrival", "Unstitched"];
 
@@ -65,6 +67,7 @@ const CreateProduct = () => {
       supplier: "",
       categories: [],
       barcode: "",
+      subcategory: "", // Add subcategory to form values
       images: [],
     },
     validationSchema: validationSchema,
@@ -88,8 +91,38 @@ const CreateProduct = () => {
       }
     };
 
+    const fetchSubcategories = async () => {
+      // Fetch subcategories
+      try {
+        const response = await axiosInstance.get(
+          `${process.env.REACT_APP_API_URL}/api/subcategories`
+        );
+        setSubcategories(response.data || []);
+        setFilteredSubcategories(response.data || []); // Initially set all subcategories
+      } catch (err) {
+        toast.error("Failed to load subcategories");
+      }
+    };
+
     fetchBrands();
+    fetchSubcategories();
   }, []);
+
+ // Filter subcategories based on the selected brand
+ const handleBrandChange = (event) => {
+  const selectedBrand = event.target.value;
+  setFieldValue("brand", selectedBrand);
+
+  // Filter subcategories based on selected brand
+  const filtered = subcategories.filter(
+    (subcategory) => subcategory.brand === selectedBrand
+  );
+  setFilteredSubcategories(filtered);
+};
+
+
+
+
 
   useEffect(() => {
     const fetchSuppliers = async () => {
@@ -239,18 +272,11 @@ const CreateProduct = () => {
               error={touched.quantity && Boolean(errors.quantity)}
               helperText={touched.quantity && errors.quantity}
             />
-            {/* <TextField
-              sx={{ mb: 3 }}
-              fullWidth
-              id="brand"
-              label="Brand"
-              name="brand"
-              value={values.brand}
-              onChange={handleChange}
-              onBlur={handleBlur}
-              error={touched.brand && Boolean(errors.brand)}
-              helperText={touched.brand && errors.brand}
-            /> */}
+
+           
+
+            {/* Brand selection */}
+
             <TextField
               sx={{ mb: 3 }}
               fullWidth
@@ -259,21 +285,41 @@ const CreateProduct = () => {
               label="Brand"
               name="brand"
               value={values.brand}
-              onChange={handleChange}
+              onChange={handleBrandChange} // Use handleBrandChange for dynamic filtering
               onBlur={handleBlur}
               error={touched.brand && Boolean(errors.brand)}
               helperText={touched.brand && errors.brand}
             >
-              {brands.length === 0 ? (
-                <MenuItem disabled>No brands available</MenuItem>
-              ) : (
-                brands.map((brand) => (
-                  <MenuItem key={brand._id} value={brand._id}>
-                    {brand.brandName}
-                  </MenuItem>
-                ))
-              )}
+              {brands.map((brand) => (
+                <MenuItem key={brand._id} value={brand._id}>
+                  {brand.brandName}
+                </MenuItem>
+              ))}
             </TextField>
+            
+            {/* Subcategory selection */}
+            <TextField
+              sx={{ mb: 3 }}
+              fullWidth
+              select
+              id="subcategory"
+              label="Subcategory"
+              name="subcategory"
+              value={values.subcategory}
+              onChange={handleChange}
+              onBlur={handleBlur}
+              error={touched.subcategory && Boolean(errors.subcategory)}
+              helperText={touched.subcategory && errors.subcategory}
+            >
+              {filteredSubcategories.map((subcategory) => (
+                <MenuItem key={subcategory._id} value={subcategory._id}>
+                  {subcategory.name}
+                </MenuItem>
+              ))}
+            </TextField>
+
+
+           
 
             <TextField
               sx={{ mb: 3 }}
