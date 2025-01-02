@@ -113,6 +113,7 @@ const LogIn = (props) => {
           justifyContent: "center",
           bgcolor: "primary.white",
         }}
+        
       >
         <Box
           onSubmit={formik.handleSubmit}
@@ -183,7 +184,7 @@ const LogIn = (props) => {
               Log In
             </Button>
 
-            <div className="my-2">
+            {/* <div className="my-2">
               {!isAuthenticated ? (
                 <button
                   className="border-0 rounded bg-white"
@@ -198,7 +199,7 @@ const LogIn = (props) => {
                   Sign out
                 </button>
               )}
-            </div>
+            </div> */}
             <Link to="/register" className="font-color mt-2 fs-6">
               <u>Register Now</u>
             </Link>
