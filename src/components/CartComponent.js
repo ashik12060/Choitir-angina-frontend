@@ -39,6 +39,7 @@ const CartComponent = () => {
             <div>
               <p className="text-xl">Item Name: <span className="font-bold"> {itm.title}</span></p> 
               <p className="text-base">Size: <span className="font-bold">{itm.size}</span></p>  {/* Access and display the size */}
+              <p className="text-base">Color: <span className="font-bold">{itm.color}</span></p>  {/* Access and display the size */}
 
               <br />
               <p className="text-xl">Price: <span className="font-bold">{Number(itm.price)}</span></p>

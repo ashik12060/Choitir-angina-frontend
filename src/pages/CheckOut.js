@@ -43,63 +43,34 @@ const CheckOut = () => {
   };
 
  
-  // const handlePlaceOrder = () => {
-  //   const tax = totalSum * 0.1; // 10% tax
-  //   const orderData = {
-  //     ...customerDetails,
-  //     cart,
-  //     totalPrice: totalSum + deliveryFee + tax,
-  //   };
-  
-  //   // Update product quantities in the database
-  //   cart.forEach((itm) => {
-  //     const updatedQuantity = itm.quantityInStock - itm.quantity; // Subtract the purchased quantity from the stock
-  //     if (updatedQuantity < 0) {
-  //       toast.error("Not enough stock for " + itm.title);
-  //       return; // Exit if there's insufficient stock
-  //     }
-  
-  //     // Call the API to update the stock of each product
-  //     axiosInstance
-  //       .put(`${process.env.REACT_APP_API_URL}/api/product/update/quantity/${itm._id}`, {
-  //         quantity: updatedQuantity, // Send the updated quantity
-  //       })
-  //       .then((response) => {
-  //         console.log("Product quantity updated successfully", response);
-  //       })
-  //       .catch((error) => {
-  //         console.error("Error updating product quantity", error);
-  //       });
-  //   });
-  
-  //   // Now place the order
-  //   axiosInstance
-  //     .post(`${process.env.REACT_APP_API_URL}/api/order/place`, orderData)
-  //     .then((response) => {
-  //       clearCart();
-  //       toast.success("Payment Completed");
-  //       navigate("/bkash-payment");
-  //     })
-  //     .catch((error) => {
-  //       console.error("Error placing order:", error);
-  //     });
-  // };
-  
-
-
-
   const handlePlaceOrder = () => {
     let totalSum = 0;
     cart.forEach((itm) => {
       totalSum += Number(itm.price) * itm.quantity;
+      return {
+        ...itm, // Spread the item
+        size: itm.size, // Include the size
+        color: itm.color, // Include the color
+      };
     });
   
     const tax = totalSum * 0.1; // Calculate 10% tax
+// Map through the cart to add size and color information
+const updatedCart = cart.map((itm) => ({
+  ...itm,
+  size: itm.size,   // Ensure size is included
+  color: itm.color, // Ensure color is included
+  
+}));
+console.log(cart)
+
     const orderData = {
       ...customerDetails,
       cart,
+      updatedCart,
       totalPrice: totalSum + deliveryFee + tax,
     };
+    console.log(orderData);
   
     // Update product quantities in the database
     cart.forEach((itm) => {
@@ -252,12 +223,12 @@ const CheckOut = () => {
             </div>
           </form>
 
-          <button
+          {/* <button
             onClick={handlePlaceOrder}
             className="px-5 py-2 rounded bg-color border-0 text-white fw-bold mt-3"
           >
             Place Order
-          </button>
+          </button> */}
         </div>
 
         {/* Right Section */}
@@ -278,13 +249,23 @@ const CheckOut = () => {
                 objectFit: "cover",
               }}
             />
+                <div>
                 <p className="text-xl">
                   {itm.title} - {Number(itm.price)} x {itm.quantity}
                 </p>
+                <br />
+                <p>
+                <span>Size: {itm.size}</span> 
+                <br />
+                <span>Color: {itm.color}</span>
+                </p>
+                   </div>
                 <div>
                   <span className="fw-bold">
                     Total: {Number(itm.price) * itm.quantity}
                   </span>
+                  <br />
+                  
                 </div>
               </div>
             ))}
@@ -304,6 +285,12 @@ const CheckOut = () => {
           <p className="pb-3">
             <strong>Total Price:</strong> <span className="ps-3">BDT {totalSum + deliveryFee + tax}</span>
           </p>
+          <button
+            onClick={handlePlaceOrder}
+            className="px-5 py-2 rounded bg-color border-0 text-white fw-bold mt-3"
+          >
+            Place Order
+          </button>
         </div>
       </div>
     </div>
