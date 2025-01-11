@@ -25,10 +25,10 @@ const validationSchema = yup.object({
     .min(1, "Text content should have a minimum of 1 character")
     .required("Text content is required"),
   price: yup.number("Add Price").required("Price is required"),
-  quantity: yup.number("Add quantity").required("quantity is required"),
+  // quantity: yup.number("Add quantity").required("quantity is required"),
   brand: yup.string("Add brand name").required("Brand name is required"),
   supplier: yup.string("Select a supplier").required("Supplier is required"),
-  sizes: yup.array().min(1, "At least one size is required").required("Sizes are required"),
+  // sizes: yup.array().min(1, "At least one size is required").required("Sizes are required"),
 
   categories: yup
     .array()
@@ -37,8 +37,22 @@ const validationSchema = yup.object({
   barcode: yup
     .string("Add a barcode")
     .min(6, "Barcode must be at least 6 characters"),
-});
 
+  variants: yup
+    .array()
+    .of(
+      yup.object().shape({
+        size: yup.string("Add size").required("Size is required"),
+        color: yup.string("Add color").required("Color is required"),
+        quantity: yup
+          .number("Add quantity")
+          .min(1, "Quantity must be at least 1")
+          .required("Quantity is required"),
+      })
+    )
+    .min(1, "At least one variant is required")
+    .required("Variants are required"),
+});
 
 const CreateProduct = () => {
   const [suppliers, setSuppliers] = useState([]);
@@ -50,7 +64,9 @@ const CreateProduct = () => {
   const [subcategories, setSubcategories] = useState([]); // Add subcategories state
   const [filteredSubcategories, setFilteredSubcategories] = useState([]); // State for filtered subcategories
   const [sizes, setSizes] = useState([]);
-
+  const [variants, setVariants] = useState([
+    { size: "", color: "", quantity: 0 }, //variant added
+  ]);
 
   const categoriesList = ["All", "Top Brands", "New Arrival", "Unstitched"];
 
@@ -67,11 +83,12 @@ const CreateProduct = () => {
       title: "",
       content: "",
       price: "",
-      quantity: "",
+      // quantity: "",
       brand: "",
       supplier: "",
-      sizes: [],
+      // sizes: [],
       categories: [],
+      variants: [{ size: "", color: "", quantity: 0 }],
       barcode: "",
       subcategory: "", // Add subcategory to form values
       images: [],
@@ -83,20 +100,20 @@ const CreateProduct = () => {
     },
   });
 
-    // Add a new size to the list
-    const handleAddSize = (size) => {
-      if (size && !sizes.includes(size)) {
-        setSizes([...sizes, size]);
-        setFieldValue("sizes", [...sizes, size]); // Update Formik values
-      }
-    };
-  
-    // Remove a size from the list
-    const handleRemoveSize = (sizeToRemove) => {
-      const updatedSizes = sizes.filter((size) => size !== sizeToRemove);
-      setSizes(updatedSizes);
-      setFieldValue("sizes", updatedSizes); // Update Formik values
-    };
+  // Add a new size to the list
+  const handleAddSize = (size) => {
+    if (size && !sizes.includes(size)) {
+      setSizes([...sizes, size]);
+      setFieldValue("sizes", [...sizes, size]); // Update Formik values
+    }
+  };
+
+  // Remove a size from the list
+  const handleRemoveSize = (sizeToRemove) => {
+    const updatedSizes = sizes.filter((size) => size !== sizeToRemove);
+    setSizes(updatedSizes);
+    setFieldValue("sizes", updatedSizes); // Update Formik values
+  };
 
   useEffect(() => {
     const fetchBrands = async () => {
@@ -156,6 +173,26 @@ const CreateProduct = () => {
     fetchSuppliers();
   }, []);
 
+  useEffect(() => {
+    setFieldValue("variants", variants);
+  }, [variants, setFieldValue]);
+
+  const handleVariantChange = (index, field, value) => {
+    const updatedVariants = [...variants];
+    updatedVariants[index][field] = value;
+    setVariants(updatedVariants);
+  };
+
+  const addVariant = () => {
+    setVariants([...variants, { size: "", color: "", quantity: 0 }]);
+  };
+
+  const removeVariant = (index) => {
+    const updatedVariants = variants.filter((_, i) => i !== index);
+    setVariants(updatedVariants);
+  };
+
+  // new product add
   const createNewProduct = async (values) => {
     try {
       const result = await axiosInstance.post(
@@ -276,7 +313,7 @@ const CreateProduct = () => {
               error={touched.price && Boolean(errors.price)}
               helperText={touched.price && errors.price}
             />
-            <TextField
+            {/* <TextField
               sx={{ mb: 3 }}
               fullWidth
               id="quantity"
@@ -288,7 +325,7 @@ const CreateProduct = () => {
               onBlur={handleBlur}
               error={touched.quantity && Boolean(errors.quantity)}
               helperText={touched.quantity && errors.quantity}
-            />
+            /> */}
 
             {/* Brand selection */}
 
@@ -334,7 +371,7 @@ const CreateProduct = () => {
             </TextField>
 
             {/* Size Input Field */}
-        <TextField
+            {/* <TextField
           fullWidth
           label="Add Size (e.g., S, M, 32, 34)"
           value={values.sizeInput || ""}
@@ -349,10 +386,10 @@ const CreateProduct = () => {
           }}
         >
           Add Size
-        </Button>
+        </Button> */}
 
-        {/* Display Added Sizes */}
-        <Box sx={{ mt: 3 }}>
+            {/* Display Added Sizes */}
+            {/* <Box sx={{ mt: 3 }}>
           <Typography variant="subtitle1">Selected Sizes</Typography>
           <div>
             {sizes.map((size) => (
@@ -364,7 +401,7 @@ const CreateProduct = () => {
               />
             ))}
           </div>
-        </Box>
+        </Box> */}
 
             <TextField
               sx={{ mb: 3 }}
@@ -413,6 +450,121 @@ const CreateProduct = () => {
               ))}
             </Select>
 
+            {/* new variant start */}
+            {/* <div>
+        <h3>Variants</h3>
+        {variants.map((variant, index) => (
+          <div key={index}>
+            <input
+              type="text"
+              placeholder="Size"
+              value={variant.size}
+              onChange={(e) => handleVariantChange(index, 'size', e.target.value)}
+            />
+            <input
+              type="text"
+              placeholder="Color"
+              value={variant.color}
+              onChange={(e) => handleVariantChange(index, 'color', e.target.value)}
+            />
+            <input
+              type="number"
+              placeholder="Quantity"
+              value={variant.quantity}
+              onChange={(e) => handleVariantChange(index, 'quantity', e.target.value)}
+            />
+            <button type="button" onClick={() => removeVariant(index)}>
+              Remove Variant
+            </button>
+          </div>
+        ))}
+        <button type="button" onClick={addVariant}>
+          Add Variant
+        </button>
+      </div> */}
+
+            <Box sx={{ mb: 3 }}>
+              <Typography variant="h6">Variants</Typography>
+
+              {values.variants.map((variant, index) => (
+                <Box
+                  key={index}
+                  sx={{ display: "flex", flexDirection: "column", mb: 2 }}
+                >
+                  <TextField
+                    fullWidth
+                    label={`Size ${index + 1}`}
+                    name={`variants[${index}].size`}
+                    value={variant.size}
+                    onChange={(e) =>
+                      handleVariantChange(index, "size", e.target.value)
+                    }
+                    onBlur={handleBlur}
+                    error={
+                      touched.variants?.[index]?.size &&
+                      Boolean(errors.variants?.[index]?.size)
+                    }
+                    helperText={
+                      touched.variants?.[index]?.size &&
+                      errors.variants?.[index]?.size
+                    }
+                    sx={{ mb: 2 }}
+                  />
+                  <TextField
+                    fullWidth
+                    label={`Color ${index + 1}`}
+                    name={`variants[${index}].color`}
+                    value={variant.color}
+                    onChange={(e) =>
+                      handleVariantChange(index, "color", e.target.value)
+                    }
+                    onBlur={handleBlur}
+                    error={
+                      touched.variants?.[index]?.color &&
+                      Boolean(errors.variants?.[index]?.color)
+                    }
+                    helperText={
+                      touched.variants?.[index]?.color &&
+                      errors.variants?.[index]?.color
+                    }
+                    sx={{ mb: 2 }}
+                  />
+                  <TextField
+                    fullWidth
+                    label={`Quantity ${index + 1}`}
+                    name={`variants[${index}].quantity`}
+                    type="number"
+                    value={variant.quantity}
+                    onChange={(e) =>
+                      handleVariantChange(index, "quantity", e.target.value)
+                    }
+                    onBlur={handleBlur}
+                    error={
+                      touched.variants?.[index]?.quantity &&
+                      Boolean(errors.variants?.[index]?.quantity)
+                    }
+                    helperText={
+                      touched.variants?.[index]?.quantity &&
+                      errors.variants?.[index]?.quantity
+                    }
+                    sx={{ mb: 2 }}
+                  />
+                  <Button
+                    onClick={() => removeVariant(index)}
+                    color="error"
+                    variant="outlined"
+                  >
+                    Remove Variant
+                  </Button>
+                </Box>
+              ))}
+
+              <Button onClick={addVariant} variant="contained" sx={{ mt: 2 }}>
+                Add Variant
+              </Button>
+            </Box>
+
+            {/* new variant end */}
 
             <TextField
               sx={{ mb: 3 }}
