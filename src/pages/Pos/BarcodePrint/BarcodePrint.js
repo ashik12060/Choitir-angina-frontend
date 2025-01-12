@@ -25,11 +25,21 @@ function BarcodePrint() {
   }, []);
 
   // Handle print
-  const handlePrint = (barcode) => {
+  const handlePrint = (barcode, title,price) => {
     const printWindow = window.open("", "", "width=600,height=400");
-    printWindow.document.write(
-      `<html><body><img src="${barcode}" alt="Barcode" style="width: 100%; max-width: 400px;" /></body></html>`
-    );
+    printWindow.document.write(`
+      <html>
+        <body>
+          <div style="text-align: center; font-family: Arial, sans-serif;">
+          <h2 className="fw-bold ">CHAITYR ANGINA</h2>
+            <h3 style="margin-bottom: 10px;">${title}</h3>
+           
+            <img src="${barcode}" alt="Barcode" style="width: 100%; max-width: 400px;" />
+            <h3 style="font-weight: bold; font-size:: 20px">Price: ${price.toFixed(2)}</h3>
+          </div>
+        </body>
+      </html>
+    `);
     printWindow.document.close();
     printWindow.print();
   };
@@ -57,24 +67,36 @@ function BarcodePrint() {
             </thead>
             <tbody>
               {products.map((product) => {
+                const subCategoryName = product.subcategory?.name || "N/A"; // Handle missing subcategory
                 return (
                   <tr key={product._id} className="border-b">
-                    <td className="px-4 ">{product.title}</td>
-                    <td className="px-4 ">
+                    <td className="px-4">{product.title}</td>
+                    <td className="px-4">
+                      <h5 className="fw-bold">CHAITYR ANGINA</h5>
+                    <p>{product.title}</p>
                       {product.barcode ? (
                         <img
                           src={product.barcode}
                           alt={`${product.title} Barcode`}
                           className="w-24 h-24 object-contain"
                         />
+                        
                       ) : (
                         <p>No barcode available</p>
                       )}
+                      <p className="fw-bold">Price: {product.price?.toFixed(2)}</p>
                     </td>
                     <td className="px-4">
                       {product.barcode && (
                         <button
-                          onClick={() => handlePrint(product.barcode)}
+                          onClick={() =>
+                            handlePrint(
+                              product.barcode,
+                              product.title,
+                              product.price,
+                              product.price
+                            )
+                          }
                           className="bg-blue-500 text-white py-1 px-3 rounded hover:bg-blue-600"
                         >
                           Print Barcode
@@ -105,3 +127,5 @@ function BarcodePrint() {
 }
 
 export default BarcodePrint;
+
+

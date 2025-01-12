@@ -14,6 +14,7 @@ import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import { toast } from "react-toastify";
 import { useEffect, useState, useRef } from "react";
 import axiosInstance from "../pages/axiosInstance";
+import JsBarcode from "jsbarcode";
 
 const validationSchema = yup.object({
   title: yup
@@ -60,6 +61,7 @@ const CreateProduct = () => {
   const [imageFields, setImageFields] = useState([]);
   const observedElementRef = useRef(null);
   const [barcode, setBarcode] = useState(null);
+  const [generatedBarcode, setGeneratedBarcode] = useState(""); // Store generated barcode image
   const [brands, setBrands] = useState([]);
   const [subcategories, setSubcategories] = useState([]); // Add subcategories state
   const [filteredSubcategories, setFilteredSubcategories] = useState([]); // State for filtered subcategories
@@ -195,14 +197,18 @@ const CreateProduct = () => {
   // new product add
   const createNewProduct = async (values) => {
     try {
+      const payload = { ...values, barcodeSvg: generatedBarcode };
+
       const result = await axiosInstance.post(
         `${process.env.REACT_APP_API_URL}/api/product/create`,
-        values
+        payload
       );
       console.log("API response:", result); // Debugging line
       if (result?.data?.success) {
         toast.success("Product created");
         setImageFields([]); // Clear the image fields here
+        setBarcode(""); // Clear the barcode input field
+      setGeneratedBarcode(""); // Clear the generated barcode image
       } else {
         toast.error("Failed to create product");
       }
@@ -212,11 +218,47 @@ const CreateProduct = () => {
     }
   };
 
+  // const generateBarcode = () => {
+  //   const generatedBarcode = `BAR${Date.now()}`;
+  //   setFieldValue("barcode", generatedBarcode);
+  //   toast.success("Barcode generated");
+  // };
+
+  // barcode start
+  // const generateBarcode = () => {
+  //   const generatedBarcode = `BAR${Date.now()}`;
+  //   setFieldValue("barcode", generatedBarcode); // Set the barcode in Formik
+  //   toast.success("Barcode generated");
+  // };
   const generateBarcode = () => {
-    const generatedBarcode = `BAR${Date.now()}`;
-    setFieldValue("barcode", generatedBarcode);
-    toast.success("Barcode generated");
+    if (barcode) {
+      // Generate barcode using jsbarcode
+      JsBarcode("#barcode-svg", barcode, {
+        format: "CODE128", // Barcode format
+        displayValue: true, // Display value below the barcode
+        fontSize: 18,
+      });
+
+      // Get the barcode as an image (base64 encoded)
+      const barcodeSvg = document.getElementById("barcode-svg");
+      const imageData = barcodeSvg.outerHTML;
+      setGeneratedBarcode(imageData); // Set the generated barcode in state
+    }
   };
+
+  // const handleBarcodeChange = (e) => {
+  //   const newBarcode = e.target.value;
+  //   setBarcode(newBarcode); // Set custom barcode value
+  //   setFieldValue("barcode", newBarcode); // Sync with Formik state
+  // };
+
+  const handleBarcodeChange = (e) => {
+    const value = e.target.value;
+    setBarcode(value);
+    setFieldValue("barcode", value); // Update Formik value
+  };
+  
+  // barcode end
 
   const addImageField = () => {
     setImageFields([...imageFields, { image: null, colorName: "" }]);
@@ -566,7 +608,8 @@ const CreateProduct = () => {
 
             {/* new variant end */}
 
-            <TextField
+            {/* barcode starts */}
+            {/* <TextField
               sx={{ mb: 3 }}
               fullWidth
               id="barcode"
@@ -580,7 +623,63 @@ const CreateProduct = () => {
             />
             <Button variant="outlined" onClick={generateBarcode} sx={{ mb: 3 }}>
               Generate Barcode
-            </Button>
+            </Button> */}
+
+            {/* Barcode Section */}
+            {/* <TextField
+              sx={{ mb: 3 }}
+              fullWidth
+              id="barcode"
+              label="Barcode"
+              name="barcode"
+              value={barcode} // Display barcode state
+              onChange={handleBarcodeChange} // Allow manual barcode entry
+              onBlur={handleBlur}
+              error={touched.barcode && Boolean(errors.barcode)}
+              helperText={touched.barcode && errors.barcode}
+            />
+            <Button variant="outlined" onClick={generateBarcode} sx={{ mb: 3 }}>
+              Generate Barcode
+            </Button> */}
+
+            <div>
+              <TextField
+                sx={{ mb: 3 }}
+                fullWidth
+                id="barcode"
+                label="Barcode"
+                name="barcode"
+                value={barcode}
+                onChange={handleBarcodeChange}
+                // Add your validation logic here
+              />
+              <Button
+                variant="outlined"
+                onClick={generateBarcode}
+                sx={{ mb: 3 }}
+                disabled={!barcode || barcode.length < 6}
+              >
+                Generate Barcode
+              </Button>
+
+              {/* Display the generated barcode image */}
+              <div>
+                <svg id="barcode-svg" style={{ display: "none" }}></svg>{" "}
+                {/* Barcode will be rendered here */}
+                {generatedBarcode && (
+                  <div className="py-2">
+                    <h3>Custom Number: {barcode}</h3>
+                    <div
+                      // dangerouslySetInnerHTML={{
+                      //   __html: generatedBarcode, // Display the barcode image
+                      // }}
+                    />
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* barcode end */}
 
             <Button variant="outlined" onClick={addImageField} sx={{ mb: 3 }}>
               Add Image

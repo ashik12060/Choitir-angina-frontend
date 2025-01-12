@@ -417,7 +417,7 @@ const SinglePro = () => {
       .filter((variant) => variant.color === color)
       .map((variant) => variant.size);
     setAvailableSizes(sizesForColor);
-    setSelectedSize(null); // Reset selected size when color changes
+    setSelectedSize(null); 
   };
 
   const handleSizeSelect = (size) => {
