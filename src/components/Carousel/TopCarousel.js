@@ -18,7 +18,7 @@ useEffect(() => {
         const response = await axiosInstance.get(
           `${process.env.REACT_APP_API_URL}/api/topBanners/show`
         );
-        console.log("API Response:", response.data); // Debugging output
+       
         if (response.data.success) {
           // Update this line to use the correct property from the response
           setBanners(response.data.topBanners || []);

@@ -25,6 +25,12 @@ const validationSchema = yup.object({
     .string("Add text content")
     .min(1, "Text content should have a minimum of 1 character")
     .required("Text content is required"),
+
+  description: yup
+    .string("Add text description")
+    .min(1, "Text content should have a minimum of 1 character")
+    .required("Text content is required"),
+
   price: yup.number("Add Price").required("Price is required"),
   // quantity: yup.number("Add quantity").required("quantity is required"),
   brand: yup.string("Add brand name").required("Brand name is required"),
@@ -49,6 +55,12 @@ const validationSchema = yup.object({
           .number("Add quantity")
           .min(1, "Quantity must be at least 1")
           .required("Quantity is required"),
+          productLength: yup
+          .number("Add length")
+          .min(1, "Length must be at least 1")
+          .required("Length is required"),
+
+          
       })
     )
     .min(1, "At least one variant is required")
@@ -67,7 +79,7 @@ const CreateProduct = () => {
   const [filteredSubcategories, setFilteredSubcategories] = useState([]); // State for filtered subcategories
   const [sizes, setSizes] = useState([]);
   const [variants, setVariants] = useState([
-    { size: "", color: "", quantity: 0 }, //variant added
+    { size: "", color: "", quantity: 0,productLength: 0 }, //variant added
   ]);
 
   const categoriesList = ["All", "Top Brands", "New Arrival", "Unstitched"];
@@ -84,13 +96,15 @@ const CreateProduct = () => {
     initialValues: {
       title: "",
       content: "",
+      description: "",
+
       price: "",
-      // quantity: "",
+      
       brand: "",
       supplier: "",
-      // sizes: [],
+     
       categories: [],
-      variants: [{ size: "", color: "", quantity: 0 }],
+      variants: [{ size: "", color: "", quantity: 0,productLength: 0 }],
       barcode: "",
       subcategory: "", // Add subcategory to form values
       images: [],
@@ -186,7 +200,7 @@ const CreateProduct = () => {
   };
 
   const addVariant = () => {
-    setVariants([...variants, { size: "", color: "", quantity: 0 }]);
+    setVariants([...variants, { size: "", color: "", quantity: 0, productLength: 0 }]);
   };
 
   const removeVariant = (index) => {
@@ -208,7 +222,7 @@ const CreateProduct = () => {
         toast.success("Product created");
         setImageFields([]); // Clear the image fields here
         setBarcode(""); // Clear the barcode input field
-      setGeneratedBarcode(""); // Clear the generated barcode image
+        setGeneratedBarcode(""); // Clear the generated barcode image
       } else {
         toast.error("Failed to create product");
       }
@@ -257,7 +271,7 @@ const CreateProduct = () => {
     setBarcode(value);
     setFieldValue("barcode", value); // Update Formik value
   };
-  
+
   // barcode end
 
   const addImageField = () => {
@@ -328,6 +342,7 @@ const CreateProduct = () => {
               error={touched.title && Boolean(errors.title)}
               helperText={touched.title && errors.title}
             />
+
             <TextField
               sx={{ mb: 3 }}
               fullWidth
@@ -342,6 +357,24 @@ const CreateProduct = () => {
               error={touched.content && Boolean(errors.content)}
               helperText={touched.content && errors.content}
             />
+
+            <TextField
+              sx={{ mb: 3 }}
+              fullWidth
+              id="description"
+              label="Description"
+              name="description"
+              multiline
+              rows={4}
+              value={values.description}
+              onChange={handleChange}
+              onBlur={handleBlur}
+              error={touched.description && Boolean(errors.description)}
+              helperText={touched.description && errors.description}
+            />
+
+            
+
             <TextField
               sx={{ mb: 3 }}
               fullWidth
@@ -412,38 +445,7 @@ const CreateProduct = () => {
               ))}
             </TextField>
 
-            {/* Size Input Field */}
-            {/* <TextField
-          fullWidth
-          label="Add Size (e.g., S, M, 32, 34)"
-          value={values.sizeInput || ""}
-          onBlur={handleBlur}
-          onChange={(e) => setFieldValue("sizeInput", e.target.value)}
-          name="sizeInput"
-        />
-        <Button
-          onClick={() => {
-            handleAddSize(values.sizeInput);
-            setFieldValue("sizeInput", ""); // Clear input after adding
-          }}
-        >
-          Add Size
-        </Button> */}
-
-            {/* Display Added Sizes */}
-            {/* <Box sx={{ mt: 3 }}>
-          <Typography variant="subtitle1">Selected Sizes</Typography>
-          <div>
-            {sizes.map((size) => (
-              <Chip
-                key={size}
-                label={size}
-                onDelete={() => handleRemoveSize(size)}
-                sx={{ margin: 0.5 }}
-              />
-            ))}
-          </div>
-        </Box> */}
+           
 
             <TextField
               sx={{ mb: 3 }}
@@ -492,38 +494,7 @@ const CreateProduct = () => {
               ))}
             </Select>
 
-            {/* new variant start */}
-            {/* <div>
-        <h3>Variants</h3>
-        {variants.map((variant, index) => (
-          <div key={index}>
-            <input
-              type="text"
-              placeholder="Size"
-              value={variant.size}
-              onChange={(e) => handleVariantChange(index, 'size', e.target.value)}
-            />
-            <input
-              type="text"
-              placeholder="Color"
-              value={variant.color}
-              onChange={(e) => handleVariantChange(index, 'color', e.target.value)}
-            />
-            <input
-              type="number"
-              placeholder="Quantity"
-              value={variant.quantity}
-              onChange={(e) => handleVariantChange(index, 'quantity', e.target.value)}
-            />
-            <button type="button" onClick={() => removeVariant(index)}>
-              Remove Variant
-            </button>
-          </div>
-        ))}
-        <button type="button" onClick={addVariant}>
-          Add Variant
-        </button>
-      </div> */}
+           
 
             <Box sx={{ mb: 3 }}>
               <Typography variant="h6">Variants</Typography>
@@ -588,6 +559,26 @@ const CreateProduct = () => {
                     helperText={
                       touched.variants?.[index]?.quantity &&
                       errors.variants?.[index]?.quantity
+                    }
+                    sx={{ mb: 2 }}
+                  />
+                  <TextField 
+                    fullWidth
+                    label={`Length ${index + 1}`}
+                    name={`variants[${index}].productLength`}
+                    type="number"
+                    value={variant.productLength}
+                    onChange={(e) =>
+                      handleVariantChange(index, "productLength", e.target.value)
+                    }
+                    onBlur={handleBlur}
+                    error={
+                      touched.variants?.[index]?.productLength &&
+                      Boolean(errors.variants?.[index]?.productLength)
+                    }
+                    helperText={
+                      touched.variants?.[index]?.productLength &&
+                      errors.variants?.[index]?.productLength
                     }
                     sx={{ mb: 2 }}
                   />
@@ -670,9 +661,9 @@ const CreateProduct = () => {
                   <div className="py-2">
                     <h3>Custom Number: {barcode}</h3>
                     <div
-                      // dangerouslySetInnerHTML={{
-                      //   __html: generatedBarcode, // Display the barcode image
-                      // }}
+                    // dangerouslySetInnerHTML={{
+                    //   __html: generatedBarcode, // Display the barcode image
+                    // }}
                     />
                   </div>
                 )}

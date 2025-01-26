@@ -36,7 +36,6 @@ const AdminDashboard = () => {
         `${process.env.REACT_APP_API_URL}/api/orders`
       );
       setOrders(data.orders);
-      // console.log(orders.orderItems.price);
     } catch (error) {
       console.error("Error fetching orders:", error);
     }
