@@ -16,12 +16,12 @@ const socket = io("/", {
 const SinglePro = () => {
   const { userInfo } = useSelector((state) => state.signIn);
   const {
-        cart,
-        addCartItem,
-        incrementItem,
-        decrementItem,
-        removeItemFromCart,
-      } = useCart();
+    cart,
+    addCartItem,
+    incrementItem,
+    decrementItem,
+    removeItemFromCart,
+  } = useCart();
 
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -45,10 +45,10 @@ const SinglePro = () => {
         `${process.env.REACT_APP_API_URL}/api/product/${id}`
       );
       setProduct(data.product);
-     
+
       setMainImage(data.product.images[0]?.url); // Set the first image as the main image
       setLoading(false);
-     console.log(product)
+      console.log(product);
     } catch (error) {
       console.log(error);
     }
@@ -91,8 +91,8 @@ const SinglePro = () => {
       .filter((variant) => variant.color === color)
       .map((variant) => variant.size);
     setAvailableSizes(sizesForColor);
-    setSelectedSize(null); 
-    console.log(product.variants)
+    setSelectedSize(null);
+    console.log(product.variants);
   };
 
   const handleSizeSelect = (size) => {
@@ -115,8 +115,8 @@ const SinglePro = () => {
     addCartItem(selectedProduct);
   };
 
-//   const productLength = product.variants[1].productLength;
-// console.log(productLength); // Outputs: 10
+  //   const productLength = product.variants[1].productLength;
+  // console.log(productLength); // Outputs: 10
 
   const handleBuyNow = () => {
     navigate("/checkout");
@@ -131,6 +131,19 @@ const SinglePro = () => {
     ...new Set(product?.variants.map((variant) => variant.color)),
   ];
 
+  const [zoomStyle, setZoomStyle] = useState({});
+  const handleMouseMove = (e) => {
+    const { left, top, width, height } = e.target.getBoundingClientRect();
+    const x = ((e.clientX - left) / width) * 100;
+    const y = ((e.clientY - top) / height) * 100;
+    setZoomStyle({
+      transformOrigin: `${x}% ${y}%`,
+    });
+  };
+  const resetZoom = () => {
+    setZoomStyle({});
+  };
+  
   return (
     <div className="bg-white min-h-screen">
       <div className="container mx-auto py-8">
@@ -140,8 +153,8 @@ const SinglePro = () => {
           <div className="flex flex-col lg:flex-row bg-gray-50 p-6 shadow-md rounded-md">
             {/* Product Images */}
             {/* <div className="lg:w-1/3 p-4"> */}
-              {/* Main Image */}
-              {/* <div className="relative">
+            {/* Main Image */}
+            {/* <div className="relative">
                 <img
                   src={mainImage}
                   alt={product.title}
@@ -149,8 +162,8 @@ const SinglePro = () => {
                 />
               </div> */}
 
-              {/* Thumbnails */}
-              {/* {product.images && product.images.length > 1 && (
+            {/* Thumbnails */}
+            {/* {product.images && product.images.length > 1 && (
                 <div className="flex mt-4 space-x-2 overflow-x-auto">
                   {product.images.map((image, index) => {
                     const color = product.variants.find(
@@ -177,55 +190,66 @@ const SinglePro = () => {
                 </div>
               )} */}
 
-
-
-<div className="lg:w-1/3 p-4">
-      {product.images && product.images.length > 0 ? (
-        <div className="relative">
-          {/* Main Image Display */}
-          <div className="border rounded-md mb-4">
+            <div className="lg:w-1/3 p-4">
+              {product.images && product.images.length > 0 ? (
+                <div className="relative">
+                  {/* <div className="border rounded-md mb-4">
+                    <img
+                      src={mainImage} 
+                      alt={product.title}
+                      className="w-full h-96 object-cover rounded-md"
+                      style={{ aspectRatio: "1 / 1" }} 
+                    />
+                  </div> */}
+                  <div
+            className="border rounded-md mb-4 overflow-hidden group relative"
+            onMouseMove={handleMouseMove}
+            onMouseLeave={resetZoom}
+          >
             <img
               src={mainImage} // Show the selected image
               alt={product.title}
-              className="w-full h-96 object-cover rounded-md"
-              style={{ aspectRatio: "1 / 1" }} // Ensures a perfect square
+              className="w-full h-96 object-cover rounded-md transition-transform duration-300"
+              style={{
+                ...zoomStyle,
+                transform: zoomStyle.transformOrigin
+                  ? "scale(2)" // Adjust the zoom level as needed
+                  : "scale(1)",
+              }}
             />
           </div>
 
-          {/* Display Color Name */}
-          <div className="mt-4 text-center">
-            <p className="text-sm font-semibold text-gray-700">
-              Color: {selectedColor || "N/A"}
-            </p>
-          </div>
+                  <div className="mt-4 text-center">
+                    <p className="text-sm font-semibold text-gray-700">
+                      Color: {selectedColor || "N/A"}
+                    </p>
+                  </div>
 
-          {/* Thumbnail Slider */}
-          <div className="flex space-x-2 overflow-x-auto">
-            {product.images.map((img, index) => (
-              <div key={index} className="text-center">
-                <img
-                  src={img.url}
-                  className={`w-16 h-16 object-cover rounded-md border cursor-pointer hover:shadow-lg transition ${
-                    mainImage === img.url ? "border-blue-500" : ""
-                  }`}
-                  alt={`Thumbnail ${index + 1}`}
-                  onClick={() => handleImageClick(img.color, img.url)} // Update selected image and color
-                />
-                {/* <p className="text-sm mt-1 text-gray-600">
-                  Color: {img.color || "N/A"}
-                </p> */}
+                  <div className="flex space-x-2 overflow-x-auto">
+                    {product.images.map((img, index) => (
+                      <div key={index} className="text-center">
+                        <img
+                          src={img.url}
+                          className={`w-16 h-16 object-cover rounded-md border cursor-pointer hover:shadow-lg transition ${
+                            mainImage === img.url ? "border-blue-500" : ""
+                          }`}
+                          alt={`Thumbnail ${index + 1}`}
+                          onClick={() => handleImageClick(img.color, img.url)} // Update selected image and color
+                        />
+                       
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ) : (
+                <p className="text-gray-500">No images available</p>
+              )}
+
+              <div className="py-10">
+                <h4 className="font-bold pb--3">Product Description</h4>
+                <p>{product.description}</p>
               </div>
-            ))}
-          </div>
-        </div>
-      ) : (
-        <p className="text-gray-500">No images available</p>
-      )}
-      <div>
-        <h1>Description</h1>
-        <p>{product.description}</p>
-      </div>
-    </div>
+            </div>
             {/* </div> */}
 
             {/* Product Details */}
@@ -235,12 +259,10 @@ const SinglePro = () => {
               </h2>
               <div className="mt-4">
                 <p className="text-xl  font-semibold text-black">
-                ৳{product.price}
+                  ৳{product.price}
                 </p>
                 {/* <p className="line-through text-gray-400">$30</p> */}
               </div>
-
-             
 
               {/* Color Selector */}
               <div className="mt-4">
@@ -259,19 +281,17 @@ const SinglePro = () => {
                       {color}
                     </button>
                   ))}
-                  
                 </div>
                 {/* Selected Color Display */}
-              {selectedColor && (
-                <div className="mt-4">
-                  <p className="text-sm text-gray-700">
-                    Selected Color:{" "}
-                    <span className="font-bold">{selectedColor}</span>
-                  </p>
-                </div>
-              )}
+                {selectedColor && (
+                  <div className="mt-4">
+                    <p className="text-sm text-gray-700">
+                      Selected Color:{" "}
+                      <span className="font-bold">{selectedColor}</span>
+                    </p>
+                  </div>
+                )}
               </div>
-
 
               {/* Size Selector */}
               {selectedColor && (
@@ -300,18 +320,17 @@ const SinglePro = () => {
                       <span className="font-bold">{selectedSize}</span>
                     </p>
                   )}
-                  
-
                 </div>
               )}
 
-      <ul>
-        {product.variants.map((variant, index) => (
-          <li key={index} className="text-lg"> 
-          <span className="font-bold">Length:</span> {variant.productLength}
-          </li>
-        ))}
-      </ul>
+              <ul>
+                {product.variants.map((variant, index) => (
+                  <li key={index} className="text-lg">
+                    <span className="font-bold">Length:</span>{" "}
+                    {variant.productLength}
+                  </li>
+                ))}
+              </ul>
               {/* Action Buttons */}
               <div className="mt-4">
                 <button
