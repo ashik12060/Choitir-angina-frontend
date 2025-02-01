@@ -68,6 +68,7 @@ import BrandSetup from "./pages/Pos/BrandSetup/BrandSetup";
 import ProductInformation from "./pages/Pos/ProductInformation/ProductInformation";
 import CreateTopBanner from "./admin/CreateTopBanner";
 import SupplierSetup from "./pages/Pos/SupplierSetup/SupplierSetup";
+import ShopProductAssigner from "./admin/ShopProductAssigner";
 //HOC
 const AdminDashboardHOC = Layout(AdminDashboard);
 
@@ -75,6 +76,7 @@ const CreatePostHOC = Layout(CreatePost);
 const CreateItemHOC = Layout(CreateItem);
 const CreateProductHOC = Layout(CreateProduct);
 const CreateTopBannerHOC = Layout(CreateTopBanner);
+const ProductAssignToShopHOC = Layout(ShopProductAssigner);
 
 const CreateGalleryHOC = Layout(CreateGallery);
 const EditPostHOC = Layout(EditPost);
@@ -153,6 +155,7 @@ function App() {
                 <Route path="/admin-login" element={<AdminLogin />}></Route>
                 <Route path="/show-users" element={<ShowUsers />}></Route>
                 <Route path="/order-single" element={<OrderSingle />}></Route>
+                {/* <Route path="/product-assign-to-shop" element={<ShopProductAssigner />}></Route> */}
 
                 <Route path="/" element={<BlogHome />} />
                 {/* <Route path="/bloghome" element={<BlogHome />} /> */}
@@ -246,6 +249,15 @@ function App() {
                   element={
                     <AdminRoute>
                       <CreateTopBannerHOC />
+                    </AdminRoute>
+                  }
+                />
+
+                <Route
+                  path="/admin/topBanner/assign-products-to-shop"
+                  element={
+                    <AdminRoute>
+                      <ProductAssignToShopHOC />
                     </AdminRoute>
                   }
                 />
