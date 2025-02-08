@@ -19,6 +19,7 @@ import Dashboard from "./Dashboard";
 import SalesPos from "./SalesPos";
 import AttendanceReport from "./AttendanceReport";
 import ProductsInfo from "./ProductsInfo";
+import ShopProductList from "./ShopProductList";
 
 const AdminDashboard = () => {
   const [posts, setPosts] = useState([]);
@@ -76,21 +77,7 @@ const AdminDashboard = () => {
     displayItem();
   }, []);
 
-  //display products
-  // const displayProduct = async () => {
-  //   try {
-  //     const { data } = await axiosInstance.get(
-  //       `${process.env.REACT_APP_API_URL}/api/products/show`
-  //     );
-  //     setProducts(data.products);
-  //   } catch (error) {
-  //     console.log(error);
-  //   }
-  // };
-
-  // useEffect(() => {
-  //   displayProduct();
-  // }, []);
+ 
 
   //display displayTopBanners
   const displayTopBanners = async () => {
@@ -159,25 +146,6 @@ const AdminDashboard = () => {
     }
   };
 
-  //delete product by Id
-  // const deleteProductById = async (e, id) => {
-  //   console.log(id);
-  //   if (window.confirm("Are you sure you want to delete this product?")) {
-  //     try {
-  //       //
-  //       const { data } = await axiosInstance.delete(
-  //         `${process.env.REACT_APP_API_URL}/api/delete/product/${id}`
-  //       );
-  //       if (data.success === true) {
-  //         toast.success(data.message);
-  //         displayProduct();
-  //       }
-  //     } catch (error) {
-  //       console.log(error);
-  //       toast.error(error);
-  //     }
-  //   }
-  // };
 
   //delete top banner by Id
   const deleteTopBannerById = async (e, id) => {
@@ -237,7 +205,7 @@ const AdminDashboard = () => {
     }
   };
 
-  //   // seller columns
+ 
 
   //   // post columns
   const PostColumns = [
@@ -721,6 +689,18 @@ const AdminDashboard = () => {
           >
             POS Sales
           </button>
+          <button
+            class="nav-link  border border-1"
+            id="shopProductList-tab"
+            data-bs-toggle="pill"
+            data-bs-target="#shopProductList"
+            type="button"
+            role="tab"
+            aria-controls="shopProductList"
+            aria-selected="true"
+          >
+           Shop 
+          </button>
 
           {/* <button
             class="nav-link border border-1 mt-3"
@@ -842,58 +822,17 @@ const AdminDashboard = () => {
           >
             <SalesPos />
           </div>
-
-          {/* <div
-            class="tab-pane fade"
-            id="v-pills-profile"
+          <div
+            class="tab-pane fade "
+            id="v-pills-shopProductList"
             role="tabpanel"
-            aria-labelledby="v-pills-profile-tab"
+            aria-labelledby="v-pills-shopProductList-tab"
             tabindex="0"
           >
-           
-            <Box>
-              <h3 className="mt-3">
-                <span className="py-2 px-4 rounded bg-primary text-white ">
-                  PRODUCTS
-                </span>
-              </h3>
-              <Box sx={{ pb: 2, display: "flex", justifyContent: "right" }}>
-                <Button
-                  variant="contained"
-                  color="success"
-                  startIcon={<AddIcon />}
-                >
-                  <Link
-                    style={{ color: "white", textDecoration: "none" }}
-                    to="/admin/product/create"
-                  >
-                    Add Products
-                  </Link>{" "}
-                </Button>
-              </Box>
-              <Paper sx={{ bgColor: "white" }}>
-                <Box sx={{ height: 400, width: "100%" }}>
-                  <DataGrid
-                    getRowId={(row) => row._id}
-                    sx={{
-                      "& .MuiTablePagination-displayedRows": {
-                        color: "black",
-                      },
-                      color: "black",
-                      [`& .${gridClasses.row}`]: {
-                        bgColor: "white",
-                      },
-                    }}
-                    rows={products}
-                    columns={ProductColumns}
-                    pageSize={3}
-                    rowsPerPageOptions={[3]}
-                    checkboxSelection
-                  />
-                </Box>
-              </Paper>
-            </Box>
-          </div> */}
+            <ShopProductList />
+          </div>
+
+          
 
 
           <div

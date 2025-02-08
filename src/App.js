@@ -69,6 +69,7 @@ import ProductInformation from "./pages/Pos/ProductInformation/ProductInformatio
 import CreateTopBanner from "./admin/CreateTopBanner";
 import SupplierSetup from "./pages/Pos/SupplierSetup/SupplierSetup";
 import ShopProductAssigner from "./admin/ShopProductAssigner";
+import ShopProductList from "./admin/ShopProductList";
 //HOC
 const AdminDashboardHOC = Layout(AdminDashboard);
 
@@ -77,6 +78,7 @@ const CreateItemHOC = Layout(CreateItem);
 const CreateProductHOC = Layout(CreateProduct);
 const CreateTopBannerHOC = Layout(CreateTopBanner);
 const ProductAssignToShopHOC = Layout(ShopProductAssigner);
+const ShopProductListHOC = Layout(ShopProductList);
 
 const CreateGalleryHOC = Layout(CreateGallery);
 const EditPostHOC = Layout(EditPost);
@@ -254,10 +256,18 @@ function App() {
                 />
 
                 <Route
-                  path="/admin/topBanner/assign-products-to-shop"
+                  path="/admin/products/assign-products-to-shop"
                   element={
                     <AdminRoute>
                       <ProductAssignToShopHOC />
+                    </AdminRoute>
+                  }
+                />
+                <Route
+                  path="/admin/shop-products-list"
+                  element={
+                    <AdminRoute>
+                      <ShopProductListHOC />
                     </AdminRoute>
                   }
                 />
