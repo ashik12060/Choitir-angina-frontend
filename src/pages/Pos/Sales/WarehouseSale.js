@@ -3,14 +3,11 @@ import axiosInstance from "../../axiosInstance";
 import { Link } from "react-router-dom";
 
 const WarehouseSale = () => {
+  
   const [warehouseProducts, setWarehouseProducts] = useState([]);
   const [selectedProducts, setSelectedProducts] = useState([]); // Array to store selected products
   const [qty, setQty] = useState(1);
-  const [customerInfo, setCustomerInfo] = useState({
-    id: "",
-    name: "",
-    mobile: "",
-  });
+
   const [totalPrice, setTotalPrice] = useState(0.0);
   const [netPayable, setNetPayable] = useState(0.0);
   const [vatRate, setVatRate] = useState(0); // VAT rate in percentage
@@ -20,6 +17,11 @@ const WarehouseSale = () => {
   const [paymentMethod, setPaymentMethod] = useState(""); // New state for payment method
   const [amountGiven, setAmountGiven] = useState(0.0); // Amount customer gave
   const [changeReturned, setChangeReturned] = useState(0.0); // Change to return
+
+
+  const [customerName, setCustomerName] = useState("");
+  const [customerPhone, setCustomerPhone] = useState("");
+  const [customerAddress, setCustomerAddress] = useState("");
 
 
 
@@ -80,6 +82,7 @@ useEffect(() => {
     );
   };
 
+
   // Handle VAT and Discount calculations
   const calculateNetPayable = () => {
     let subtotal = 0;
@@ -112,32 +115,40 @@ useEffect(() => {
         title: product.title,
         quantity: product.qty, // Change `qty` to `quantity`
         price: product.price,
+        type: product.type || "defaultType",
       })),
-      customerInfo:
-        customerInfo.id || customerInfo.name || customerInfo.mobile
-          ? customerInfo
-          : undefined,
+      
+  
       totalPrice, // Change `totalPrice` to `totalAmount`
       vatAmount,
       discountAmount,
       netPayable,
       paymentMethod,
+
+      customerName,  // Added customer name
+      customerPhone, // Added customer phone
+      customerAddress, // Added customer address
     };
+    console.log(saleData)
 
     axiosInstance
-      .post(`${process.env.REACT_APP_API_URL}/api/sales/create`, saleData)
+      .post(`${process.env.REACT_APP_API_URL}/api/warehouse-sales/create`, saleData)
       .then((response) => {
         alert("Sale submitted successfully!");
         // Reset fields after submission
         setSelectedProducts([]);
         setQty(1);
-        setCustomerInfo({ id: "", name: "", mobile: "" });
+        // setCustomerInfo({ id: "", name: "", mobile: "" });
         setTotalPrice(0.0);
         setNetPayable(0.0);
         setVatAmount(0.0);
         setDiscountAmount(0.0);
         setVatRate(0);
         setDiscountRate(0);
+        setCustomerName("");
+        setCustomerPhone("");
+        setCustomerAddress("");
+        
       });
   };
 
@@ -148,9 +159,7 @@ useEffect(() => {
     );
   };
 
-  //   if (!Array.isArray(warehouseProducts)) {
-  //     return <div>Loading...</div>; // Or any loading spinner/UI you prefer
-  //   }
+
   return (
     <div className="min-h-screen bg-gray-100 p-4">
       {/* Header */}
@@ -198,44 +207,6 @@ useEffect(() => {
               </select>
             </div>
 
-            {/* Customer Details */}
-            <div>
-              <label className="text-sm text-gray-700">
-                Customer ID(Optional)
-              </label>
-              <input
-                type="text"
-                className="w-full border border-gray-300 rounded-md p-2"
-                value={customerInfo.id}
-                onChange={(e) =>
-                  setCustomerInfo({ ...customerInfo, id: e.target.value })
-                }
-              />
-            </div>
-            <div>
-              <label className="text-sm text-gray-700">
-                Customer Name(Optional)
-              </label>
-              <input
-                type="text"
-                className="w-full border border-gray-300 rounded-md p-2"
-                value={customerInfo.name}
-                onChange={(e) =>
-                  setCustomerInfo({ ...customerInfo, name: e.target.value })
-                }
-              />
-            </div>
-            <div>
-              <label className="text-sm text-gray-700">Mobile(Optional)</label>
-              <input
-                type="text"
-                className="w-full border border-gray-300 rounded-md p-2"
-                value={customerInfo.mobile}
-                onChange={(e) =>
-                  setCustomerInfo({ ...customerInfo, mobile: e.target.value })
-                }
-              />
-            </div>
 
             <div>
               <label className="text-sm text-gray-700">VAT Rate (%)</label>
@@ -267,9 +238,10 @@ useEffect(() => {
                   <th className="border border-gray-300 p-2">Product</th>
                   <th className="border border-gray-300 p-2">Price</th>
                   <th className="border border-gray-300 p-2">Qty</th>
+                  <th className="border border-gray-300 p-2">Available</th>
                   <th className="border border-gray-300 p-2">Total</th>
                   <th className="border border-gray-300 p-2">Action</th>{" "}
-                  {/* Added Action column */}
+                
                 </tr>
               </thead>
               <tbody>
@@ -295,10 +267,14 @@ useEffect(() => {
                       />
                     </td>
                     <td className="border border-gray-300 p-2">
+            {product.quantity} {/* Show available quantity */}
+          </td>
+                    <td className="border border-gray-300 p-2">
                       $
                       {parseFloat(product.price * product.qty).toFixed(2) ||
                         "0.00"}
                     </td>
+                  
                     <td className="border border-gray-300 p-2">
                       <button
                         onClick={() => handleRemoveProduct(product._id)}
@@ -312,6 +288,13 @@ useEffect(() => {
               </tbody>
             </table>
           </div>
+
+
+
+
+        
+
+          
         </div>
 
         {/* Right Section */}
@@ -400,6 +383,36 @@ useEffect(() => {
                 />
               </div>
             </div>
+
+            <div className="grid grid-cols-3 gap-4 mb-4">
+            <div>
+              <label className="text-sm text-gray-700">Customer Name</label>
+              <input
+                type="text"
+                className="w-full border border-gray-300 rounded-md p-2"
+                value={customerName}
+                onChange={(e) => setCustomerName(e.target.value)}
+              />
+            </div>
+            <div>
+              <label className="text-sm text-gray-700">Customer Phone</label>
+              <input
+                type="text"
+                className="w-full border border-gray-300 rounded-md p-2"
+                value={customerPhone}
+                onChange={(e) => setCustomerPhone(e.target.value)}
+              />
+            </div>
+            <div>
+              <label className="text-sm text-gray-700">Customer Address</label>
+              <input
+                type="text"
+                className="w-full border border-gray-300 rounded-md p-2"
+                value={customerAddress}
+                onChange={(e) => setCustomerAddress(e.target.value)}
+              />
+            </div>
+          </div>
 
             {/* Payment Method Dropdown */}
             <div className="mt-4">
