@@ -108,6 +108,51 @@ useEffect(() => {
     calculateNetPayable();
   }, [selectedProducts, vatRate, discountRate]);
 
+  // const handleSubmit = () => {
+  //   const saleData = {
+  //     warehouseProducts: selectedProducts.map((product) => ({
+  //       productId: product._id,
+  //       title: product.title,
+  //       quantity: product.qty, // Change `qty` to `quantity`
+  //       price: product.price,
+  //       type: product.type || "defaultType",
+  //     })),
+      
+  
+  //     totalPrice, // Change `totalPrice` to `totalAmount`
+  //     vatAmount,
+  //     discountAmount,
+  //     netPayable,
+  //     paymentMethod,
+
+  //     customerName,  // Added customer name
+  //     customerPhone, // Added customer phone
+  //     customerAddress, // Added customer address
+  //   };
+  //   console.log(saleData)
+
+  //   axiosInstance
+  //     .post(`${process.env.REACT_APP_API_URL}/api/warehouse-sales/create`, saleData)
+  //     .then((response) => {
+  //       alert("Sale submitted successfully!");
+  //       // Reset fields after submission
+  //       setSelectedProducts([]);
+  //       setQty(1);
+  //       // setCustomerInfo({ id: "", name: "", mobile: "" });
+  //       setTotalPrice(0.0);
+  //       setNetPayable(0.0);
+  //       setVatAmount(0.0);
+  //       setDiscountAmount(0.0);
+  //       setVatRate(0);
+  //       setDiscountRate(0);
+  //       setCustomerName("");
+  //       setCustomerPhone("");
+  //       setCustomerAddress("");
+        
+  //     });
+  // };
+
+  // Remove product from selected products
   const handleSubmit = () => {
     const saleData = {
       warehouseProducts: selectedProducts.map((product) => ({
@@ -117,7 +162,6 @@ useEffect(() => {
         price: product.price,
         type: product.type || "defaultType",
       })),
-      
   
       totalPrice, // Change `totalPrice` to `totalAmount`
       vatAmount,
@@ -129,16 +173,31 @@ useEffect(() => {
       customerPhone, // Added customer phone
       customerAddress, // Added customer address
     };
-    console.log(saleData)
 
+    // Submit the sale data
     axiosInstance
       .post(`${process.env.REACT_APP_API_URL}/api/warehouse-sales/create`, saleData)
       .then((response) => {
         alert("Sale submitted successfully!");
+        
+        // After sale is successful, update the stock
+        selectedProducts.forEach((product) => {
+          axiosInstance
+            .put(`${process.env.REACT_APP_API_URL}/api/warehouse-products/update`, {
+              productId: product._id,
+              soldQuantity: product.qty, // Pass the quantity that was sold
+            })
+            .then((updateResponse) => {
+              console.log("Stock updated for product", product._id);
+            })
+            .catch((updateError) => {
+              console.error("Error updating stock:", updateError);
+            });
+        });
+
         // Reset fields after submission
         setSelectedProducts([]);
         setQty(1);
-        // setCustomerInfo({ id: "", name: "", mobile: "" });
         setTotalPrice(0.0);
         setNetPayable(0.0);
         setVatAmount(0.0);
@@ -148,11 +207,15 @@ useEffect(() => {
         setCustomerName("");
         setCustomerPhone("");
         setCustomerAddress("");
-        
+      })
+      .catch((error) => {
+        console.error("Error submitting sale:", error);
       });
-  };
+};
 
-  // Remove product from selected products
+  
+  
+  
   const handleRemoveProduct = (productId) => {
     setSelectedProducts((prevSelected) =>
       prevSelected.filter((product) => product._id !== productId)

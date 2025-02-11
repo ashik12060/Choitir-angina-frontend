@@ -27,7 +27,7 @@
     "firebase": "^10.11.1",
     "formik": "^2.4.5",
     "jsbarcode": "^3.11.6",
-    "jspdf": "^2.5.1",
+    "jspdf": "^2.5.2",
     "lottie-react": "^2.4.0",
     "moment": "^2.29.4",
     "otp-input-react": "^0.3.0",
