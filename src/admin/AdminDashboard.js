@@ -20,6 +20,7 @@ import SalesPos from "./SalesPos";
 import AttendanceReport from "./AttendanceReport";
 import ProductsInfo from "./ProductsInfo";
 import ShopProductList from "./ShopProductList";
+import WarehouseProductsTable from "./WarehouseProductsTable";
 
 const AdminDashboard = () => {
   const [posts, setPosts] = useState([]);
@@ -76,8 +77,6 @@ const AdminDashboard = () => {
   useEffect(() => {
     displayItem();
   }, []);
-
- 
 
   //display displayTopBanners
   const displayTopBanners = async () => {
@@ -146,7 +145,6 @@ const AdminDashboard = () => {
     }
   };
 
-
   //delete top banner by Id
   const deleteTopBannerById = async (e, id) => {
     console.log(id);
@@ -204,8 +202,6 @@ const AdminDashboard = () => {
       }
     }
   };
-
- 
 
   //   // post columns
   const PostColumns = [
@@ -648,11 +644,23 @@ const AdminDashboard = () => {
 
       <div class="d-flex align-items-start mt-3 ">
         <div
-          className="nav flex-column nav-pills w-1/5 border border-1 rounded me-4 dashboard-nav-size 5 px-2  pt-4"
+          className="nav flex-column nav-pills w-1/5  rounded me-4 dashboard-nav-size 5 px-2  pt-4"
           id="v-pills-tab"
           role="tablist"
           aria-orientation="vertical"
         >
+          <button
+            class="nav-link active border border-1"
+            id="v-pills-warehouse-tab"
+            data-bs-toggle="pill"
+            data-bs-target="#v-pills-warehouse"
+            type="button"
+            role="tab"
+            aria-controls="v-pills-warehouse"
+            aria-selected="true"
+          >
+            Warehouse Selling
+          </button>
           <button
             class="nav-link active border border-1"
             id="v-pills-dashboard-tab"
@@ -665,6 +673,7 @@ const AdminDashboard = () => {
           >
             Dashboard
           </button>
+
           <button
             class="nav-link  border border-1"
             id="v-pills-home-tab"
@@ -699,7 +708,7 @@ const AdminDashboard = () => {
             aria-controls="shopProductList"
             aria-selected="true"
           >
-           Shop 
+            Shop
           </button>
 
           {/* <button
@@ -728,7 +737,7 @@ const AdminDashboard = () => {
             Products
           </button>
 
-          <button
+          {/* <button
             class="nav-link border border-1 mt-3"
             id="v-pills-barcode-tab"
             data-bs-toggle="pill"
@@ -739,7 +748,7 @@ const AdminDashboard = () => {
             aria-selected="false"
           >
             Bar Codes
-          </button>
+          </button> */}
 
           <button
             class="nav-link border border-1 mt-3"
@@ -780,21 +789,36 @@ const AdminDashboard = () => {
             Attendance Report
           </button>
 
-          <button
-            class="nav-link  border border-1 mt-3"
-            id="v-pills-users-tab"
-            data-bs-toggle="pill"
-            data-bs-target="#v-pills-users"
-            type="button"
-            role="tab"
-            aria-controls="v-pills-users"
-            aria-selected="true"
-          >
-            Customers List
-          </button>
+        
         </div>
 
         <div className=" w-75 tab-content" id="v-pills-tabContent">
+          <div
+            class="tab-pane"
+            id="v-pills-warehouse"
+            role="tabpanel"
+            aria-labelledby="v-pills-warehouse-tab"
+            tabindex="0"
+          >
+            <Box sx={{ pb: 2, display: "flex", justifyContent: "right" }}>
+              <Button
+                variant="contained"
+                color="success"
+                startIcon={<AddIcon />}
+              >
+                <Link
+                  style={{ color: "white", textDecoration: "none" }}
+                  to="/admin/warehouse-product/create"
+                >
+                  Add Warehouse Products
+                </Link>{" "}
+              </Button>
+              
+            </Box>
+            <WarehouseProductsTable />
+          </div>
+
+
           <div
             class="tab-pane fade show active"
             id="v-pills-dashboard"
@@ -832,9 +856,6 @@ const AdminDashboard = () => {
             <ShopProductList />
           </div>
 
-          
-
-
           <div
             class="tab-pane fade"
             id="v-pills-test"
@@ -842,10 +863,8 @@ const AdminDashboard = () => {
             aria-labelledby="v-pills-test-tab"
             tabindex="0"
           >
-           <ProductsInfo />
+            <ProductsInfo />
           </div>
-
-
 
           <div
             class="tab-pane fade"
@@ -876,15 +895,12 @@ const AdminDashboard = () => {
                 </Button>
               </Box>
               <Paper sx={{ bgColor: "white" }}>
-                <Box sx={{ height: 400, width: "100%" }}>
-
-
-                </Box>
+                <Box sx={{ height: 400, width: "100%" }}></Box>
               </Paper>
             </Box>
           </div>
 
-{/* Top Banner */}
+          {/* Top Banner */}
           <div
             class="tab-pane fade"
             id="v-pills-topBanner"
@@ -997,9 +1013,6 @@ const AdminDashboard = () => {
             </Box>
           </div>
 
-
-
-
           <div
             class="tab-pane fade show"
             id="v-pills-attendance"
@@ -1016,11 +1029,8 @@ const AdminDashboard = () => {
             aria-labelledby="v-pills-users-tab"
             tabindex="0"
           >
-            <Users />
+            {/* <Users /> */}
           </div>
-
-
-
         </div>
       </div>
     </>

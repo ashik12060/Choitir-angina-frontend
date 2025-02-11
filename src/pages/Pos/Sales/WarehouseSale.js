@@ -2,8 +2,8 @@ import React, { useState, useEffect } from "react";
 import axiosInstance from "../../axiosInstance";
 import { Link } from "react-router-dom";
 
-const Sales = () => {
-  const [products, setProducts] = useState([]);
+const WarehouseSale = () => {
+  const [warehouseProducts, setWarehouseProducts] = useState([]);
   const [selectedProducts, setSelectedProducts] = useState([]); // Array to store selected products
   const [qty, setQty] = useState(1);
   const [customerInfo, setCustomerInfo] = useState({
@@ -21,21 +21,30 @@ const Sales = () => {
   const [amountGiven, setAmountGiven] = useState(0.0); // Amount customer gave
   const [changeReturned, setChangeReturned] = useState(0.0); // Change to return
 
-  // Fetch products from the API
-  useEffect(() => {
-    axiosInstance
-      .get(`${process.env.REACT_APP_API_URL}/api/products/show`)
-      .then((response) => {
-        setProducts(response.data.products);
-       
-      });
+
+
+useEffect(() => {
+    const fetchWarehouseProducts = async () => {
+      try {
+        const response = await axiosInstance.get("/api/warehouse-products/show");
+        console.log(response.data.warehouseProducts)
+        if (response.data && Array.isArray(response.data.warehouseProducts)) {
+            setWarehouseProducts(response.data.warehouseProducts);
+        } else {
+            setWarehouseProducts([]); // Set empty array if data is missing
+        }
+      } catch (error) {
+        console.error("Error fetching warehouseProducts:", error);
+        setWarehouseProducts([]); // Prevent crash on error
+      }
+    };
+  
+    fetchWarehouseProducts();
   }, []);
-
-
 
   // Handle product selection
   const handleProductSelect = (productId) => {
-    const product = products.find((p) => p._id === productId);
+    const product = warehouseProducts.find((p) => p._id === productId);
     if (!product) return;
 
     // Add product to selectedProducts array
@@ -96,44 +105,41 @@ const Sales = () => {
     calculateNetPayable();
   }, [selectedProducts, vatRate, discountRate]);
 
-
   const handleSubmit = () => {
-    
     const saleData = {
-      products: selectedProducts.map((product) => ({
+      warehouseProducts: selectedProducts.map((product) => ({
         productId: product._id,
         title: product.title,
         quantity: product.qty, // Change `qty` to `quantity`
-        price: product.price, 
+        price: product.price,
       })),
-      customerInfo: customerInfo.id || customerInfo.name || customerInfo.mobile ? customerInfo : undefined,
+      customerInfo:
+        customerInfo.id || customerInfo.name || customerInfo.mobile
+          ? customerInfo
+          : undefined,
       totalPrice, // Change `totalPrice` to `totalAmount`
       vatAmount,
       discountAmount,
       netPayable,
       paymentMethod,
     };
-    
-    
-  
-    axiosInstance.post(`${process.env.REACT_APP_API_URL}/api/sales/create`, saleData).then((response) => {
-      alert("Sale submitted successfully!");
-      // Reset fields after submission
-      setSelectedProducts([]);
-      setQty(1);
-      setCustomerInfo({ id: "", name: "", mobile: "" });
-      setTotalPrice(0.0);
-      setNetPayable(0.0);
-      setVatAmount(0.0);
-      setDiscountAmount(0.0);
-      setVatRate(0);
-      setDiscountRate(0);
-    });
+
+    axiosInstance
+      .post(`${process.env.REACT_APP_API_URL}/api/sales/create`, saleData)
+      .then((response) => {
+        alert("Sale submitted successfully!");
+        // Reset fields after submission
+        setSelectedProducts([]);
+        setQty(1);
+        setCustomerInfo({ id: "", name: "", mobile: "" });
+        setTotalPrice(0.0);
+        setNetPayable(0.0);
+        setVatAmount(0.0);
+        setDiscountAmount(0.0);
+        setVatRate(0);
+        setDiscountRate(0);
+      });
   };
-  
-
-
-
 
   // Remove product from selected products
   const handleRemoveProduct = (productId) => {
@@ -142,11 +148,16 @@ const Sales = () => {
     );
   };
 
+  //   if (!Array.isArray(warehouseProducts)) {
+  //     return <div>Loading...</div>; // Or any loading spinner/UI you prefer
+  //   }
   return (
     <div className="min-h-screen bg-gray-100 p-4">
       {/* Header */}
       <div className="bg-white shadow-md p-4 rounded-md flex justify-between items-center">
-        <Link to='/' className="text-xl font-bold">Chaityr Angina</Link>
+        <Link to="/" className="text-xl font-bold">
+          Chaityr Angina
+        </Link>
         <p className="font-bold">
           <i>Green Software Technology</i>
         </p>
@@ -163,6 +174,8 @@ const Sales = () => {
         <div className="col-span-9 bg-white shadow-md p-4 rounded-md">
           {/* Input Fields */}
           <div className="grid grid-cols-6 gap-4">
+          
+
             <div>
               <label className="text-sm text-gray-700">Product</label>
               <select
@@ -170,17 +183,26 @@ const Sales = () => {
                 onChange={(e) => handleProductSelect(e.target.value)}
               >
                 <option value="">Select a product</option>
-                {products.map((product) => (
-                  <option key={product._id} value={product._id}>
-                    {product.title}
+                {Array.isArray(warehouseProducts) &&
+                warehouseProducts.length > 0 ? (
+                  warehouseProducts.map((product) => (
+                    <option key={product._id} value={product._id}>
+                      {product.title}
+                    </option>
+                  ))
+                ) : (
+                  <option value="" disabled>
+                    No products available
                   </option>
-                ))}
+                )}
               </select>
             </div>
 
             {/* Customer Details */}
             <div>
-              <label className="text-sm text-gray-700">Customer ID(Optional)</label>
+              <label className="text-sm text-gray-700">
+                Customer ID(Optional)
+              </label>
               <input
                 type="text"
                 className="w-full border border-gray-300 rounded-md p-2"
@@ -191,7 +213,9 @@ const Sales = () => {
               />
             </div>
             <div>
-              <label className="text-sm text-gray-700">Customer Name(Optional)</label>
+              <label className="text-sm text-gray-700">
+                Customer Name(Optional)
+              </label>
               <input
                 type="text"
                 className="w-full border border-gray-300 rounded-md p-2"
@@ -292,119 +316,118 @@ const Sales = () => {
 
         {/* Right Section */}
         <div className="col-span-3 bg-white shadow-md p-4 rounded-md">
-         
-            <div className="col-span-3 bg-white  p-4 rounded-md">
-              <h1 className="bg-green-600 text-white text-left text-lg font-bold p-4">Payable Amount: {`৳ ${netPayable.toFixed(2)}`}</h1>
-              <h2 className="text-xl font-bold">৳ Net Payable</h2>
-              <div className="mt-4">
-                {/* Total Price input */}
-                <div className="flex items-center">
-                  <label className="text-sm py-2 w-1/5 text-gray-700">
-                    Total Price
-                  </label>
-                  <input
-                    type="text"
-                    value={`৳ ${totalPrice.toFixed(2)}`}
-                    readOnly
-                    className="w-2/3 border border-gray-300 rounded-md p-2"
-                  />
-                </div>
-
-                {/* Discount input */}
-                <div className="mt-2 flex items-center">
-                  <label className="text-sm py-2 w-1/5 text-gray-700">
-                    Discount
-                  </label>
-                  <input
-                    type="text"
-                    value={`-৳ ${discountAmount.toFixed(2)}`}
-                    readOnly
-                    className="w-2/3 border border-gray-300 rounded-md p-2"
-                  />
-                </div>
-
-                {/* VAT input */}
-                <div className="mt-2 flex items-center">
-                  <label className="text-sm py-2 w-1/5 text-gray-700">
-                    VAT
-                  </label>
-                  <input
-                    type="text"
-                    value={`+৳ ${vatAmount.toFixed(2)}`}
-                    readOnly
-                    className="w-2/3 border border-gray-300 rounded-md p-2"
-                  />
-                </div>
-
-                {/* Net Payable input */}
-                <div className="mt-2 flex items-center">
-                  <label className="text-sm py-2 w-1/5 text-gray-700 font-bold">
-                    Net Payable
-                  </label>
-                  <input
-                    type="text"
-                    value={`৳ ${netPayable.toFixed(2)}`}
-                    readOnly
-                    className="w-2/3 border border-gray-300 font-bold rounded-md p-2"
-                  />
-                </div>
-
-                {/* Amount Given input */}
-                <div className="mt-2 flex items-center">
-                  <label className="text-sm py-2 w-1/5 text-gray-700">
-                    Amount Given
-                  </label>
-                  <input
-                    type="number"
-                    value={amountGiven}
-                    onChange={(e) =>
-                      setAmountGiven(parseFloat(e.target.value) || 0.0)
-                    }
-                    className="w-2/3 border border-gray-300 rounded-md p-2"
-                  />
-                </div>
-
-                {/* Change to Return input */}
-                <div className="mt-2 flex items-center">
-                  <label className="text-sm py-2 w-1/5 text-gray-700 font-bold" >
-                    Change to Return
-                  </label>
-                  <input
-                    type="text"
-                    value={`৳ ${changeReturned.toFixed(2)}`}
-                    readOnly
-                    className="w-2/3 border border-gray-300 rounded-md p-2"
-                  />
-                </div>
+          <div className="col-span-3 bg-white  p-4 rounded-md">
+            <h1 className="bg-green-600 text-white text-left text-lg font-bold p-4">
+              Payable Amount: {`৳ ${netPayable.toFixed(2)}`}
+            </h1>
+            <h2 className="text-xl font-bold">৳ Net Payable</h2>
+            <div className="mt-4">
+              {/* Total Price input */}
+              <div className="flex items-center">
+                <label className="text-sm py-2 w-1/5 text-gray-700">
+                  Total Price
+                </label>
+                <input
+                  type="text"
+                  value={`৳ ${totalPrice.toFixed(2)}`}
+                  readOnly
+                  className="w-2/3 border border-gray-300 rounded-md p-2"
+                />
               </div>
 
-              {/* Payment Method Dropdown */}
-              <div className="mt-4">
-                <label className="text-sm text-gray-700">Payment Method</label>
-                <select
-                  className="w-full border border-gray-300 rounded-md p-2"
-                  value={paymentMethod}
-                  onChange={(e) => setPaymentMethod(e.target.value)}
-                >
-                  <option value="">Select Payment Method</option>
-                  <option value="Cash">Cash</option>
-                  <option value="Card">Card</option>
-                </select>
+              {/* Discount input */}
+              <div className="mt-2 flex items-center">
+                <label className="text-sm py-2 w-1/5 text-gray-700">
+                  Discount
+                </label>
+                <input
+                  type="text"
+                  value={`-৳ ${discountAmount.toFixed(2)}`}
+                  readOnly
+                  className="w-2/3 border border-gray-300 rounded-md p-2"
+                />
               </div>
 
-              {/* Submit Button */}
-              <button
-                onClick={handleSubmit}
-                className="mt-4 bg-green-500 text-white py-2 px-4 rounded-md"
-              >
-                Print & Submit
-              </button>
+              {/* VAT input */}
+              <div className="mt-2 flex items-center">
+                <label className="text-sm py-2 w-1/5 text-gray-700">VAT</label>
+                <input
+                  type="text"
+                  value={`+৳ ${vatAmount.toFixed(2)}`}
+                  readOnly
+                  className="w-2/3 border border-gray-300 rounded-md p-2"
+                />
+              </div>
+
+              {/* Net Payable input */}
+              <div className="mt-2 flex items-center">
+                <label className="text-sm py-2 w-1/5 text-gray-700 font-bold">
+                  Net Payable
+                </label>
+                <input
+                  type="text"
+                  value={`৳ ${netPayable.toFixed(2)}`}
+                  readOnly
+                  className="w-2/3 border border-gray-300 font-bold rounded-md p-2"
+                />
+              </div>
+
+              {/* Amount Given input */}
+              <div className="mt-2 flex items-center">
+                <label className="text-sm py-2 w-1/5 text-gray-700">
+                  Amount Given
+                </label>
+                <input
+                  type="number"
+                  value={amountGiven}
+                  onChange={(e) =>
+                    setAmountGiven(parseFloat(e.target.value) || 0.0)
+                  }
+                  className="w-2/3 border border-gray-300 rounded-md p-2"
+                />
+              </div>
+
+              {/* Change to Return input */}
+              <div className="mt-2 flex items-center">
+                <label className="text-sm py-2 w-1/5 text-gray-700 font-bold">
+                  Change to Return
+                </label>
+                <input
+                  type="text"
+                  value={`৳ ${changeReturned.toFixed(2)}`}
+                  readOnly
+                  className="w-2/3 border border-gray-300 rounded-md p-2"
+                />
+              </div>
             </div>
+
+            {/* Payment Method Dropdown */}
+            <div className="mt-4">
+              <label className="text-sm text-gray-700">Payment Method</label>
+              <select
+                className="w-full border border-gray-300 rounded-md p-2"
+                value={paymentMethod}
+                onChange={(e) => setPaymentMethod(e.target.value)}
+              >
+                <option value="">Select Payment Method</option>
+                <option value="Cash">Cash</option>
+                <option value="Card">Card</option>
+              </select>
+            </div>
+
+            {/* Submit Button */}
+            <button
+              onClick={handleSubmit}
+              className="mt-4 bg-green-500 text-white py-2 px-4 rounded-md"
+            >
+              Print & Submit
+            </button>
           </div>
+        </div>
         {/* </div> */}
       </div>
     </div>
   );
 };
 
-export default Sales;
+export default WarehouseSale;

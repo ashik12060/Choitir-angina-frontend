@@ -70,10 +70,13 @@ import CreateTopBanner from "./admin/CreateTopBanner";
 import SupplierSetup from "./pages/Pos/SupplierSetup/SupplierSetup";
 import ShopProductAssigner from "./admin/ShopProductAssigner";
 import ShopProductList from "./admin/ShopProductList";
+import CreateWarehouseProduct from "./admin/CreateWarehouseProduct";
+import WarehouseSale from "./pages/Pos/Sales/WarehouseSale";
 //HOC
 const AdminDashboardHOC = Layout(AdminDashboard);
 
 const CreatePostHOC = Layout(CreatePost);
+const CreateWarehouseProductHOC = Layout(CreateWarehouseProduct);
 const CreateItemHOC = Layout(CreateItem);
 const CreateProductHOC = Layout(CreateProduct);
 const CreateTopBannerHOC = Layout(CreateTopBanner);
@@ -126,6 +129,7 @@ function App() {
                 <Route path="/users" element={<Users />} />
                 <Route path="/bkash-payment" element={<Bkash/>} />
                 <Route path="/dashboard" element={<Dashboard/>} />
+                <Route path="/warehouse-sale" element={<WarehouseSale/>} />
 
               {/* pos start */}
               <Route path="/pos" element={<Dashboard />} />
@@ -229,6 +233,17 @@ function App() {
                     </AdminRoute>
                   }
                 />
+
+                <Route
+                  path="/admin/warehouse-product/create"
+                  element={
+                    <AdminRoute>
+                      <CreateWarehouseProductHOC />
+                    </AdminRoute>
+                  }
+                />
+
+
                 <Route
                   path="/admin/item/create"
                   element={
