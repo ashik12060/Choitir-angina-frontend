@@ -72,11 +72,13 @@ import ShopProductAssigner from "./admin/ShopProductAssigner";
 import ShopProductList from "./admin/ShopProductList";
 import CreateWarehouseProduct from "./admin/CreateWarehouseProduct";
 import WarehouseSale from "./pages/Pos/Sales/WarehouseSale";
+import WarehouseSales from "./admin/WarehouseSales";
 //HOC
 const AdminDashboardHOC = Layout(AdminDashboard);
 
 const CreatePostHOC = Layout(CreatePost);
 const CreateWarehouseProductHOC = Layout(CreateWarehouseProduct);
+const WarehouseSalesHOC = Layout(WarehouseSales);
 const CreateItemHOC = Layout(CreateItem);
 const CreateProductHOC = Layout(CreateProduct);
 const CreateTopBannerHOC = Layout(CreateTopBanner);

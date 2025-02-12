@@ -21,6 +21,7 @@ import AttendanceReport from "./AttendanceReport";
 import ProductsInfo from "./ProductsInfo";
 import ShopProductList from "./ShopProductList";
 import WarehouseProductsTable from "./WarehouseProductsTable";
+import WarehouseSales from "./WarehouseSales";
 
 const AdminDashboard = () => {
   const [posts, setPosts] = useState([]);
@@ -650,7 +651,7 @@ const AdminDashboard = () => {
           aria-orientation="vertical"
         >
           <button
-            class="nav-link active border border-1"
+            class="nav-link border border-1"
             id="v-pills-warehouse-tab"
             data-bs-toggle="pill"
             data-bs-target="#v-pills-warehouse"
@@ -659,7 +660,7 @@ const AdminDashboard = () => {
             aria-controls="v-pills-warehouse"
             aria-selected="true"
           >
-            Warehouse Selling
+            Warehouse Products
           </button>
           <button
             class="nav-link active border border-1"
@@ -685,6 +686,18 @@ const AdminDashboard = () => {
             aria-selected="true"
           >
             Website Sales
+          </button>
+          <button
+            class="nav-link  border border-1"
+            id="v-pills-warehouse-sales-tab"
+            data-bs-toggle="pill"
+            data-bs-target="#v-pills-warehouse-sales"
+            type="button"
+            role="tab"
+            aria-controls="v-pills-warehouse-sales"
+            aria-selected="true"
+          >
+            Warehouse Sales
           </button>
           <button
             class="nav-link  border border-1"
@@ -837,6 +850,15 @@ const AdminDashboard = () => {
           >
             <OrderSingle />
           </div>
+          <div
+            class="tab-pane fade "
+            id="v-pills-warehouse-sales"
+            role="tabpanel"
+            aria-labelledby="v-pills-warehouse-sales-tab"
+            tabindex="0"
+          >
+            <WarehouseSales />
+                      </div>
           <div
             class="tab-pane fade "
             id="v-pills-pos"
