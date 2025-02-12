@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from "react";
 import axiosInstance from "../../axiosInstance";
 import { Link } from "react-router-dom";
+import { jsPDF } from "jspdf";
 
 const WarehouseSale = () => {
-  
   const [warehouseProducts, setWarehouseProducts] = useState([]);
   const [selectedProducts, setSelectedProducts] = useState([]); // Array to store selected products
   const [qty, setQty] = useState(1);
@@ -15,32 +15,107 @@ const WarehouseSale = () => {
   const [vatAmount, setVatAmount] = useState(0.0); // VAT amount
   const [discountAmount, setDiscountAmount] = useState(0.0); // Discount amount
   const [paymentMethod, setPaymentMethod] = useState(""); // New state for payment method
-  const [amountGiven, setAmountGiven] = useState(0.0); // Amount customer gave
-  const [changeReturned, setChangeReturned] = useState(0.0); // Change to return
 
+  const [amountGiven, setAmountGiven] = useState(0);
+  const [changeReturned, setChangeReturned] = useState(0);
 
   const [customerName, setCustomerName] = useState("");
   const [customerPhone, setCustomerPhone] = useState("");
   const [customerAddress, setCustomerAddress] = useState("");
 
+  // generate invoice
+  const generateInvoicePDF = (invoiceData) => {
+    const {
+      discountAmount,
+      vatAmount,
+      warehouseProducts,
+      paymentMethod,
+      netPayable, // This seems like an overall value, so we need to compute totals in the loop.
+      customerAddress,
+      customerPhone,
+      customerName,
+      timestamp,
+    } = invoiceData;
+  
+    console.log(invoiceData);
+  
+    const doc = new jsPDF();
+  
+    doc.setFont("helvetica");
+    doc.setFontSize(14);
+  
+    // Add Invoice Header
+    doc.text("Invoice", 14, 16);
+    doc.text("Choityr Angina", 14, 22);
+    doc.setFontSize(10);
+  
+    doc.text(`Date: ${new Date(timestamp).toLocaleDateString()}`, 14, 35);
+  
+    // Add Customer Info
+    doc.text(`Customer: ${customerName}`, 14, 45);
+    doc.text(`Address: ${customerAddress}`, 14, 50);
+    doc.text(`Phone: ${customerPhone}`, 14, 55);
+  
+    // Add Product Details Table
+    const startY = 60;
+    let yOffset = startY;
+    doc.text("Product Details:", 14, yOffset);
+    yOffset += 6;
+  
+    let totalPrice = 0; // Initialize the total price for all products
+    warehouseProducts.forEach((product) => {
+      const productTotal = product.quantity * product.price; // Calculate the total for this product
+      totalPrice += productTotal; // Add the product's total to the overall total
+  
+      doc.text(`Product: ${product.title}`, 14, yOffset);
+      yOffset += 6;
+      doc.text(`Quantity: ${product.quantity}`, 14, yOffset);
+      doc.text(`Price: ${product.price} BDT`, 100, yOffset);
+      doc.text(`Total: ${productTotal} BDT`, 160, yOffset);
+      yOffset += 12; // Add space between products
+    });
+  
+    // Add Summary Information
+    yOffset += 10;
+    doc.text(`Discount: ${discountAmount} BDT`, 14, yOffset);
+    yOffset += 6;
+    doc.text(`VAT: ${vatAmount} BDT`, 14, yOffset);
+    yOffset += 6;
+  
+    // Calculate net payable based on totalPrice, discountAmount, and vatAmount
+    const netAmount = totalPrice - discountAmount + vatAmount;
+  
+    doc.text(`Net Payable: ${netAmount} BDT`, 14, yOffset);
+    yOffset += 6;
+  
+    // Optionally add Payment Information
+    // doc.text(`Payment Method: ${paymentMethod}`, 14, yOffset);
+  
+    return doc; // Return the jsPDF instance instead of saving it
+  };
+  
 
+  // end invoice generation
 
-useEffect(() => {
+  // show products
+  useEffect(() => {
     const fetchWarehouseProducts = async () => {
       try {
-        const response = await axiosInstance.get("/api/warehouse-products/show");
-        console.log(response.data.warehouseProducts)
+        const response = await axiosInstance.get(
+          "/api/warehouse-products/show"
+        );
+        console.log(response.data.warehouseProducts);
         if (response.data && Array.isArray(response.data.warehouseProducts)) {
-            setWarehouseProducts(response.data.warehouseProducts);
+          setWarehouseProducts(response.data.warehouseProducts);
         } else {
-            setWarehouseProducts([]); // Set empty array if data is missing
+          setWarehouseProducts([]); // Set empty array if data is missing
         }
       } catch (error) {
         console.error("Error fetching warehouseProducts:", error);
         setWarehouseProducts([]); // Prevent crash on error
       }
     };
-  
+
     fetchWarehouseProducts();
   }, []);
 
@@ -82,7 +157,6 @@ useEffect(() => {
     );
   };
 
-
   // Handle VAT and Discount calculations
   const calculateNetPayable = () => {
     let subtotal = 0;
@@ -102,57 +176,13 @@ useEffect(() => {
     setDiscountAmount(discount);
     setNetPayable(finalAmount);
   };
+  // Handle VAT and Discount calculations
 
   // Update net payable whenever total price, VAT or discount changes
   useEffect(() => {
     calculateNetPayable();
   }, [selectedProducts, vatRate, discountRate]);
 
-  // const handleSubmit = () => {
-  //   const saleData = {
-  //     warehouseProducts: selectedProducts.map((product) => ({
-  //       productId: product._id,
-  //       title: product.title,
-  //       quantity: product.qty, // Change `qty` to `quantity`
-  //       price: product.price,
-  //       type: product.type || "defaultType",
-  //     })),
-      
-  
-  //     totalPrice, // Change `totalPrice` to `totalAmount`
-  //     vatAmount,
-  //     discountAmount,
-  //     netPayable,
-  //     paymentMethod,
-
-  //     customerName,  // Added customer name
-  //     customerPhone, // Added customer phone
-  //     customerAddress, // Added customer address
-  //   };
-  //   console.log(saleData)
-
-  //   axiosInstance
-  //     .post(`${process.env.REACT_APP_API_URL}/api/warehouse-sales/create`, saleData)
-  //     .then((response) => {
-  //       alert("Sale submitted successfully!");
-  //       // Reset fields after submission
-  //       setSelectedProducts([]);
-  //       setQty(1);
-  //       // setCustomerInfo({ id: "", name: "", mobile: "" });
-  //       setTotalPrice(0.0);
-  //       setNetPayable(0.0);
-  //       setVatAmount(0.0);
-  //       setDiscountAmount(0.0);
-  //       setVatRate(0);
-  //       setDiscountRate(0);
-  //       setCustomerName("");
-  //       setCustomerPhone("");
-  //       setCustomerAddress("");
-        
-  //     });
-  // };
-
-  // Remove product from selected products
   const handleSubmit = () => {
     const saleData = {
       warehouseProducts: selectedProducts.map((product) => ({
@@ -162,31 +192,72 @@ useEffect(() => {
         price: product.price,
         type: product.type || "defaultType",
       })),
-  
+
       totalPrice, // Change `totalPrice` to `totalAmount`
       vatAmount,
       discountAmount,
       netPayable,
       paymentMethod,
 
-      customerName,  // Added customer name
+      customerName, // Added customer name
       customerPhone, // Added customer phone
       customerAddress, // Added customer address
     };
 
     // Submit the sale data
     axiosInstance
-      .post(`${process.env.REACT_APP_API_URL}/api/warehouse-sales/create`, saleData)
+      .post(
+        `${process.env.REACT_APP_API_URL}/api/warehouse-sales/create`,
+        saleData
+      )
       .then((response) => {
+        console.log("API Response:", response); // Debugging
+
+        if (!response.data) {
+          console.error("Error: response.data is undefined");
+          alert("Unexpected API response. Check console for details.");
+          return;
+        }
+
+        const sale = response.data.sale;
+
+        if (!sale._id) {
+          console.error("Error: sale._id is missing", sale);
+          alert("Sale submitted, but missing ID. Check backend response.");
+          return;
+        }
+
         alert("Sale submitted successfully!");
-        
+
+        // Generate invoice
+        // const pdf1 = generateInvoicePDF(sale);
+        // pdf1.autoPrint();
+        // window.open(pdf1.output("bloburl"));
+
+        // const pdf2 = generateInvoicePDF(sale);
+        // pdf2.autoPrint();
+        // window.open(pdf2.output("bloburl"));
+
+        // Generate both invoices
+        const customerInvoice = generateInvoicePDF(sale, true); // Customer copy
+        customerInvoice.autoPrint();
+        window.open(customerInvoice.output("bloburl"));
+
+        const officeInvoice = generateInvoicePDF(sale, false); // Office copy
+        officeInvoice.autoPrint();
+        window.open(officeInvoice.output("bloburl"));
+        // invoice
+
         // After sale is successful, update the stock
         selectedProducts.forEach((product) => {
           axiosInstance
-            .put(`${process.env.REACT_APP_API_URL}/api/warehouse-products/update`, {
-              productId: product._id,
-              soldQuantity: product.qty, // Pass the quantity that was sold
-            })
+            .put(
+              `${process.env.REACT_APP_API_URL}/api/warehouse-products/update`,
+              {
+                productId: product._id,
+                soldQuantity: product.qty, // Pass the quantity that was sold
+              }
+            )
             .then((updateResponse) => {
               console.log("Stock updated for product", product._id);
             })
@@ -211,17 +282,26 @@ useEffect(() => {
       .catch((error) => {
         console.error("Error submitting sale:", error);
       });
-};
+  };
 
-  
-  
-  
   const handleRemoveProduct = (productId) => {
     setSelectedProducts((prevSelected) =>
       prevSelected.filter((product) => product._id !== productId)
     );
   };
 
+  // Handle Amount Given Input Change
+  useEffect(() => {
+    const change = amountGiven - netPayable;
+    setChangeReturned(change >= 0 ? change : 0); // Ensure no negative change
+  }, [amountGiven, netPayable]);
+
+  const handleAmountGivenChange = (e) => {
+    const givenAmount = parseFloat(e.target.value);
+    setAmountGiven(givenAmount);
+  };
+
+  // invoice
 
   return (
     <div className="min-h-screen bg-gray-100 p-4">
@@ -246,8 +326,6 @@ useEffect(() => {
         <div className="col-span-9 bg-white shadow-md p-4 rounded-md">
           {/* Input Fields */}
           <div className="grid grid-cols-6 gap-4">
-          
-
             <div>
               <label className="text-sm text-gray-700">Product</label>
               <select
@@ -269,7 +347,6 @@ useEffect(() => {
                 )}
               </select>
             </div>
-
 
             <div>
               <label className="text-sm text-gray-700">VAT Rate (%)</label>
@@ -304,7 +381,6 @@ useEffect(() => {
                   <th className="border border-gray-300 p-2">Available</th>
                   <th className="border border-gray-300 p-2">Total</th>
                   <th className="border border-gray-300 p-2">Action</th>{" "}
-                
                 </tr>
               </thead>
               <tbody>
@@ -330,14 +406,14 @@ useEffect(() => {
                       />
                     </td>
                     <td className="border border-gray-300 p-2">
-            {product.quantity} {/* Show available quantity */}
-          </td>
+                      {product.quantity} {/* Show available quantity */}
+                    </td>
                     <td className="border border-gray-300 p-2">
                       $
                       {parseFloat(product.price * product.qty).toFixed(2) ||
                         "0.00"}
                     </td>
-                  
+
                     <td className="border border-gray-300 p-2">
                       <button
                         onClick={() => handleRemoveProduct(product._id)}
@@ -351,13 +427,6 @@ useEffect(() => {
               </tbody>
             </table>
           </div>
-
-
-
-
-        
-
-          
         </div>
 
         {/* Right Section */}
@@ -367,8 +436,7 @@ useEffect(() => {
               Payable Amount: {`৳ ${netPayable.toFixed(2)}`}
             </h1>
             <h2 className="text-xl font-bold">৳ Net Payable</h2>
-            <div className="mt-4">
-              {/* Total Price input */}
+            <div className="mt-1">
               <div className="flex items-center">
                 <label className="text-sm py-2 w-1/5 text-gray-700">
                   Total Price
@@ -381,8 +449,7 @@ useEffect(() => {
                 />
               </div>
 
-              {/* Discount input */}
-              <div className="mt-2 flex items-center">
+              {/* <div className="mt-2 flex items-center">
                 <label className="text-sm py-2 w-1/5 text-gray-700">
                   Discount
                 </label>
@@ -394,7 +461,6 @@ useEffect(() => {
                 />
               </div>
 
-              {/* VAT input */}
               <div className="mt-2 flex items-center">
                 <label className="text-sm py-2 w-1/5 text-gray-700">VAT</label>
                 <input
@@ -403,7 +469,7 @@ useEffect(() => {
                   readOnly
                   className="w-2/3 border border-gray-300 rounded-md p-2"
                 />
-              </div>
+              </div> */}
 
               {/* Net Payable input */}
               <div className="mt-2 flex items-center">
@@ -418,24 +484,25 @@ useEffect(() => {
                 />
               </div>
 
-              {/* Amount Given input */}
-              <div className="mt-2 flex items-center">
-                <label className="text-sm py-2 w-1/5 text-gray-700">
+              {/* Amount Given */}
+              {/* <div className="mt-2 flex items-center">
+                <label className="text-sm py-2 w-1/3 text-gray-700">
                   Amount Given
                 </label>
                 <input
                   type="number"
                   value={amountGiven}
-                  onChange={(e) =>
-                    setAmountGiven(parseFloat(e.target.value) || 0.0)
-                  }
+                  onChange={handleAmountGivenChange}
+                  // onChange={(e) =>
+                  //   setAmountGiven(parseFloat(e.target.value) || 0.0)
+                  // }
                   className="w-2/3 border border-gray-300 rounded-md p-2"
                 />
-              </div>
+              </div> */}
 
-              {/* Change to Return input */}
-              <div className="mt-2 flex items-center">
-                <label className="text-sm py-2 w-1/5 text-gray-700 font-bold">
+              {/* Change to Return */}
+              {/* <div className="mt-2 flex items-center">
+                <label className="text-sm py-2 w-1/3 text-gray-700 font-bold">
                   Change to Return
                 </label>
                 <input
@@ -444,38 +511,40 @@ useEffect(() => {
                   readOnly
                   className="w-2/3 border border-gray-300 rounded-md p-2"
                 />
-              </div>
+              </div> */}
             </div>
 
-            <div className="grid grid-cols-3 gap-4 mb-4">
-            <div>
-              <label className="text-sm text-gray-700">Customer Name</label>
-              <input
-                type="text"
-                className="w-full border border-gray-300 rounded-md p-2"
-                value={customerName}
-                onChange={(e) => setCustomerName(e.target.value)}
-              />
+            <div className="grid grid-cols-3 gap-1 mb-1">
+              <div>
+                <label className="text-sm text-gray-700">Customer Name</label>
+                <input
+                  type="text"
+                  className="w-full border border-gray-300 rounded-md p-2"
+                  value={customerName}
+                  onChange={(e) => setCustomerName(e.target.value)}
+                />
+              </div>
+              <div>
+                <label className="text-sm text-gray-700">Customer Phone</label>
+                <input
+                  type="text"
+                  className="w-full border border-gray-300 rounded-md p-2"
+                  value={customerPhone}
+                  onChange={(e) => setCustomerPhone(e.target.value)}
+                />
+              </div>
+              <div>
+                <label className="text-sm text-gray-700">
+                  Customer Address
+                </label>
+                <input
+                  type="text"
+                  className="w-full border border-gray-300 rounded-md p-2"
+                  value={customerAddress}
+                  onChange={(e) => setCustomerAddress(e.target.value)}
+                />
+              </div>
             </div>
-            <div>
-              <label className="text-sm text-gray-700">Customer Phone</label>
-              <input
-                type="text"
-                className="w-full border border-gray-300 rounded-md p-2"
-                value={customerPhone}
-                onChange={(e) => setCustomerPhone(e.target.value)}
-              />
-            </div>
-            <div>
-              <label className="text-sm text-gray-700">Customer Address</label>
-              <input
-                type="text"
-                className="w-full border border-gray-300 rounded-md p-2"
-                value={customerAddress}
-                onChange={(e) => setCustomerAddress(e.target.value)}
-              />
-            </div>
-          </div>
 
             {/* Payment Method Dropdown */}
             <div className="mt-4">
@@ -494,7 +563,7 @@ useEffect(() => {
             {/* Submit Button */}
             <button
               onClick={handleSubmit}
-              className="mt-4 bg-green-500 text-white py-2 px-4 rounded-md"
+              className="mt-4 bg-green-600 text-white py-2 px-4 rounded-md"
             >
               Print & Submit
             </button>
