@@ -14,6 +14,7 @@ const WarehouseSale = () => {
   const [discountRate, setDiscountRate] = useState(0); // Discount rate in percentage
   const [vatAmount, setVatAmount] = useState(0.0); // VAT amount
   const [discountAmount, setDiscountAmount] = useState(0.0); // Discount amount
+  
   const [paymentMethod, setPaymentMethod] = useState(""); // New state for payment method
 
   const [amountGiven, setAmountGiven] = useState(0);
@@ -24,110 +25,6 @@ const WarehouseSale = () => {
   const [customerAddress, setCustomerAddress] = useState("");
 
   // generate invoice
- 
-  // const generateInvoicePDF = (invoiceData) => {
-  //   const {
-  //     id,
-  //     discountAmount,
-  //     vatAmount,
-  //     warehouseProducts,
-  //     paymentMethod,
-  //     customerAddress,
-  //     customerPhone,
-  //     customerName,
-  //     timestamp,
-  //   } = invoiceData;
-  
-  //   console.log(invoiceData);
-  
-  //   const doc = new jsPDF();
-  
-  //   // Header Styling
-  //   doc.setFont("helvetica");
-  //   doc.setFontSize(16);
-  //   doc.text("Invoice", 14, 16);
-  //   doc.setFontSize(12);
-  //   doc.text("Choityr Angina", 14, 22);
-  //   doc.setFontSize(10);
-  //   doc.text(`Invoice ID: ${id}`, 14, 28);
-  //   doc.setFontSize(10);
-  
-  //   doc.setLineWidth(0.5);
-  //   doc.line(14, 24, 200, 24); // Add a line below the header
-  
-  //   doc.text(`Date: ${new Date(timestamp).toLocaleDateString()}`, 14, 35);
-  //   doc.setFontSize(12);
-  
-  //   // Customer Information Section
-  //   doc.text("Customer Information", 14, 45);
-  //   doc.setFontSize(10);
-  //   doc.text(`Customer: ${customerName}`, 14, 50);
-  //   doc.text(`Address: ${customerAddress}`, 14, 55);
-  //   doc.text(`Phone: ${customerPhone}`, 14, 60);
-  
-  //   // Add a border around the customer info
-  //   doc.setLineWidth(0.5);
-  //   doc.rect(10, 40, 190, 30); // Border around customer info
-  
-  //   // Product Details Table
-  //   const startY = 85;
-  //   let yOffset = startY;
-   
-  //   yOffset += 6; // Space between title and table header
-  
-  //   // Table Header
-  //   doc.setFontSize(10);
-  //   doc.setFont("helvetica", "bold");
-  //   doc.text("Product", 14, yOffset);
-  //   doc.text("Quantity", 90, yOffset);
-  //   doc.text("Price", 130, yOffset);
-  //   doc.text("Total", 160, yOffset);
-    
-  //   doc.setFont("helvetica", "normal");
-  //   yOffset += 6;
-  //   doc.line(14, yOffset, 200, yOffset); // Add a line below the table header
-  //   yOffset += 6;
-  
-  //   let totalPrice = 0;
-  //   warehouseProducts.forEach((product) => {
-  //     const productTotal = product.quantity * product.price;
-  //     totalPrice += productTotal;
-  //     doc.text(`ID: ${product.productId}`, 100, yOffset);
-  //     doc.text(product.title, 14, yOffset);
-  //     doc.text(product.quantity.toString(), 90, yOffset);
-  //     doc.text(`${product.price} BDT`, 130, yOffset);
-  //     doc.text(`${productTotal} BDT`, 160, yOffset);
-  //     yOffset += 8;
-  //   });
-  
-  //   // Add a line after the product details
-  //   doc.line(14, yOffset, 200, yOffset);
-    
-  //   // Add Summary Information
-  //   yOffset += 10;
-  //   doc.setFont("helvetica", "bold");
-  //   doc.text(`Discount: ${discountAmount} BDT`, 14, yOffset);
-  //   yOffset += 6;
-  //   doc.text(`VAT: ${vatAmount} BDT`, 14, yOffset);
-  //   yOffset += 6;
-  
-  //   // Calculate net payable
-  //   const netAmount = totalPrice - discountAmount + vatAmount;
-  //   doc.text(`Net Payable: ${netAmount} BDT`, 14, yOffset);
-  //   yOffset += 6;
-  
-  //   // Payment Information (Optional)
-  //   if (paymentMethod) {
-  //     doc.setFont("helvetica", "italic");
-  //     doc.text(`Payment Method: ${paymentMethod}`, 14, yOffset);
-  //   }
-  
-  //   // Add a border around the summary section
-  //   doc.setLineWidth(0.5);
-  //   doc.rect(10, startY, 190, yOffset - startY + 10); // Border around product and summary section
-  
-  //   return doc; // Return the jsPDF instance instead of saving it
-  // };
 
   const generateInvoicePDF = (invoiceData) => {
     const {
@@ -202,16 +99,7 @@ const WarehouseSale = () => {
     yOffset += 6;
   
     let totalPrice = 0;
-    // warehouseProducts.forEach((product) => {
-    //   const productTotal = product.quantity * product.price;
-    //   totalPrice += productTotal;
-      
-    //   doc.text(product.title, 14, yOffset);
-    //   doc.text(product.quantity.toString(), 90, yOffset);
-    //   doc.text(`${product.price} BDT`, 130, yOffset);
-    //   doc.text(`${productTotal} BDT`, 160, yOffset);
-    //   yOffset += 8;
-    // });
+   
     warehouseProducts.forEach((product) => {
       const productTotal = product.quantity * product.price;
       totalPrice += productTotal;
@@ -260,9 +148,6 @@ const WarehouseSale = () => {
   
     return doc; // Return the jsPDF instance instead of saving it
 };
-
-  
-
   // end invoice generation
 
   // show products
@@ -329,19 +214,29 @@ const WarehouseSale = () => {
   const calculateNetPayable = () => {
     let subtotal = 0;
     let vat = 0;
-    let discount = 0;
+    // let discount = 0;
 
     selectedProducts.forEach((product) => {
       const productTotal = parseFloat(product.price) * product.qty;
       subtotal += productTotal;
       vat += (productTotal * vatRate) / 100;
-      discount += (productTotal * discountRate) / 100;
+      // discount += (productTotal * discountRate) / 100;
     });
 
-    const finalAmount = subtotal - discount + vat;
+    // Ensure discountAmount does not exceed subtotal
+  const finalDiscount = Math.min(discountAmount, subtotal);
+  const finalAmount = subtotal - finalDiscount + vat;
+
+    // const finalAmount = subtotal - discount + vat;
+    // setTotalPrice(subtotal);
+    // setVatAmount(vat);
+    // setDiscountAmount(discount);
+    // setNetPayable(finalAmount);
+
+
     setTotalPrice(subtotal);
     setVatAmount(vat);
-    setDiscountAmount(discount);
+    setDiscountAmount(finalDiscount); // Store the actual discount applied
     setNetPayable(finalAmount);
   };
   // Handle VAT and Discount calculations
@@ -349,7 +244,7 @@ const WarehouseSale = () => {
   // Update net payable whenever total price, VAT or discount changes
   useEffect(() => {
     calculateNetPayable();
-  }, [selectedProducts, vatRate, discountRate]);
+  }, [selectedProducts, vatRate, discountAmount]);
 
   const handleSubmit = () => {
     const saleData = {
@@ -396,15 +291,6 @@ const WarehouseSale = () => {
         }
 
         alert("Sale submitted successfully!");
-
-        // Generate invoice
-        // const pdf1 = generateInvoicePDF(sale);
-        // pdf1.autoPrint();
-        // window.open(pdf1.output("bloburl"));
-
-        // const pdf2 = generateInvoicePDF(sale);
-        // pdf2.autoPrint();
-        // window.open(pdf2.output("bloburl"));
 
         // Generate both invoices
         const customerInvoice = generateInvoicePDF(sale, true); // Customer copy
@@ -531,10 +417,14 @@ const WarehouseSale = () => {
               <input
                 type="number"
                 className="w-full border border-gray-300 rounded-md p-2"
-                value={discountRate}
-                onChange={(e) => setDiscountRate(e.target.value)}
+                value={discountAmount}
+                // onChange={(e) => setDiscountRate(e.target.value)}
+                onChange={(e) => setDiscountAmount(parseFloat(e.target.value) || 0)}
               />
             </div>
+
+
+            
           </div>
 
           {/* Table Section */}
