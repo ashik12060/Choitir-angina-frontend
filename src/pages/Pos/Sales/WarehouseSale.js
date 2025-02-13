@@ -26,6 +26,7 @@ const WarehouseSale = () => {
 
   // generate invoice
 
+
   const generateInvoicePDF = (invoiceData) => {
     const {
       _id,
@@ -38,32 +39,35 @@ const WarehouseSale = () => {
       customerName,
       timestamp,
     } = invoiceData;
-
-    console.log(invoiceData);
-
+  
     const doc = new jsPDF();
-
+  
     // Header Styling
     doc.setFont("helvetica", "bold");
     doc.setFontSize(18);
     doc.text("Invoice", 14, 16);
-
+  
+    // Invoice type (Customer or Office)
+    doc.setFontSize(12);
+  
+  
+    // Rest of the header information
     doc.setFontSize(12);
     doc.text("Choityr Angina", 14, 20);
-
+  
     // Invoice ID
     doc.setFontSize(10);
     doc.setFont("helvetica", "bold");
-    doc.text(`Invoice ID: ${_id}`, 14, 24); // Positioned to the right for better alignment
-
+    doc.text(`Invoice ID: ${_id}`, 14, 24);
+  
     doc.setLineWidth(0.5);
-    doc.line(14, 28, 200, 28); // Line to separate header
-
+    doc.line(14, 28, 200, 28);
+  
     // Date
     doc.setFontSize(10);
     doc.setFont("helvetica", "normal");
     doc.text(`Date: ${new Date(timestamp).toLocaleDateString()}`, 14, 35);
-
+  
     // Customer Information Section
     doc.setFontSize(12);
     doc.text("Customer Information", 14, 45);
@@ -71,16 +75,16 @@ const WarehouseSale = () => {
     doc.text(`Customer: ${customerName}`, 14, 50);
     doc.text(`Address: ${customerAddress}`, 14, 55);
     doc.text(`Phone: ${customerPhone}`, 14, 60);
-
+  
     // Add a border around the customer info
     doc.setLineWidth(0.5);
-    doc.rect(10, 40, 190, 30); // Border around customer info
-
+    doc.rect(10, 40, 190, 30);
+  
     // Product Details Table
     const startY = 85;
     let yOffset = startY;
-    yOffset += 6; // Space between title and table header
-
+    yOffset += 6;
+  
     // Table Header
     doc.setFontSize(10);
     doc.setFont("helvetica", "bold");
@@ -88,36 +92,33 @@ const WarehouseSale = () => {
     doc.text("Quantity", 90, yOffset);
     doc.text("Price", 130, yOffset);
     doc.text("Total", 160, yOffset);
-
+  
     doc.setFont("helvetica", "normal");
     yOffset += 6;
     doc.line(14, yOffset, 200, yOffset); // Line below table header
     yOffset += 6;
-
+  
     let totalPrice = 0;
-
+  
     warehouseProducts.forEach((product) => {
       const productTotal = product.quantity * product.price;
       totalPrice += productTotal;
-
-      // Display Product ID in a separate line for clarity
+  
       doc.setFont("helvetica", "italic");
       doc.text(`ID: ${product.productId}`, 14, yOffset);
-      yOffset += 5; // Small space before title
-
-      // Reset font and display product details
+      yOffset += 5;
+  
       doc.setFont("helvetica", "normal");
       doc.text(product.title, 14, yOffset);
       doc.text(product.quantity.toString(), 90, yOffset);
       doc.text(`${product.price} BDT`, 130, yOffset);
       doc.text(`${productTotal} BDT`, 160, yOffset);
-
-      yOffset += 8; // Space before next product
+  
+      yOffset += 8;
     });
-
-    // Line after product details
+  
     doc.line(14, yOffset, 200, yOffset);
-
+  
     // Summary Section
     yOffset += 10;
     doc.setFont("helvetica", "bold");
@@ -125,24 +126,25 @@ const WarehouseSale = () => {
     yOffset += 6;
     doc.text(`VAT: ${vatAmount} BDT`, 14, yOffset);
     yOffset += 6;
-
-    // Calculate net payable
+  
     const netAmount = totalPrice - discountAmount + vatAmount;
     doc.text(`Net Payable(Due): ${netAmount} BDT`, 14, yOffset);
     yOffset += 6;
-
-    // Payment Information (Optional)
+  
     if (paymentMethod) {
       doc.setFont("helvetica", "italic");
       doc.text(`Payment Method: ${paymentMethod}`, 14, yOffset);
     }
-
+  
     // Border around the summary section
     doc.setLineWidth(0.5);
     doc.rect(10, startY, 190, yOffset - startY + 10);
-
-    return doc; // Return the jsPDF instance instead of saving it
+  
+    return doc;
   };
+  
+  
+  
   // end invoice generation
 
   // show products
@@ -196,29 +198,22 @@ const WarehouseSale = () => {
     }
   }, [amountGiven, netPayable]);
 
-  // Handle quantity change for a specific product
+
   const handleQtyChange = (productId, newQty) => {
     setSelectedProducts((prevSelected) =>
-      prevSelected.map((product) =>
-        product._id === productId ? { ...product, qty: newQty } : product
-      )
+      prevSelected.map((product) => {
+        if (product._id === productId) {
+          const maxQty = product.quantity; // Available stock
+          if (newQty > maxQty) {
+            alert(`Only ${maxQty} items are available in stock!`);
+            return { ...product, qty: maxQty }; // Set to max available
+          }
+          return { ...product, qty: Math.max(newQty, 1) }; // Prevent qty < 1
+        }
+        return product;
+      })
     );
   };
-  // const handleQtyChange = (productId, newQty) => {
-  //   setSelectedProducts((prevSelected) =>
-  //     prevSelected.map((product) => {
-  //       if (product._id === productId) {
-  //         const maxQty = product.quantity; // Available stock
-  //         if (newQty > maxQty) {
-  //           alert(`Only ${maxQty} items are available in stock!`);
-  //           return { ...product, qty: maxQty }; // Set to max available
-  //         }
-  //         return { ...product, qty: Math.max(newQty, 1) }; // Prevent qty < 1
-  //       }
-  //       return product;
-  //     })
-  //   );
-  // };
 
   // Handle VAT and Discount calculations
   const calculateNetPayable = () => {
@@ -260,67 +255,60 @@ const WarehouseSale = () => {
       warehouseProducts: selectedProducts.map((product) => ({
         productId: product._id,
         title: product.title,
-        quantity: product.qty, // Change `qty` to `quantity`
+        quantity: product.qty,
         price: product.price,
         type: product.type || "defaultType",
       })),
-
-      totalPrice, // Change `totalPrice` to `totalAmount`
+      totalPrice,
       vatAmount,
       discountAmount,
       netPayable,
       paymentMethod,
-
-      customerName, // Added customer name
-      customerPhone, // Added customer phone
-      customerAddress, // Added customer address
+      customerName,
+      customerPhone,
+      customerAddress,
     };
-
-    // Submit the sale data
+  
     axiosInstance
-      .post(
-        `${process.env.REACT_APP_API_URL}/api/warehouse-sales/create`,
-        saleData
-      )
+      .post(`${process.env.REACT_APP_API_URL}/api/warehouse-sales/create`, saleData)
       .then((response) => {
-        console.log("API Response:", response); // Debugging
-
+        console.log("API Response:", response);
+  
         if (!response.data) {
           console.error("Error: response.data is undefined");
           alert("Unexpected API response. Check console for details.");
           return;
         }
-
+  
         const sale = response.data.sale;
-
+  
         if (!sale._id) {
           console.error("Error: sale._id is missing", sale);
           alert("Sale submitted, but missing ID. Check backend response.");
           return;
         }
-
+  
         alert("Sale submitted successfully!");
-
-        // Generate both invoices
-        const customerInvoice = generateInvoicePDF(sale, true); // Customer copy
-        customerInvoice.autoPrint();
-        window.open(customerInvoice.output("bloburl"));
-
-        const officeInvoice = generateInvoicePDF(sale, false); // Office copy
-        officeInvoice.autoPrint();
-        window.open(officeInvoice.output("bloburl"));
-        // invoice
-
-        // After sale is successful, update the stock
+  
+        // Generate and Open Customer Copy
+        const customerInvoice = generateInvoicePDF(sale, true);  // Customer Copy
+        const customerBlobURL = customerInvoice.output("bloburl");
+        window.open(customerBlobURL);
+  
+        // Generate and Open Office Copy after a short delay
+        setTimeout(() => {
+          const officeInvoice = generateInvoicePDF(sale, false);  // Office Copy
+          const officeBlobURL = officeInvoice.output("bloburl");
+          window.open(officeBlobURL);
+        }, 1000); // Adding a small delay to ensure the second window opens
+  
+        // Update stock
         selectedProducts.forEach((product) => {
           axiosInstance
-            .put(
-              `${process.env.REACT_APP_API_URL}/api/warehouse-products/update`,
-              {
-                productId: product._id,
-                soldQuantity: product.qty, // Pass the quantity that was sold
-              }
-            )
+            .put(`${process.env.REACT_APP_API_URL}/api/warehouse-products/update`, {
+              productId: product._id,
+              soldQuantity: product.qty,
+            })
             .then((updateResponse) => {
               console.log("Stock updated for product", product._id);
             })
@@ -328,7 +316,7 @@ const WarehouseSale = () => {
               console.error("Error updating stock:", updateError);
             });
         });
-
+  
         // Reset fields after submission
         setSelectedProducts([]);
         setQty(1);
@@ -346,7 +334,9 @@ const WarehouseSale = () => {
         console.error("Error submitting sale:", error);
       });
   };
-
+  
+  
+  
   const handleRemoveProduct = (productId) => {
     setSelectedProducts((prevSelected) =>
       prevSelected.filter((product) => product._id !== productId)
@@ -421,18 +411,7 @@ const WarehouseSale = () => {
               />
             </div>
 
-            <div>
-              <label className="text-sm text-gray-700">Discount Rate (%)</label>
-              <input
-                type="number"
-                className="w-full border border-gray-300 rounded-md p-2"
-                value={discountAmount}
-                // onChange={(e) => setDiscountRate(e.target.value)}
-                onChange={(e) =>
-                  setDiscountAmount(parseFloat(e.target.value) || 0)
-                }
-              />
-            </div>
+            
           </div>
 
           {/* Table Section */}
@@ -521,6 +500,7 @@ const WarehouseSale = () => {
                   type="number"
                   className="w-full border border-gray-300 rounded-md p-2"
                   value={discountAmount}
+                  placeholder="add alteals zero (0)"
                   // onChange={(e) => setDiscountRate(e.target.value)}
                   onChange={(e) =>
                     setDiscountAmount(parseFloat(e.target.value) || 0)
