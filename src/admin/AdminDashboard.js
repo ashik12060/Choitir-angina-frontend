@@ -819,6 +819,7 @@ const AdminDashboard = () => {
             aria-labelledby="v-pills-warehouse-sales-tab"
             tabindex="0"
           >
+            
             <WarehouseSales />
           </div>
           <div

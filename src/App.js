@@ -129,36 +129,42 @@ function App() {
                 <Route path="/seller-login" element={<LoginUser />}></Route>
                 <Route path="/seller" element={<Seller />} />
                 <Route path="/users" element={<Users />} />
-                <Route path="/bkash-payment" element={<Bkash/>} />
-                <Route path="/dashboard" element={<Dashboard/>} />
-                <Route path="/warehouse-sale" element={<WarehouseSale/>} />
+                <Route path="/bkash-payment" element={<Bkash />} />
+                <Route path="/dashboard" element={<Dashboard />} />
+                <Route path="/warehouse-sale" element={<WarehouseSale />} />
 
-              {/* pos start */}
-              <Route path="/pos" element={<Dashboard />} />
-      <Route path="/sales" element={<Sales />} />
-      <Route path="/barcode-print" element={<BarcodePrint />} />
-      <Route path="/sales-report" element={<SalesReport />} />
-      <Route path="/sales-cancel" element={<SalesCancel />} />
-      <Route path="/customer-report" element={<CustomerReport />} />
-      <Route path="/vat-report" element={<VatReport />} />
-      <Route path="/stock-report" element={<StockReport />} />
-      <Route path="/invoice-reprint" element={<InvoiceReprint />} />
-      <Route path="/shop-receive" element={<ShopReceive />} />
-      <Route path="/supplier-return" element={<SupllierReturn />} />
-      <Route path="/employee-setup" element={<EmployeeSetup />} />
-      <Route path="/customer-setup" element={<CustomerSetup />} />
-      <Route path="/credit-collection" element={<CustomerCreditCollection />} />
-      <Route path="/user-permission" element={<UserPermission />} />
-      <Route path="/user-management" element={<UserManagement />} />
-      <Route path="/attendance" element={<Attendance />} />
-      <Route path="/counter" element={<Counter />} />
-      <Route path="/settings" element={<Settings />} />
-      <Route path="/group-setup" element={<GroupSetup />} />
-      <Route path="/brand-setup" element={<BrandSetup />} />
-      <Route path="/product-information" element={<ProductInformation />} />
-      <Route path="/supplier-setup" element={<SupplierSetup />} />
+                {/* pos start */}
+                <Route path="/pos" element={<Dashboard />} />
+                <Route path="/sales" element={<Sales />} />
+                <Route path="/barcode-print" element={<BarcodePrint />} />
+                <Route path="/sales-report" element={<SalesReport />} />
+                <Route path="/sales-cancel" element={<SalesCancel />} />
+                <Route path="/customer-report" element={<CustomerReport />} />
+                <Route path="/vat-report" element={<VatReport />} />
+                <Route path="/stock-report" element={<StockReport />} />
+                <Route path="/invoice-reprint" element={<InvoiceReprint />} />
+                <Route path="/shop-receive" element={<ShopReceive />} />
+                <Route path="/supplier-return" element={<SupllierReturn />} />
+                <Route path="/employee-setup" element={<EmployeeSetup />} />
+                <Route path="/customer-setup" element={<CustomerSetup />} />
+                <Route
+                  path="/credit-collection"
+                  element={<CustomerCreditCollection />}
+                />
+                <Route path="/user-permission" element={<UserPermission />} />
+                <Route path="/user-management" element={<UserManagement />} />
+                <Route path="/attendance" element={<Attendance />} />
+                <Route path="/counter" element={<Counter />} />
+                <Route path="/settings" element={<Settings />} />
+                <Route path="/group-setup" element={<GroupSetup />} />
+                <Route path="/brand-setup" element={<BrandSetup />} />
+                <Route
+                  path="/product-information"
+                  element={<ProductInformation />}
+                />
+                <Route path="/supplier-setup" element={<SupplierSetup />} />
 
-              {/* pos end */}
+                {/* pos end */}
 
                 <Route path="/admin-login" element={<AdminLogin />}></Route>
                 <Route path="/show-users" element={<ShowUsers />}></Route>
@@ -180,7 +186,6 @@ function App() {
                   }
                 />
 
-                
                 <Route
                   path="/login"
                   element={
@@ -192,8 +197,6 @@ function App() {
                   }
                 />
                 <Route path="/register" element={<Register />} />
-
-              
 
                 <Route path="/medicine" element={<Products />} />
                 <Route
@@ -216,7 +219,6 @@ function App() {
                     </PrivateRoute>
                   }
                 />
-
 
                 <Route
                   path="/admin/dashboard"
@@ -244,7 +246,6 @@ function App() {
                     </AdminRoute>
                   }
                 />
-
 
                 <Route
                   path="/admin/item/create"
@@ -288,9 +289,6 @@ function App() {
                     </AdminRoute>
                   }
                 />
-
-
-
 
                 <Route
                   path="/admin/gallery/create"

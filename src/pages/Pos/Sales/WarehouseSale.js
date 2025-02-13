@@ -26,10 +26,10 @@ const WarehouseSale = () => {
 
   // generate invoice
 
-
   const generateInvoicePDF = (invoiceData) => {
     const {
       _id,
+      type,
       discountAmount,
       vatAmount,
       warehouseProducts,
@@ -47,53 +47,54 @@ const WarehouseSale = () => {
     doc.setFontSize(18);
     doc.text("Invoice", 14, 16);
   
-    // Invoice type (Customer or Office)
+    // Store Name
     doc.setFontSize(12);
+    doc.text("Choityr Angina", 14, 22);
   
-  
-    // Rest of the header information
-    doc.setFontSize(12);
-    doc.text("Choityr Angina", 14, 20);
-  
-    // Invoice ID
+    // Invoice ID and Date
     doc.setFontSize(10);
-    doc.setFont("helvetica", "bold");
-    doc.text(`Invoice ID: ${_id}`, 14, 24);
+    doc.text(`Invoice ID: ${_id}`, 14, 28);
+    doc.text(`Date: ${new Date(timestamp).toLocaleDateString()}`, 150, 28);
   
     doc.setLineWidth(0.5);
-    doc.line(14, 28, 200, 28);
-  
-    // Date
-    doc.setFontSize(10);
-    doc.setFont("helvetica", "normal");
-    doc.text(`Date: ${new Date(timestamp).toLocaleDateString()}`, 14, 35);
+    doc.line(14, 32, 200, 32); // Horizontal line after header
   
     // Customer Information Section
     doc.setFontSize(12);
-    doc.text("Customer Information", 14, 45);
-    doc.setFontSize(10);
-    doc.text(`Customer: ${customerName}`, 14, 50);
-    doc.text(`Address: ${customerAddress}`, 14, 55);
-    doc.text(`Phone: ${customerPhone}`, 14, 60);
+    doc.text("Customer Information", 14, 40); // Title is outside the border
   
-    // Add a border around the customer info
+    // Draw Border AFTER the title
+    const customerBoxY = 42; // Move box down to start below title
     doc.setLineWidth(0.5);
-    doc.rect(10, 40, 190, 30);
+    doc.rect(10, customerBoxY, 190, 24); // Adjusted height to fit content
   
-    // Product Details Table
-    const startY = 85;
+    // Customer Details (inside the border)
+    doc.setFontSize(10);
+    doc.text(`Name: ${customerName}`, 14, customerBoxY + 6);
+    doc.text(`Address: ${customerAddress}`, 14, customerBoxY + 12);
+    doc.text(`Phone: ${customerPhone}`, 14, customerBoxY + 18);
+  
+    // Product Details Section with Padding
+    let startY = customerBoxY + 30; // Shift product section down to avoid overlap
     let yOffset = startY;
-    yOffset += 6;
+  
+    doc.setFontSize(12);
+    doc.text("Product Details", 14, yOffset);
+    yOffset += 10; // Added padding before the table
+  
+    // Product Details Table Border
+    doc.setLineWidth(0.5);
+    doc.rect(10, yOffset - 4, 190, 10 + warehouseProducts.length * 14 + 10); // Added padding inside border
   
     // Table Header
     doc.setFontSize(10);
     doc.setFont("helvetica", "bold");
     doc.text("Product", 14, yOffset);
-    doc.text("Quantity", 90, yOffset);
-    doc.text("Price", 130, yOffset);
-    doc.text("Total", 160, yOffset);
+    doc.text("Quantity", 80, yOffset);
+    doc.text("Price", 110, yOffset);
+    doc.text("Total", 140, yOffset);
+    doc.text("Type", 170, yOffset);
   
-    doc.setFont("helvetica", "normal");
     yOffset += 6;
     doc.line(14, yOffset, 200, yOffset); // Line below table header
     yOffset += 6;
@@ -110,17 +111,19 @@ const WarehouseSale = () => {
   
       doc.setFont("helvetica", "normal");
       doc.text(product.title, 14, yOffset);
-      doc.text(product.quantity.toString(), 90, yOffset);
-      doc.text(`${product.price} BDT`, 130, yOffset);
-      doc.text(`${productTotal} BDT`, 160, yOffset);
+      doc.text(product.quantity.toString(), 80, yOffset);
+      doc.text(`${product.price} BDT`, 110, yOffset);
+      doc.text(`${productTotal} BDT`, 140, yOffset);
+      doc.text(product.type || "-", 170, yOffset); // Ensuring type is visible
   
       yOffset += 8;
     });
   
     doc.line(14, yOffset, 200, yOffset);
   
+    yOffset += 10; // Added padding after the table
+  
     // Summary Section
-    yOffset += 10;
     doc.setFont("helvetica", "bold");
     doc.text(`Customer Given: ${discountAmount} BDT`, 14, yOffset);
     yOffset += 6;
@@ -135,10 +138,6 @@ const WarehouseSale = () => {
       doc.setFont("helvetica", "italic");
       doc.text(`Payment Method: ${paymentMethod}`, 14, yOffset);
     }
-  
-    // Border around the summary section
-    doc.setLineWidth(0.5);
-    doc.rect(10, startY, 190, yOffset - startY + 10);
   
     return doc;
   };
@@ -424,6 +423,7 @@ const WarehouseSale = () => {
                   <th className="border border-gray-300 p-2">Price</th>
                   <th className="border border-gray-300 p-2">Qty</th>
                   <th className="border border-gray-300 p-2">Available</th>
+                  <th className="border border-gray-300 p-2">Type</th>
                   <th className="border border-gray-300 p-2">Total</th>
                   <th className="border border-gray-300 p-2">Action</th>{" "}
                 </tr>
@@ -452,6 +452,9 @@ const WarehouseSale = () => {
                     </td>
                     <td className="border border-gray-300 p-2">
                       {product.quantity} {/* Show available quantity */}
+                    </td>
+                    <td className="border border-gray-300 p-2">
+                      {product.type} {/* Show available quantity */}
                     </td>
                     <td className="border border-gray-300 p-2">
                       $
