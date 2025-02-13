@@ -19,7 +19,6 @@ import { toast } from "react-toastify";
 import axiosInstance from "../pages/axiosInstance";
 import { Link } from "react-router-dom";
 
-
 const WarehouseSales = () => {
   const [warehouseSales, setWarehouseSales] = useState([]);
   const isMobile = useMediaQuery("(max-width: 768px)");
@@ -30,31 +29,27 @@ const WarehouseSales = () => {
       try {
         const response = await axiosInstance.get("/api/warehouse-sales/show");
         if (response.data && Array.isArray(response.data)) {
-          setWarehouseSales(response.data); // Set the sales data
+          setWarehouseSales(response.data);
         } else {
-          setWarehouseSales([]); // Set empty array if no sales data
+          setWarehouseSales([]);
         }
       } catch (error) {
         console.error("Error fetching warehouseSales:", error);
-        setWarehouseSales([]); // Prevent crash on error
+        setWarehouseSales([]);
       }
     };
 
     fetchWarehouseSales();
   }, []);
 
-
-
-const handleStatusChange = async (saleId, productId, newStatus) => {
+  const handleStatusChange = async (saleId, productId, newStatus) => {
     try {
       console.log("Updating status:", { saleId, productId, newStatus });
-  
+
       const response = await axiosInstance.put(`/api/warehouse-sales/update-status/${saleId}/${productId}`, {
         status: newStatus,
       });
-  
-      console.log("Response:", response);
-  
+
       if (response.status === 200) {
         setWarehouseSales((prevSales) =>
           prevSales.map((sale) => {
@@ -80,7 +75,6 @@ const handleStatusChange = async (saleId, productId, newStatus) => {
       toast.error("Failed to update status");
     }
   };
-  
 
   const getStatusBackgroundColor = (status) => {
     switch (status) {
@@ -94,34 +88,47 @@ const handleStatusChange = async (saleId, productId, newStatus) => {
     }
   };
 
+  // **Calculate Total Price & Quantity of Sold Out Products**
+  const soldOutTotals = warehouseSales.reduce(
+    (totals, sale) => {
+      sale.warehouseProducts.forEach((product) => {
+        if (product.status === "Sold Out") {
+          totals.totalPrice += product.price * product.quantity;
+          totals.totalQuantity += product.quantity;
+        }
+      });
+      return totals;
+    },
+    { totalPrice: 0, totalQuantity: 0 }
+  );
+
   return (
     <Box sx={{ width: "100%", px: 2, mt: 4 }}>
       <Typography variant="h5" sx={{ mb: 2, textAlign: "center" }}>
         Warehouse Sales
       </Typography>
+
+      {/* Total Sold Out Information */}
+      <Box sx={{ mb: 2, p: 2, border: "1px solid #ccc", borderRadius: "8px", backgroundColor: "#f9f9f9" }}>
+        <Typography variant="h6">Total Sold Out Summary</Typography>
+        <p><strong>Total Sold Out Price:</strong> ${soldOutTotals.totalPrice.toFixed(2)}</p>
+        <p><strong>Total Sold Out Quantity:</strong> {soldOutTotals.totalQuantity}</p>
+      </Box>
+
       <Box sx={{ pb: 2, display: "flex", justifyContent: "right" }}>
-                      <Button
-                        variant="contained"
-                        color="success"
-                        
-                      >
-                        <Link
-                          style={{ color: "white", textDecoration: "none" }}
-                          to="/admin/warehouse-product/create"
-                        >
-                          Add Product
-                        </Link>{" "}
-                      </Button>
-                    </Box>
+        <Button variant="contained" color="success">
+          <Link style={{ color: "white", textDecoration: "none" }} to="/admin/warehouse-product/create">
+            Add Product
+          </Link>
+        </Button>
+      </Box>
 
       <TableContainer component={Paper} sx={{ overflowX: "auto" }}>
         <Table>
           <TableHead>
             <TableRow>
-              {/* <TableCell><b>Sale ID</b></TableCell> */}
               {!isMobile && <TableCell><b>Customer</b></TableCell>}
               <TableCell><b>Total Price</b></TableCell>
-              {/* {!isMobile && <TableCell><b>Status</b></TableCell>} */}
               <TableCell><b>Product</b></TableCell>
               <TableCell><b>Price</b></TableCell>
               <TableCell><b>Quantity</b></TableCell>
@@ -133,7 +140,6 @@ const handleStatusChange = async (saleId, productId, newStatus) => {
             {warehouseSales.map((sale) =>
               sale.warehouseProducts.map((product) => (
                 <TableRow key={product.productId._id}>
-                  {/* <TableCell sx={{ minWidth: "100px" }}>{sale._id}</TableCell> */}
                   {!isMobile && (
                     <TableCell sx={{ minWidth: "120px" }}>
                       {sale.customerName}
@@ -142,29 +148,13 @@ const handleStatusChange = async (saleId, productId, newStatus) => {
                   <TableCell sx={{ minWidth: "100px" }}>
                     ${sale.totalPrice}
                   </TableCell>
-                  {/* {!isMobile && (
-                    <TableCell sx={{ minWidth: "120px" }}>{sale.status}</TableCell>
-                  )} */}
                   <TableCell sx={{ minWidth: "150px" }}>{product.title}</TableCell>
                   <TableCell sx={{ minWidth: "100px" }}>${product.price}</TableCell>
                   <TableCell sx={{ minWidth: "100px" }}>{product.quantity}</TableCell>
                   {!isMobile && (
                     <TableCell sx={{ minWidth: "100px" }}>{product.type}</TableCell>
                   )}
-                  {/* <TableCell sx={{ minWidth: "150px" }}>
-                    <Select
-                      value={product.status || "Pending"}
-                      onChange={(e) =>
-                        handleStatusChange(sale._id, product.productId?._id || product.productId, e.target.value)
-
-                      }
-                      sx={{ width: 130 }}
-                    >
-                      <MenuItem value="Pending">Pending</MenuItem>
-                      <MenuItem value="Sold Out">Sold Out</MenuItem>
-                      <MenuItem value="Canceled">Canceled</MenuItem>
-                    </Select>
-                  </TableCell> */}
+                  
                   <TableCell sx={{ minWidth: "150px" }}>
                     <Select
                       value={product.status || "Pending"}

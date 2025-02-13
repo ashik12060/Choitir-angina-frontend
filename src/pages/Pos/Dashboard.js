@@ -38,6 +38,7 @@ const Dashboard = () => {
       title: 'Sales and Reports',
       items: [
         { name: 'Sales ', path: '/sales' },
+        { name: 'Warehouse Sales ', path: '/warehouse-sale' },
         { name: 'Barcode Print  ', path: '/barcode-print' },
         { name: 'Sales Cancel', path: '/sales-cancel' },
         { name: 'Sales Report', path: '/sales-report' },
