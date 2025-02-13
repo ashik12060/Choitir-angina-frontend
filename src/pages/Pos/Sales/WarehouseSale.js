@@ -14,7 +14,7 @@ const WarehouseSale = () => {
   const [discountRate, setDiscountRate] = useState(0); // Discount rate in percentage
   const [vatAmount, setVatAmount] = useState(0.0); // VAT amount
   const [discountAmount, setDiscountAmount] = useState(0.0); // Discount amount
-  
+
   const [paymentMethod, setPaymentMethod] = useState(""); // New state for payment method
 
   const [amountGiven, setAmountGiven] = useState(0);
@@ -38,18 +38,16 @@ const WarehouseSale = () => {
       customerName,
       timestamp,
     } = invoiceData;
-  
+
     console.log(invoiceData);
-  
+
     const doc = new jsPDF();
-  
+
     // Header Styling
     doc.setFont("helvetica", "bold");
     doc.setFontSize(18);
     doc.text("Invoice", 14, 16);
 
-    
-    
     doc.setFontSize(12);
     doc.text("Choityr Angina", 14, 20);
 
@@ -58,16 +56,14 @@ const WarehouseSale = () => {
     doc.setFont("helvetica", "bold");
     doc.text(`Invoice ID: ${_id}`, 14, 24); // Positioned to the right for better alignment
 
-    
-
     doc.setLineWidth(0.5);
     doc.line(14, 28, 200, 28); // Line to separate header
-  
+
     // Date
     doc.setFontSize(10);
     doc.setFont("helvetica", "normal");
     doc.text(`Date: ${new Date(timestamp).toLocaleDateString()}`, 14, 35);
-    
+
     // Customer Information Section
     doc.setFontSize(12);
     doc.text("Customer Information", 14, 45);
@@ -75,16 +71,16 @@ const WarehouseSale = () => {
     doc.text(`Customer: ${customerName}`, 14, 50);
     doc.text(`Address: ${customerAddress}`, 14, 55);
     doc.text(`Phone: ${customerPhone}`, 14, 60);
-  
+
     // Add a border around the customer info
     doc.setLineWidth(0.5);
     doc.rect(10, 40, 190, 30); // Border around customer info
-  
+
     // Product Details Table
     const startY = 85;
     let yOffset = startY;
     yOffset += 6; // Space between title and table header
-  
+
     // Table Header
     doc.setFontSize(10);
     doc.setFont("helvetica", "bold");
@@ -92,62 +88,61 @@ const WarehouseSale = () => {
     doc.text("Quantity", 90, yOffset);
     doc.text("Price", 130, yOffset);
     doc.text("Total", 160, yOffset);
-    
+
     doc.setFont("helvetica", "normal");
     yOffset += 6;
     doc.line(14, yOffset, 200, yOffset); // Line below table header
     yOffset += 6;
-  
+
     let totalPrice = 0;
-   
+
     warehouseProducts.forEach((product) => {
       const productTotal = product.quantity * product.price;
       totalPrice += productTotal;
-    
+
       // Display Product ID in a separate line for clarity
       doc.setFont("helvetica", "italic");
       doc.text(`ID: ${product.productId}`, 14, yOffset);
       yOffset += 5; // Small space before title
-    
+
       // Reset font and display product details
       doc.setFont("helvetica", "normal");
       doc.text(product.title, 14, yOffset);
       doc.text(product.quantity.toString(), 90, yOffset);
       doc.text(`${product.price} BDT`, 130, yOffset);
       doc.text(`${productTotal} BDT`, 160, yOffset);
-      
+
       yOffset += 8; // Space before next product
     });
-    
-  
+
     // Line after product details
     doc.line(14, yOffset, 200, yOffset);
-    
+
     // Summary Section
     yOffset += 10;
     doc.setFont("helvetica", "bold");
-    doc.text(`Discount: ${discountAmount} BDT`, 14, yOffset);
+    doc.text(`Customer Given: ${discountAmount} BDT`, 14, yOffset);
     yOffset += 6;
     doc.text(`VAT: ${vatAmount} BDT`, 14, yOffset);
     yOffset += 6;
-  
+
     // Calculate net payable
     const netAmount = totalPrice - discountAmount + vatAmount;
-    doc.text(`Net Payable: ${netAmount} BDT`, 14, yOffset);
+    doc.text(`Net Payable(Due): ${netAmount} BDT`, 14, yOffset);
     yOffset += 6;
-  
+
     // Payment Information (Optional)
     if (paymentMethod) {
       doc.setFont("helvetica", "italic");
       doc.text(`Payment Method: ${paymentMethod}`, 14, yOffset);
     }
-  
+
     // Border around the summary section
     doc.setLineWidth(0.5);
     doc.rect(10, startY, 190, yOffset - startY + 10);
-  
+
     return doc; // Return the jsPDF instance instead of saving it
-};
+  };
   // end invoice generation
 
   // show products
@@ -209,6 +204,21 @@ const WarehouseSale = () => {
       )
     );
   };
+  // const handleQtyChange = (productId, newQty) => {
+  //   setSelectedProducts((prevSelected) =>
+  //     prevSelected.map((product) => {
+  //       if (product._id === productId) {
+  //         const maxQty = product.quantity; // Available stock
+  //         if (newQty > maxQty) {
+  //           alert(`Only ${maxQty} items are available in stock!`);
+  //           return { ...product, qty: maxQty }; // Set to max available
+  //         }
+  //         return { ...product, qty: Math.max(newQty, 1) }; // Prevent qty < 1
+  //       }
+  //       return product;
+  //     })
+  //   );
+  // };
 
   // Handle VAT and Discount calculations
   const calculateNetPayable = () => {
@@ -224,15 +234,14 @@ const WarehouseSale = () => {
     });
 
     // Ensure discountAmount does not exceed subtotal
-  const finalDiscount = Math.min(discountAmount, subtotal);
-  const finalAmount = subtotal - finalDiscount + vat;
+    const finalDiscount = Math.min(discountAmount, subtotal);
+    const finalAmount = subtotal - finalDiscount + vat;
 
     // const finalAmount = subtotal - discount + vat;
     // setTotalPrice(subtotal);
     // setVatAmount(vat);
     // setDiscountAmount(discount);
     // setNetPayable(finalAmount);
-
 
     setTotalPrice(subtotal);
     setVatAmount(vat);
@@ -419,12 +428,11 @@ const WarehouseSale = () => {
                 className="w-full border border-gray-300 rounded-md p-2"
                 value={discountAmount}
                 // onChange={(e) => setDiscountRate(e.target.value)}
-                onChange={(e) => setDiscountAmount(parseFloat(e.target.value) || 0)}
+                onChange={(e) =>
+                  setDiscountAmount(parseFloat(e.target.value) || 0)
+                }
               />
             </div>
-
-
-            
           </div>
 
           {/* Table Section */}
@@ -507,27 +515,18 @@ const WarehouseSale = () => {
                 />
               </div>
 
-              {/* <div className="mt-2 flex items-center">
-                <label className="text-sm py-2 w-1/5 text-gray-700">
-                  Discount
-                </label>
+              <div>
+                <label className="text-sm text-gray-700">Customer Given</label>
                 <input
-                  type="text"
-                  value={`-৳ ${discountAmount.toFixed(2)}`}
-                  readOnly
-                  className="w-2/3 border border-gray-300 rounded-md p-2"
+                  type="number"
+                  className="w-full border border-gray-300 rounded-md p-2"
+                  value={discountAmount}
+                  // onChange={(e) => setDiscountRate(e.target.value)}
+                  onChange={(e) =>
+                    setDiscountAmount(parseFloat(e.target.value) || 0)
+                  }
                 />
               </div>
-
-              <div className="mt-2 flex items-center">
-                <label className="text-sm py-2 w-1/5 text-gray-700">VAT</label>
-                <input
-                  type="text"
-                  value={`+৳ ${vatAmount.toFixed(2)}`}
-                  readOnly
-                  className="w-2/3 border border-gray-300 rounded-md p-2"
-                />
-              </div> */}
 
               {/* Net Payable input */}
               <div className="mt-2 flex items-center">
@@ -541,35 +540,6 @@ const WarehouseSale = () => {
                   className="w-2/3 border border-gray-300 font-bold rounded-md p-2"
                 />
               </div>
-
-              {/* Amount Given */}
-              {/* <div className="mt-2 flex items-center">
-                <label className="text-sm py-2 w-1/3 text-gray-700">
-                  Amount Given
-                </label>
-                <input
-                  type="number"
-                  value={amountGiven}
-                  onChange={handleAmountGivenChange}
-                  // onChange={(e) =>
-                  //   setAmountGiven(parseFloat(e.target.value) || 0.0)
-                  // }
-                  className="w-2/3 border border-gray-300 rounded-md p-2"
-                />
-              </div> */}
-
-              {/* Change to Return */}
-              {/* <div className="mt-2 flex items-center">
-                <label className="text-sm py-2 w-1/3 text-gray-700 font-bold">
-                  Change to Return
-                </label>
-                <input
-                  type="text"
-                  value={`৳ ${changeReturned.toFixed(2)}`}
-                  readOnly
-                  className="w-2/3 border border-gray-300 rounded-md p-2"
-                />
-              </div> */}
             </div>
 
             <div className="grid grid-cols-3 gap-1 mb-1">
