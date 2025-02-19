@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import {
   Box,
@@ -46,9 +45,12 @@ const WarehouseSales = () => {
     try {
       console.log("Updating status:", { saleId, productId, newStatus });
 
-      const response = await axiosInstance.put(`/api/warehouse-sales/update-status/${saleId}/${productId}`, {
-        status: newStatus,
-      });
+      const response = await axiosInstance.put(
+        `/api/warehouse-sales/update-status/${saleId}/${productId}`,
+        {
+          status: newStatus,
+        }
+      );
 
       if (response.status === 200) {
         setWarehouseSales((prevSales) =>
@@ -71,7 +73,10 @@ const WarehouseSales = () => {
         toast.error("Failed to update status");
       }
     } catch (error) {
-      console.error("Error updating status:", error.response ? error.response.data : error);
+      console.error(
+        "Error updating status:",
+        error.response ? error.response.data : error
+      );
       toast.error("Failed to update status");
     }
   };
@@ -109,15 +114,32 @@ const WarehouseSales = () => {
       </Typography>
 
       {/* Total Sold Out Information */}
-      <Box sx={{ mb: 2, p: 2, border: "1px solid #ccc", borderRadius: "8px", backgroundColor: "#f9f9f9" }}>
+      <Box
+        sx={{
+          mb: 2,
+          p: 2,
+          border: "1px solid #ccc",
+          borderRadius: "8px",
+          backgroundColor: "#f9f9f9",
+        }}
+      >
         <Typography variant="h6">Total Sold Out Summary</Typography>
-        <p><strong>Total Sold Out Price:</strong> ${soldOutTotals.totalPrice.toFixed(2)}</p>
-        <p><strong>Total Sold Out Quantity:</strong> {soldOutTotals.totalQuantity}</p>
+        <p>
+          <strong>Total Sold Out Price:</strong> $
+          {soldOutTotals.totalPrice.toFixed(2)}
+        </p>
+        <p>
+          <strong>Total Sold Out Quantity:</strong>{" "}
+          {soldOutTotals.totalQuantity}
+        </p>
       </Box>
 
       <Box sx={{ pb: 2, display: "flex", justifyContent: "right" }}>
         <Button variant="contained" color="success">
-          <Link style={{ color: "white", textDecoration: "none" }} to="/admin/warehouse-product/create">
+          <Link
+            style={{ color: "white", textDecoration: "none" }}
+            to="/admin/warehouse-product/create"
+          >
             Add Product
           </Link>
         </Button>
@@ -125,7 +147,7 @@ const WarehouseSales = () => {
 
       <TableContainer component={Paper} sx={{ overflowX: "auto" }}>
         <Table>
-          <TableHead>
+          {/* <TableHead>
             <TableRow>
               {!isMobile && <TableCell><b>Customer</b></TableCell>}
               <TableCell><b>Total Price</b></TableCell>
@@ -135,8 +157,8 @@ const WarehouseSales = () => {
               {!isMobile && <TableCell><b>Type</b></TableCell>}
               <TableCell><b>Update Status</b></TableCell>
             </TableRow>
-          </TableHead>
-          <TableBody>
+          </TableHead> */}
+          {/* <TableBody>
             {warehouseSales.map((sale) =>
               sale.warehouseProducts.map((product) => (
                 <TableRow key={product.productId._id}>
@@ -177,7 +199,94 @@ const WarehouseSales = () => {
                 </TableRow>
               ))
             )}
-          </TableBody>
+          </TableBody> */}
+
+          <TableHead>
+            <TableRow>
+              <TableCell>
+                <b>S/N</b>
+              </TableCell>{" "}
+              {/* Serial Number Column */}
+              {!isMobile && (
+                <TableCell>
+                  <b>Customer</b>
+                </TableCell>
+              )}
+              <TableCell>
+                <b>Total Price</b>
+              </TableCell>
+              <TableCell>
+                <b>Product</b>
+              </TableCell>
+              <TableCell>
+                <b>Price</b>
+              </TableCell>
+              <TableCell>
+                <b>Quantity</b>
+              </TableCell>
+              {!isMobile && (
+                <TableCell>
+                  <b>Type</b>
+                </TableCell>
+              )}
+              <TableCell>
+                <b>Update Status</b>
+              </TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+  {(() => {
+    let serialNumber = 1; // Initialize serial number
+    return warehouseSales.flatMap((sale) =>
+      sale.warehouseProducts.map((product) => (
+        <TableRow key={`${sale._id}-${product.productId._id}`}>
+          {/* Continuous Serial Number */}
+          <TableCell sx={{ minWidth: "50px" }}>{serialNumber++}</TableCell>
+
+          {!isMobile && (
+            <TableCell sx={{ minWidth: "120px" }}>{sale.customerName}</TableCell>
+          )}
+          <TableCell sx={{ minWidth: "100px" }}>${sale.totalPrice}</TableCell>
+          <TableCell sx={{ minWidth: "150px" }}>{product.title}</TableCell>
+          <TableCell sx={{ minWidth: "100px" }}>${product.price}</TableCell>
+          <TableCell sx={{ minWidth: "100px" }}>{product.quantity}</TableCell>
+          {!isMobile && (
+            <TableCell sx={{ minWidth: "100px" }}>{product.type}</TableCell>
+          )}
+          
+          <TableCell sx={{ minWidth: "150px" }}>
+            <Select
+              value={product.status || "Pending"}
+              onChange={(e) =>
+                handleStatusChange(
+                  sale._id,
+                  product.productId?._id || product.productId,
+                  e.target.value
+                )
+              }
+              sx={{
+                width: 130,
+                backgroundColor: getStatusBackgroundColor(product.status),
+              }}
+            >
+              <MenuItem value="Pending" sx={{ backgroundColor: getStatusBackgroundColor("Pending") }}>
+                Pending
+              </MenuItem>
+              <MenuItem value="Sold Out" sx={{ backgroundColor: getStatusBackgroundColor("Sold Out") }}>
+                Sold Out
+              </MenuItem>
+              <MenuItem value="Canceled" sx={{ backgroundColor: getStatusBackgroundColor("Canceled") }}>
+                Canceled
+              </MenuItem>
+            </Select>
+          </TableCell>
+        </TableRow>
+      ))
+    );
+  })()}
+</TableBody>
+
+          
         </Table>
       </TableContainer>
     </Box>
