@@ -257,6 +257,15 @@ const SinglePro = () => {
               <h2 className="text-2xl font-bold text-gray-800">
                 {product.title}
               </h2>
+              <ul>
+                {product.variants.map((variant, index) => (
+                  <li key={index} className="text-lg">
+                    <span className="font-bold">Quantity available:</span>{" "}
+                    {variant.quantity}
+                  </li>
+                ))}
+              </ul>
+              
               <div className="mt-4">
                 <p className="text-xl  font-semibold text-black">
                   ৳{product.price}
