@@ -55,12 +55,10 @@ const validationSchema = yup.object({
           .number("Add quantity")
           .min(1, "Quantity must be at least 1")
           .required("Quantity is required"),
-          productLength: yup
+        productLength: yup
           .number("Add length")
           .min(1, "Length must be at least 1")
           .required("Length is required"),
-
-          
       })
     )
     .min(1, "At least one variant is required")
@@ -79,8 +77,10 @@ const CreateProduct = () => {
   const [filteredSubcategories, setFilteredSubcategories] = useState([]); // State for filtered subcategories
   const [sizes, setSizes] = useState([]);
   const [variants, setVariants] = useState([
-    { size: "", color: "", quantity: 0,productLength: 0 }, //variant added
+    { size: "", color: "", quantity: 0, productLength: 0 }, //variant added
   ]);
+
+  const [subBarcodeImages, setSubBarcodeImages] = useState([]);
 
   const categoriesList = ["All", "Top Brands", "New Arrival", "Unstitched"];
 
@@ -99,21 +99,29 @@ const CreateProduct = () => {
       description: "",
 
       price: "",
-      
+
       brand: "",
       supplier: "",
-     
+
       categories: [],
-      variants: [{ size: "", color: "", quantity: 0,productLength: 0 }],
+      variants: [
+        { size: "", color: "", quantity: 0, productLength: 0, subBarcode: "", subBarcodeSvg: "" },
+      ],
       barcode: "",
       subcategory: "", // Add subcategory to form values
       images: [],
     },
     validationSchema: validationSchema,
+    // onSubmit: async (values, actions) => {
+    //   await createNewProduct(values);
+    //   actions.resetForm();
+    // },
+
     onSubmit: async (values, actions) => {
+      generateSubBarcodeImages(); // 🆕 Add this line
       await createNewProduct(values);
       actions.resetForm();
-    },
+    }
   });
 
   // Add a new size to the list
@@ -193,19 +201,29 @@ const CreateProduct = () => {
     setFieldValue("variants", variants);
   }, [variants, setFieldValue]);
 
-  const handleVariantChange = (index, field, value) => {
-    const updatedVariants = [...variants];
-    updatedVariants[index][field] = value;
-    setVariants(updatedVariants);
-  };
-
   const addVariant = () => {
-    setVariants([...variants, { size: "", color: "", quantity: 0, productLength: 0 }]);
+    const updatedVariants = [...values.variants, variants];
+    generateSubBarcodes(barcode, updatedVariants);
   };
 
   const removeVariant = (index) => {
-    const updatedVariants = variants.filter((_, i) => i !== index);
-    setVariants(updatedVariants);
+    const updated = [...values.variants];
+    updated.splice(index, 1);
+    generateSubBarcodes(barcode, updated);
+  };
+
+  const handleVariantChange = (index, field, value) => {
+    const updated = [...values.variants];
+    updated[index][field] = value;
+    generateSubBarcodes(barcode, updated);
+  };
+
+  const generateSubBarcodes = (main, variants) => {
+    const updated = variants.map((variant, index) => ({
+      ...variant,
+      subBarcode: main ? `${main}${String.fromCharCode(97 + index)}` : "",
+    }));
+    setFieldValue("variants", updated);
   };
 
   // new product add
@@ -232,18 +250,6 @@ const CreateProduct = () => {
     }
   };
 
-  // const generateBarcode = () => {
-  //   const generatedBarcode = `BAR${Date.now()}`;
-  //   setFieldValue("barcode", generatedBarcode);
-  //   toast.success("Barcode generated");
-  // };
-
-  // barcode start
-  // const generateBarcode = () => {
-  //   const generatedBarcode = `BAR${Date.now()}`;
-  //   setFieldValue("barcode", generatedBarcode); // Set the barcode in Formik
-  //   toast.success("Barcode generated");
-  // };
   const generateBarcode = () => {
     if (barcode) {
       // Generate barcode using jsbarcode
@@ -261,15 +267,14 @@ const CreateProduct = () => {
   };
 
   // const handleBarcodeChange = (e) => {
-  //   const newBarcode = e.target.value;
-  //   setBarcode(newBarcode); // Set custom barcode value
-  //   setFieldValue("barcode", newBarcode); // Sync with Formik state
+  //   const value = e.target.value;
+  //   setBarcode(value);
+  //   setFieldValue("barcode", value);
   // };
-
   const handleBarcodeChange = (e) => {
-    const value = e.target.value;
-    setBarcode(value);
-    setFieldValue("barcode", value); // Update Formik value
+    const mainBarcode = e.target.value;
+    setBarcode(mainBarcode);
+    generateSubBarcodes(mainBarcode, values.variants);
   };
 
   // barcode end
@@ -311,6 +316,50 @@ const CreateProduct = () => {
     setFieldValue("images", validImages);
     handleSubmit();
   };
+
+  // const generateSubBarcodeImages = () => {
+  //   const container = document.createElement("div");
+  //   const updatedVariants = values.variants.map((variant, index) => {
+  //     const subBarcode = variant.subBarcode;
+  //     if (!subBarcode) return variant;
+  
+  //     const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+  //     JsBarcode(svg, subBarcode, {
+  //       format: "CODE128",
+  //       displayValue: true,
+  //       fontSize: 14,
+  //       height: 50,
+  //     });
+  
+  //     container.appendChild(svg);
+  //     return {
+  //       ...variant,
+  //       subBarcodeSvg: svg.outerHTML, // Save SVG as string
+  //     };
+  //   });
+  
+  //   setFieldValue("variants", updatedVariants);
+  // };
+  
+  const generateSubBarcodeImages = () => {
+    const container = document.createElement("div");
+    const updatedVariants = values.variants.map((variant, index) => {
+      const subBarcode = variant.subBarcode;
+      if (!subBarcode) return variant;
+
+      const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+      JsBarcode(svg, subBarcode, { format: "CODE128", displayValue: true, fontSize: 14, height: 50 });
+      container.appendChild(svg);
+      
+      return {
+        ...variant,
+        subBarcodeSvg: svg.outerHTML, // Save SVG as string
+      };
+    });
+
+    setFieldValue("variants", updatedVariants);
+  };
+  
 
   return (
     <div ref={observedElementRef}>
@@ -373,8 +422,6 @@ const CreateProduct = () => {
               helperText={touched.description && errors.description}
             />
 
-            
-
             <TextField
               sx={{ mb: 3 }}
               fullWidth
@@ -388,19 +435,6 @@ const CreateProduct = () => {
               error={touched.price && Boolean(errors.price)}
               helperText={touched.price && errors.price}
             />
-            {/* <TextField
-              sx={{ mb: 3 }}
-              fullWidth
-              id="quantity"
-              label="Quantity"
-              name="quantity"
-              type="number"
-              value={values.quantity}
-              onChange={handleChange}
-              onBlur={handleBlur}
-              error={touched.quantity && Boolean(errors.quantity)}
-              helperText={touched.quantity && errors.quantity}
-            /> */}
 
             {/* Brand selection */}
 
@@ -444,8 +478,6 @@ const CreateProduct = () => {
                 </MenuItem>
               ))}
             </TextField>
-
-           
 
             <TextField
               sx={{ mb: 3 }}
@@ -493,8 +525,6 @@ const CreateProduct = () => {
                 </MenuItem>
               ))}
             </Select>
-
-           
 
             <Box sx={{ mb: 3 }}>
               <Typography variant="h6">Variants</Typography>
@@ -562,14 +592,18 @@ const CreateProduct = () => {
                     }
                     sx={{ mb: 2 }}
                   />
-                  <TextField 
+                  <TextField
                     fullWidth
                     label={`Length ${index + 1}`}
                     name={`variants[${index}].productLength`}
                     type="number"
                     value={variant.productLength}
                     onChange={(e) =>
-                      handleVariantChange(index, "productLength", e.target.value)
+                      handleVariantChange(
+                        index,
+                        "productLength",
+                        e.target.value
+                      )
                     }
                     onBlur={handleBlur}
                     error={
@@ -582,6 +616,18 @@ const CreateProduct = () => {
                     }
                     sx={{ mb: 2 }}
                   />
+
+                  {/* new added sub barcode */}
+                  <TextField
+                    fullWidth
+                    label={`Sub Barcode ${index + 1}`}
+                    value={variant.subBarcode || ""}
+                    InputProps={{
+                      readOnly: true,
+                    }}
+                    sx={{ mb: 2 }}
+                  />
+
                   <Button
                     onClick={() => removeVariant(index)}
                     color="error"
@@ -596,42 +642,6 @@ const CreateProduct = () => {
                 Add Variant
               </Button>
             </Box>
-
-            {/* new variant end */}
-
-            {/* barcode starts */}
-            {/* <TextField
-              sx={{ mb: 3 }}
-              fullWidth
-              id="barcode"
-              label="Barcode"
-              name="barcode"
-              value={values.barcode}
-              onChange={handleChange}
-              onBlur={handleBlur}
-              error={touched.barcode && Boolean(errors.barcode)}
-              helperText={touched.barcode && errors.barcode}
-            />
-            <Button variant="outlined" onClick={generateBarcode} sx={{ mb: 3 }}>
-              Generate Barcode
-            </Button> */}
-
-            {/* Barcode Section */}
-            {/* <TextField
-              sx={{ mb: 3 }}
-              fullWidth
-              id="barcode"
-              label="Barcode"
-              name="barcode"
-              value={barcode} // Display barcode state
-              onChange={handleBarcodeChange} // Allow manual barcode entry
-              onBlur={handleBlur}
-              error={touched.barcode && Boolean(errors.barcode)}
-              helperText={touched.barcode && errors.barcode}
-            />
-            <Button variant="outlined" onClick={generateBarcode} sx={{ mb: 3 }}>
-              Generate Barcode
-            </Button> */}
 
             <div>
               <TextField
@@ -689,32 +699,6 @@ const CreateProduct = () => {
                   }
                 />
                 <Box border="2px dashed blue" sx={{ p: 1, mb: 3 }}>
-                  {/* <Dropzone
-                    acceptedFiles=".jpg,.jpeg,.png"
-                    multiple={false}
-                    onDrop={(acceptedFiles) => handleImageDrop(index, acceptedFiles)}
-                  >
-                    {({ getRootProps, getInputProps, isDragActive }) => (
-                      <Box
-                        {...getRootProps()}
-                        p="1rem"
-                        sx={{
-                          "&:hover": { cursor: "pointer" },
-                          bgColor: isDragActive ? "#cceffc" : "#fafafa",
-                        }}
-                      >
-                        <input {...getInputProps()} />
-                        {isDragActive ? (
-                          <Typography>Drop the file here</Typography>
-                        ) : field.image ? (
-                          <img style={{ maxWidth: "100px" }} src={field.image} alt="Uploaded" />
-                        ) : (
-                          <Typography>Drag and drop here or click to upload</Typography>
-                        )}
-                      </Box>
-                    )}
-                  </Dropzone> */}
-
                   <Dropzone
                     acceptedFiles=".jpg,.jpeg,.png"
                     multiple={false}

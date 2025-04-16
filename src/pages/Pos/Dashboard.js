@@ -40,6 +40,7 @@ const Dashboard = () => {
         { name: 'Sales ', path: '/sales' },
         { name: 'Warehouse Sales ', path: '/warehouse-sale' },
         { name: 'Barcode Print  ', path: '/barcode-print' },
+        { name: 'Sub Barcode Print  ', path: '/sub-barcode-print' },
         { name: 'Sales Cancel', path: '/sales-cancel' },
         { name: 'Sales Report', path: '/sales-report' },
         { name: 'Customer Report  ', path: '/customer-report' },
