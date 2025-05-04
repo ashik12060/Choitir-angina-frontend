@@ -38,6 +38,9 @@ const SinglePro = () => {
   const navigate = useNavigate();
   const { id } = useParams();
 
+
+
+
   const displaySingleProduct = async () => {
     setLoading(true);
     try {
@@ -119,7 +122,7 @@ const SinglePro = () => {
   // console.log(productLength); // Outputs: 10
 
   const handleBuyNow = () => {
-    navigate("/checkout");
+    navigate("/cart");
   };
 
   const handleImageClick = (color, imageUrl) => {
@@ -144,6 +147,10 @@ const SinglePro = () => {
     setZoomStyle({});
   };
   
+  if (!product) {
+    return <div>Loading...</div>;  // You can show a loading state or a fallback message
+  }
+
   return (
     <div className="bg-white min-h-screen">
       <div className="container mx-auto py-8">
@@ -151,45 +158,6 @@ const SinglePro = () => {
           <Loader />
         ) : (
           <div className="flex flex-col lg:flex-row bg-gray-50 p-6 shadow-md rounded-md">
-            {/* Product Images */}
-            {/* <div className="lg:w-1/3 p-4"> */}
-            {/* Main Image */}
-            {/* <div className="relative">
-                <img
-                  src={mainImage}
-                  alt={product.title}
-                  className="w-full h-96 object-cover rounded-md"
-                />
-              </div> */}
-
-            {/* Thumbnails */}
-            {/* {product.images && product.images.length > 1 && (
-                <div className="flex mt-4 space-x-2 overflow-x-auto">
-                  {product.images.map((image, index) => {
-                    const color = product.variants.find(
-                      (variant) => variant.image === image.url
-                    )?.color;
-                    return (
-                      <div key={index} className="text-center">
-                        <img
-                          src={image.url}
-                          alt={`Thumbnail ${index + 1}`}
-                          className={`w-16 h-16 object-cover rounded-md cursor-pointer border ${
-                            mainImage === image.url
-                              ? "border-blue-500"
-                              : "border-gray-300"
-                          }`}
-                          onClick={() => handleImageClick(color, image.url)}
-                        />
-                        <p className="text-sm mt-1 text-gray-600">
-                          Color: {img.color || "N/A"}
-                        </p>
-                      </div>
-                    );
-                  })}
-                </div>
-              )} */}
-
             <div className="lg:w-1/3 p-4">
               {product.images && product.images.length > 0 ? (
                 <div className="relative">
@@ -345,14 +313,20 @@ const SinglePro = () => {
                 <button
                   className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition"
                   onClick={addToCart}
-                  disabled={product.quantity <= 0}
+                  // disabled={product.quantity <= 0}
+                  disabled={product.variants.some((variant) => variant.quantity <= 0)}
+
+
                 >
                   Add to Cart
                 </button>
                 <button
                   className="ml-4 bg-yellow-500 text-white px-4 py-2 rounded-md hover:bg-yellow-600 transition"
                   onClick={handleBuyNow}
-                  disabled={product.quantity <= 0}
+                  // disabled={product.quantity <= 0}
+                  disabled={product.variants.some((variant) => variant.quantity <= 0)}
+
+
                 >
                   Buy Now
                 </button>
