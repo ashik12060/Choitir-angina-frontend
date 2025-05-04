@@ -223,12 +223,7 @@ console.log(cart)
             </div>
           </form>
 
-          {/* <button
-            onClick={handlePlaceOrder}
-            className="px-5 py-2 rounded bg-color border-0 text-white fw-bold mt-3"
-          >
-            Place Order
-          </button> */}
+      
         </div>
 
         {/* Right Section */}
