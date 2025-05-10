@@ -146,7 +146,7 @@ const SinglePro = () => {
   const resetZoom = () => {
     setZoomStyle({});
   };
-  
+
   if (!product) {
     return <div>Loading...</div>;  // You can show a loading state or a fallback message
   }
@@ -170,22 +170,22 @@ const SinglePro = () => {
                     />
                   </div> */}
                   <div
-            className="border rounded-md mb-4 overflow-hidden group relative"
-            onMouseMove={handleMouseMove}
-            onMouseLeave={resetZoom}
-          >
-            <img
-              src={mainImage} // Show the selected image
-              alt={product.title}
-              className="w-full h-96 object-cover rounded-md transition-transform duration-300"
-              style={{
-                ...zoomStyle,
-                transform: zoomStyle.transformOrigin
-                  ? "scale(2)" // Adjust the zoom level as needed
-                  : "scale(1)",
-              }}
-            />
-          </div>
+                    className="border rounded-md mb-4 overflow-hidden group relative"
+                    onMouseMove={handleMouseMove}
+                    onMouseLeave={resetZoom}
+                  >
+                    <img
+                      src={mainImage} // Show the selected image
+                      alt={product.title}
+                      className="w-full h-96 object-cover rounded-md transition-transform duration-300"
+                      style={{
+                        ...zoomStyle,
+                        transform: zoomStyle.transformOrigin
+                          ? "scale(2)" // Adjust the zoom level as needed
+                          : "scale(1)",
+                      }}
+                    />
+                  </div>
 
                   <div className="mt-4 text-center">
                     <p className="text-sm font-semibold text-gray-700">
@@ -198,13 +198,12 @@ const SinglePro = () => {
                       <div key={index} className="text-center">
                         <img
                           src={img.url}
-                          className={`w-16 h-16 object-cover rounded-md border cursor-pointer hover:shadow-lg transition ${
-                            mainImage === img.url ? "border-blue-500" : ""
-                          }`}
+                          className={`w-16 h-16 object-cover rounded-md border cursor-pointer hover:shadow-lg transition ${mainImage === img.url ? "border-blue-500" : ""
+                            }`}
                           alt={`Thumbnail ${index + 1}`}
                           onClick={() => handleImageClick(img.color, img.url)} // Update selected image and color
                         />
-                       
+
                       </div>
                     ))}
                   </div>
@@ -225,15 +224,13 @@ const SinglePro = () => {
               <h2 className="text-2xl font-bold text-gray-800">
                 {product.title}
               </h2>
-              <ul>
-                {product.variants.map((variant, index) => (
-                  <li key={index} className="text-lg">
-                    <span className="font-bold">Quantity available:</span>{" "}
-                    {variant.quantity}
-                  </li>
-                ))}
-              </ul>
-              
+
+
+              <p className="text-lg">
+                <span className="text-sm">Quantity available:</span>{" "}
+                {product.variants.reduce((total, variant) => total + variant.quantity, 0)}
+              </p>
+
               <div className="mt-4">
                 <p className="text-xl  font-semibold text-black">
                   ৳{product.price}
@@ -248,11 +245,10 @@ const SinglePro = () => {
                   {uniqueColors.map((color, index) => (
                     <button
                       key={index}
-                      className={`px-4 py-2 rounded-md border transition ${
-                        selectedColor === color
-                          ? "bg-blue-600 text-white"
-                          : "bg-gray-200 text-gray-800"
-                      }`}
+                      className={`px-4 py-2 rounded-md border transition ${selectedColor === color
+                        ? "bg-blue-600 text-white"
+                        : "bg-gray-200 text-gray-800"
+                        }`}
                       onClick={() => handleColorSelect(color)}
                     >
                       {color}
@@ -280,11 +276,10 @@ const SinglePro = () => {
                     {availableSizes.map((size, index) => (
                       <button
                         key={index}
-                        className={`px-4 py-2 rounded-md border transition ${
-                          selectedSize === size
-                            ? "bg-blue-600 text-white"
-                            : "bg-gray-200 text-gray-800"
-                        }`}
+                        className={`px-4 py-2 rounded-md border transition ${selectedSize === size
+                          ? "bg-blue-600 text-white"
+                          : "bg-gray-200 text-gray-800"
+                          }`}
                         onClick={() => handleSizeSelect(size)}
                       >
                         {size}
@@ -300,14 +295,31 @@ const SinglePro = () => {
                 </div>
               )}
 
-              <ul>
+              {/* <ul>
                 {product.variants.map((variant, index) => (
                   <li key={index} className="text-lg">
                     <span className="font-bold">Length:</span>{" "}
                     {variant.productLength}
                   </li>
                 ))}
-              </ul>
+              </ul> */}
+              {selectedColor && (
+                <div className="mt-4">
+                  {product.variants
+                    .filter((variant) => variant.color === selectedColor)
+                    .map((variant, index) => (
+                      <p key={index} className="text-lg">
+                        <span className="font-bold">Length:</span>{" "}
+                        {variant.productLength}
+                      </p>
+                    ))}
+                </div>
+              )}
+
+
+
+
+
               {/* Action Buttons */}
               <div className="mt-4">
                 <button

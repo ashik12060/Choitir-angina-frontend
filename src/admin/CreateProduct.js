@@ -15,6 +15,7 @@ import { toast } from "react-toastify";
 import { useEffect, useState, useRef } from "react";
 import axiosInstance from "../pages/axiosInstance";
 import JsBarcode from "jsbarcode";
+import imageCompression from "browser-image-compression";
 
 const validationSchema = yup.object({
   title: yup
@@ -283,18 +284,49 @@ const CreateProduct = () => {
     setImageFields([...imageFields, { image: null, colorName: "" }]);
   };
 
-  const handleImageDrop = (index, acceptedFiles) => {
-    console.log("Files dropped:", acceptedFiles); // Debugging line
-    acceptedFiles.forEach((file) => {
-      const reader = new FileReader();
-      reader.readAsDataURL(file);
-      reader.onloadend = () => {
-        const updatedFields = [...imageFields];
-        updatedFields[index].image = reader.result;
-        setImageFields(updatedFields);
-      };
-    });
-  };
+  // const handleImageDrop = (index, acceptedFiles) => {
+  //   console.log("Files dropped:", acceptedFiles); // Debugging line
+  //   acceptedFiles.forEach((file) => {
+  //     const reader = new FileReader();
+  //     reader.readAsDataURL(file);
+  //     reader.onloadend = () => {
+  //       const updatedFields = [...imageFields];
+  //       updatedFields[index].image = reader.result;
+  //       setImageFields(updatedFields);
+  //     };
+  //   });
+  // };
+  
+
+const handleImageDrop = async (index, acceptedFiles) => {
+  if (!acceptedFiles || acceptedFiles.length === 0) return;
+
+  const file = acceptedFiles[0];
+
+  try {
+    // Compress the image
+    const options = {
+      maxSizeMB: 0.5, // target max size in MB
+      maxWidthOrHeight: 800, // optional: max width or height
+      useWebWorker: true,
+    };
+
+    const compressedFile = await imageCompression(file, options);
+
+    // Convert compressed file to base64 for preview
+    const reader = new FileReader();
+    reader.readAsDataURL(compressedFile);
+    reader.onloadend = () => {
+      const updatedFields = [...imageFields];
+      updatedFields[index].image = reader.result; // for preview
+      updatedFields[index].file = compressedFile; // store the actual file for upload
+      setImageFields(updatedFields);
+    };
+  } catch (error) {
+    console.error("Image compression error:", error);
+  }
+};
+
 
   const handleColorNameChange = (index, event) => {
     const updatedFields = [...imageFields];
@@ -316,30 +348,6 @@ const CreateProduct = () => {
     setFieldValue("images", validImages);
     handleSubmit();
   };
-
-  // const generateSubBarcodeImages = () => {
-  //   const container = document.createElement("div");
-  //   const updatedVariants = values.variants.map((variant, index) => {
-  //     const subBarcode = variant.subBarcode;
-  //     if (!subBarcode) return variant;
-  
-  //     const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-  //     JsBarcode(svg, subBarcode, {
-  //       format: "CODE128",
-  //       displayValue: true,
-  //       fontSize: 14,
-  //       height: 50,
-  //     });
-  
-  //     container.appendChild(svg);
-  //     return {
-  //       ...variant,
-  //       subBarcodeSvg: svg.outerHTML, // Save SVG as string
-  //     };
-  //   });
-  
-  //   setFieldValue("variants", updatedVariants);
-  // };
   
   const generateSubBarcodeImages = () => {
     const container = document.createElement("div");
