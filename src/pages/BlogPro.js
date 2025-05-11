@@ -52,8 +52,8 @@ const BlogPro = ({ searchQuery }) => {
     postAddLike.length > 0
       ? postAddLike
       : postRemoveLike.length > 0
-      ? postRemoveLike
-      : products;
+        ? postRemoveLike
+        : products;
 
   if (searchQuery) {
     uiPosts = uiPosts.filter((product) =>
@@ -100,7 +100,7 @@ const BlogPro = ({ searchQuery }) => {
               <div key={index} className="col-span-1">
                 <ProductCard
                   // image={product.image ? product.image.url : ""}
-                  images={product.images} // Pass the images array
+
                   id={product._id}
                   title={product.title}
                   content={product.content}
@@ -111,8 +111,16 @@ const BlogPro = ({ searchQuery }) => {
                   likes={product.likes.length}
                   likesId={product.likes}
                   showProducts={showProducts}
+                  //  image={
+                  //   product.variants?.length > 0 ? product.variants[0].image : ""
+                  // }
+                  image={
+                    product?.variants?.length > 0
+                      ? product.variants.find(v => v.image)?.image || ""
+                      : ""
+                  }
                 />
-               
+
               </div>
             ))
           )}
@@ -121,18 +129,16 @@ const BlogPro = ({ searchQuery }) => {
         {/* Pagination */}
         <div className="mt-6 text-center">
           <button
-            className={`px-4 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400 mr-2 ${
-              currentPage === 1 ? "opacity-50 cursor-not-allowed" : ""
-            }`}
+            className={`px-4 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400 mr-2 ${currentPage === 1 ? "opacity-50 cursor-not-allowed" : ""
+              }`}
             onClick={handlePrevPage}
             disabled={currentPage === 1}
           >
             Previous
           </button>
           <button
-            className={`px-4 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400 ${
-              currentPage === totalPages ? "opacity-50 cursor-not-allowed" : ""
-            }`}
+            className={`px-4 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400 ${currentPage === totalPages ? "opacity-50 cursor-not-allowed" : ""
+              }`}
             onClick={handleNextPage}
             disabled={currentPage === totalPages}
           >
