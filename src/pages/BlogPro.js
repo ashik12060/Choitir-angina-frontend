@@ -111,14 +111,12 @@ const BlogPro = ({ searchQuery }) => {
                   likes={product.likes.length}
                   likesId={product.likes}
                   showProducts={showProducts}
-                  //  image={
-                  //   product.variants?.length > 0 ? product.variants[0].image : ""
+                  variants={product.variants} 
+                  // image={
+                  //   product?.variants?.length > 0
+                  //     ? product.variants.find(v => v.image)?.image || ""
+                  //     : ""
                   // }
-                  image={
-                    product?.variants?.length > 0
-                      ? product.variants.find(v => v.image)?.image || ""
-                      : ""
-                  }
                 />
 
               </div>

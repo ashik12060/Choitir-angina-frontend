@@ -113,10 +113,7 @@ const CreateProduct = () => {
       images: [],
     },
     validationSchema: validationSchema,
-    // onSubmit: async (values, actions) => {
-    //   await createNewProduct(values);
-    //   actions.resetForm();
-    // },
+   
 
     onSubmit: async (values, actions) => {
       generateSubBarcodeImages(); // 🆕 Add this line
@@ -267,11 +264,7 @@ const CreateProduct = () => {
     }
   };
 
-  // const handleBarcodeChange = (e) => {
-  //   const value = e.target.value;
-  //   setBarcode(value);
-  //   setFieldValue("barcode", value);
-  // };
+  
   const handleBarcodeChange = (e) => {
     const mainBarcode = e.target.value;
     setBarcode(mainBarcode);
@@ -285,50 +278,36 @@ const CreateProduct = () => {
   };
 
 
-  // const handleImageDrop = async (index, acceptedFiles) => {
-  //   if (!acceptedFiles || acceptedFiles.length === 0) return;
-
+  // const handleImageDrop = (index, acceptedFiles) => {
   //   const file = acceptedFiles[0];
+  //   const reader = new FileReader();
 
-  //   try {
-  //     // Compress the image
-  //     const options = {
-  //       maxSizeMB: 0.5, // target max size in MB
-  //       maxWidthOrHeight: 800, // optional: max width or height
-  //       useWebWorker: true,
-  //     };
+  //   reader.onloadend = () => {
+  //     const updatedVariants = [...values.variants];
+  //     updatedVariants[index].image = reader.result;
+  //     setFieldValue('variants', updatedVariants);
+  //   };
 
-  //     const compressedFile = await imageCompression(file, options);
-
-  //     // Convert compressed file to base64 for preview
-  //     const reader = new FileReader();
-  //     reader.readAsDataURL(compressedFile);
-  //     reader.onloadend = () => {
-  //       const updatedFields = [...imageFields];
-  //       updatedFields[index].image = reader.result; // for preview
-  //       updatedFields[index].file = compressedFile; // store the actual file for upload
-  //       setImageFields(updatedFields);
-  //     };
-  //   } catch (error) {
-  //     console.error("Image compression error:", error);
+  //   if (file) {
+  //     reader.readAsDataURL(file);
   //   }
   // };
+
   const handleImageDrop = (index, acceptedFiles) => {
     const file = acceptedFiles[0];
     const reader = new FileReader();
-
+  
     reader.onloadend = () => {
       const updatedVariants = [...values.variants];
       updatedVariants[index].image = reader.result;
       setFieldValue('variants', updatedVariants);
     };
-
+  
     if (file) {
       reader.readAsDataURL(file);
     }
   };
-
-
+  
 
   const handleColorNameChange = (index, event) => {
     const updatedFields = [...imageFields];
@@ -336,35 +315,6 @@ const CreateProduct = () => {
     setImageFields(updatedFields);
   };
 
-  // const handleSubmitForm = (event) => {
-  //   event.preventDefault();
-  //   const validImages = imageFields.filter(
-  //     (field) => field.image && field.colorName.trim()
-  //   );
-
-  //   if (validImages.length === 0) {
-  //     setError("Each image must have a color name.");
-  //     return;
-  //   }
-
-  //   setFieldValue("images", validImages);
-  //   handleSubmit();
-  // };
-
-  // const handleSubmitForm = (event) => {
-  //   event.preventDefault();
-
-  //   const validImages = imageFields.filter((field) => field.image);
-
-  //   if (validImages.length === 0) {
-  //     setError("Please upload at least one image.");
-  //     return;
-  //   }
-
-  //   setError(""); // Clear previous error if any
-  //   setFieldValue("images", validImages); // Or map to just image URLs if needed
-  //   handleSubmit();
-  // };
 
   const handleSubmitForm = (event) => {
   event.preventDefault();
@@ -403,6 +353,8 @@ const CreateProduct = () => {
     setFieldValue("variants", updatedVariants);
   };
 
+
+  
 
   return (
     <div ref={observedElementRef}>
@@ -673,7 +625,7 @@ const CreateProduct = () => {
 
                   <Box key={`image-${index}`} sx={{ mb: 3 }}>
                     <Box border="2px dashed blue" sx={{ p: 1, mb: 3 }}>
-                      <Dropzone
+                      {/* <Dropzone
                         acceptedFiles=".jpg,.jpeg,.png"
                         multiple={false}
                         onDrop={(acceptedFiles) => handleImageDrop(index, acceptedFiles)}
@@ -703,7 +655,17 @@ const CreateProduct = () => {
                             )}
                           </Box>
                         )}
-                      </Dropzone>
+                      </Dropzone> */}
+                      <Dropzone onDrop={(acceptedFiles) => handleImageDrop(index, acceptedFiles)}>
+  {({ getRootProps, getInputProps }) => (
+    <Box {...getRootProps()}>
+      <input {...getInputProps()} />
+      <CloudUploadIcon />
+      <Typography>Upload Image</Typography>
+    </Box>
+  )}
+</Dropzone>
+
                     </Box>
                   </Box>
 
@@ -761,103 +723,7 @@ const CreateProduct = () => {
               </div>
             </div>
 
-            {/* barcode end */}
-            {/* <Button variant="outlined" onClick={addImageField} sx={{ mb: 3 }}>
-              Add Image
-            </Button>
-
-            {imageFields.map((field, index) => (
-              <Box key={index} sx={{ mb: 3 }}>
-                <Box border="2px dashed blue" sx={{ p: 1, mb: 3 }}>
-                  <Dropzone
-                    acceptedFiles=".jpg,.jpeg,.png"
-                    multiple={false}
-                    onDrop={(acceptedFiles) => handleImageDrop(index, acceptedFiles)}
-                  >
-                    {({ getRootProps, getInputProps, isDragActive }) => (
-                      <Box
-                        {...getRootProps()}
-                        p="1rem"
-                        sx={{
-                          "&:hover": { cursor: "pointer" },
-                          bgColor: isDragActive ? "#cceffc" : "#fafafa",
-                        }}
-                      >
-                        <input {...getInputProps()} />
-                        {isDragActive ? (
-                          <Typography>Drop the file here</Typography>
-                        ) : field.image ? (
-                          <img
-                            style={{ maxWidth: "100px" }}
-                            src={field.image || ""}
-                            alt="Uploaded"
-                          />
-                        ) : (
-                          <Typography>
-                            Drag and drop here or click to upload
-                          </Typography>
-                        )}
-                      </Box>
-                    )}
-                  </Dropzone>
-                </Box>
-              </Box>
-            ))} */}
-
-
-            {/* <Button variant="outlined" onClick={addImageField} sx={{ mb: 3 }}>
-              Add Image
-            </Button>
-
-            {imageFields.map((field, index) => (
-              <Box key={index} sx={{ mb: 3 }}>
-                <TextField
-                  fullWidth
-                  label="Color Name"
-                  value={field.colorName}
-                  onChange={(e) => handleColorNameChange(index, e)}
-                  error={Boolean(field.colorName && !field.image)}
-                  helperText={
-                    field.colorName && !field.image ? "Image is required" : ""
-                  }
-                />
-                <Box border="2px dashed blue" sx={{ p: 1, mb: 3 }}>
-                  <Dropzone
-                    acceptedFiles=".jpg,.jpeg,.png"
-                    multiple={false}
-                    onDrop={(acceptedFiles) =>
-                      handleImageDrop(index, acceptedFiles)
-                    }
-                  >
-                    {({ getRootProps, getInputProps, isDragActive }) => (
-                      <Box
-                        {...getRootProps()}
-                        p="1rem"
-                        sx={{
-                          "&:hover": { cursor: "pointer" },
-                          bgColor: isDragActive ? "#cceffc" : "#fafafa",
-                        }}
-                      >
-                        <input {...getInputProps()} />
-                        {isDragActive ? (
-                          <Typography>Drop the file here</Typography>
-                        ) : field.image ? (
-                          <img
-                            style={{ maxWidth: "100px" }}
-                            src={field.image || ""}
-                            alt="Uploaded"
-                          />
-                        ) : (
-                          <Typography>
-                            Drag and drop here or click to upload
-                          </Typography>
-                        )}
-                      </Box>
-                    )}
-                  </Dropzone>
-                </Box>
-              </Box>
-            ))} */}
+            
 
             <Button
               type="submit"
