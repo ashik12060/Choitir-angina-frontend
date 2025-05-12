@@ -15,7 +15,7 @@ const ProductCard = ({
   id,
   title,
   price,
-  // images, // Changed field from 'image' to 'images'
+  images, // Changed field from 'image' to 'images'
   // image,
   content,
   comments,
@@ -94,8 +94,8 @@ const ProductCard = ({
   };
 
   // Get the first image from the images array
-  // const firstImage = image && image.length > 0 ? image[0].url : "";
-  const image = product.variants.find(v => v.image)?.image || "";
+  const firstImage = images && images.length > 0 ? images[0].url : "";
+  // const image = product.variants.find(v => v.image)?.image || "";
 
 
   return (
@@ -107,8 +107,8 @@ const ProductCard = ({
         <Link to={`/product/${id}`}>
           <img
             className="w-full h-44  object-cover rounded-md"
-            // src={firstImage}
-            {...image || "/default-image.jpg"}
+            src={firstImage}
+            // {...image || "/default-image.jpg"}
             alt="product"
           />
         </Link>
