@@ -8,6 +8,7 @@ import Loader from "../components/Loader";
 import Footer from "../components/Shared/Footer/Footer";
 import CommentList from "../components/CommentList";
 import { useCart } from "../hooks/CartProvider";
+import { X } from "lucide-react";
 
 const socket = io("/", {
   reconnection: true,
@@ -15,6 +16,7 @@ const socket = io("/", {
 
 const SinglePro = () => {
   const { userInfo } = useSelector((state) => state.signIn);
+  const [isZoomed, setIsZoomed] = useState(false);
   const {
     cart,
     addCartItem,
@@ -168,6 +170,8 @@ const SinglePro = () => {
     return <div>Loading...</div>; // You can show a loading state or a fallback message
   }
 
+  // image bigger showing
+
   return (
     <div className="bg-white min-h-screen">
       <div className="container mx-auto py-8">
@@ -178,24 +182,47 @@ const SinglePro = () => {
             <div className="lg:w-1/3 p-4">
               {product.variants && product.variants.length > 0 ? (
                 <div className="relative">
-                
                   <div
                     className="border rounded-md mb-4 overflow-hidden group relative"
                     onMouseMove={handleMouseMove}
                     onMouseLeave={resetZoom}
                   >
                    
+                    {/* Main Image */}
                     <img
-                      src={mainImage} // Show the selected image from the variant
+                      src={mainImage}
                       alt={product.title}
-                      className="w-full h-96 object-cover rounded-md transition-transform duration-300"
-                      style={{
-                        ...zoomStyle,
-                        transform: zoomStyle.transformOrigin
-                          ? "scale(2)" // Adjust the zoom level as needed
-                          : "scale(1)",
-                      }}
+                      className="w-full h-96 object-cover rounded-md transition-transform duration-300 cursor-zoom-in"
+                      onClick={() => setIsZoomed(true)}
                     />
+
+                    {/* Zoom Modal */}
+                    {isZoomed && (
+                      <div className="fixed inset-0 z-50 bg-black bg-opacity-50 flex items-center justify-center">
+                        <div className="relative bg-white p-4 rounded-md max-w-3xl w-[80%]">
+                          {/* Close Button */}
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation(); // Prevent background click from closing
+                              setIsZoomed(false);
+                            }}
+                            className="absolute top-2 right-2 text-gray-800 hover:text-red-600 border-2 bg-red-600"
+                          >
+                            X
+                            {/* <X size={24} /> */}
+                            {/* OR: <span className="text-lg font-bold">X</span> */}
+                          </button>
+
+                          {/* Zoomed Image */}
+                          <img
+                            src={mainImage}
+                            alt={product.title}
+                            className="w-full object-contain rounded-md transition-transform duration-300"
+                            style={{ transform: "scale(1.2)" }} // Moderate zoom
+                          />
+                        </div>
+                      </div>
+                    )}
                   </div>
 
                   <div className="mt-4 text-center">
@@ -205,14 +232,19 @@ const SinglePro = () => {
                   </div>
 
                   <div className="flex space-x-2 overflow-x-auto">
-                    
                     {product.variants.map((variant, index) => (
                       <div key={index} className="text-center">
                         <img
                           src={variant.imageUrl} // Get image from variant
-                          className={`w-16 h-16 object-cover rounded-md border cursor-pointer hover:shadow-lg transition ${mainImage === variant.imageUrl ? "border-blue-500" : ""}`}
+                          className={`w-16 h-16 object-cover rounded-md border cursor-pointer hover:shadow-lg transition ${
+                            mainImage === variant.imageUrl
+                              ? "border-blue-500"
+                              : ""
+                          }`}
                           alt={`Thumbnail ${index + 1}`}
-                          onClick={() => handleImageClick(variant.color, variant.imageUrl)} // Update selected image and color
+                          onClick={() =>
+                            handleImageClick(variant.color, variant.imageUrl)
+                          } // Update selected image and color
                         />
                       </div>
                     ))}
