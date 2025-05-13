@@ -38,10 +38,21 @@ const SinglePro = () => {
   const navigate = useNavigate();
   const { id } = useParams();
 
-
-
-
   const displaySingleProduct = async () => {
+    //   setLoading(true);
+    //   try {
+    //     const { data } = await axiosInstance.get(
+    //       `${process.env.REACT_APP_API_URL}/api/product/${id}`
+    //     );
+    //     setProduct(data.product);
+
+    //     setMainImage(data.product.images[0]?.url); // Set the first image as the main image
+    //     setLoading(false);
+    //     console.log(product);
+    //   } catch (error) {
+    //     console.log(error);
+    //   }
+    // };
     setLoading(true);
     try {
       const { data } = await axiosInstance.get(
@@ -49,9 +60,11 @@ const SinglePro = () => {
       );
       setProduct(data.product);
 
-      setMainImage(data.product.images[0]?.url); // Set the first image as the main image
+      // Set the first variant's image as the main image
+      const firstVariantImage = data.product.variants[0]?.imageUrl;
+      setMainImage(firstVariantImage);
       setLoading(false);
-      console.log(product);
+      console.log(data.product);
     } catch (error) {
       console.log(error);
     }
@@ -125,6 +138,10 @@ const SinglePro = () => {
     navigate("/cart");
   };
 
+  // const handleImageClick = (color, imageUrl) => {
+  //   setMainImage(imageUrl);
+  //   setSelectedColor(color); // Set the color when image is clicked
+  // };
   const handleImageClick = (color, imageUrl) => {
     setMainImage(imageUrl);
     setSelectedColor(color); // Set the color when image is clicked
@@ -148,7 +165,7 @@ const SinglePro = () => {
   };
 
   if (!product) {
-    return <div>Loading...</div>;  // You can show a loading state or a fallback message
+    return <div>Loading...</div>; // You can show a loading state or a fallback message
   }
 
   return (
@@ -159,23 +176,17 @@ const SinglePro = () => {
         ) : (
           <div className="flex flex-col lg:flex-row bg-gray-50 p-6 shadow-md rounded-md">
             <div className="lg:w-1/3 p-4">
-              {product.images && product.images.length > 0 ? (
+              {product.variants && product.variants.length > 0 ? (
                 <div className="relative">
-                  {/* <div className="border rounded-md mb-4">
-                    <img
-                      src={mainImage} 
-                      alt={product.title}
-                      className="w-full h-96 object-cover rounded-md"
-                      style={{ aspectRatio: "1 / 1" }} 
-                    />
-                  </div> */}
+                
                   <div
                     className="border rounded-md mb-4 overflow-hidden group relative"
                     onMouseMove={handleMouseMove}
                     onMouseLeave={resetZoom}
                   >
+                   
                     <img
-                      src={mainImage} // Show the selected image
+                      src={mainImage} // Show the selected image from the variant
                       alt={product.title}
                       className="w-full h-96 object-cover rounded-md transition-transform duration-300"
                       style={{
@@ -194,16 +205,15 @@ const SinglePro = () => {
                   </div>
 
                   <div className="flex space-x-2 overflow-x-auto">
-                    {product.images.map((img, index) => (
+                    
+                    {product.variants.map((variant, index) => (
                       <div key={index} className="text-center">
                         <img
-                          src={img.url}
-                          className={`w-16 h-16 object-cover rounded-md border cursor-pointer hover:shadow-lg transition ${mainImage === img.url ? "border-blue-500" : ""
-                            }`}
+                          src={variant.imageUrl} // Get image from variant
+                          className={`w-16 h-16 object-cover rounded-md border cursor-pointer hover:shadow-lg transition ${mainImage === variant.imageUrl ? "border-blue-500" : ""}`}
                           alt={`Thumbnail ${index + 1}`}
-                          onClick={() => handleImageClick(img.color, img.url)} // Update selected image and color
+                          onClick={() => handleImageClick(variant.color, variant.imageUrl)} // Update selected image and color
                         />
-
                       </div>
                     ))}
                   </div>
@@ -225,10 +235,12 @@ const SinglePro = () => {
                 {product.title}
               </h2>
 
-
               <p className="text-lg">
                 <span className="text-sm">Quantity available:</span>{" "}
-                {product.variants.reduce((total, variant) => total + variant.quantity, 0)}
+                {product.variants.reduce(
+                  (total, variant) => total + variant.quantity,
+                  0
+                )}
               </p>
 
               <div className="mt-4">
@@ -245,10 +257,11 @@ const SinglePro = () => {
                   {uniqueColors.map((color, index) => (
                     <button
                       key={index}
-                      className={`px-4 py-2 rounded-md border transition ${selectedColor === color
-                        ? "bg-blue-600 text-white"
-                        : "bg-gray-200 text-gray-800"
-                        }`}
+                      className={`px-4 py-2 rounded-md border transition ${
+                        selectedColor === color
+                          ? "bg-blue-600 text-white"
+                          : "bg-gray-200 text-gray-800"
+                      }`}
                       onClick={() => handleColorSelect(color)}
                     >
                       {color}
@@ -276,10 +289,11 @@ const SinglePro = () => {
                     {availableSizes.map((size, index) => (
                       <button
                         key={index}
-                        className={`px-4 py-2 rounded-md border transition ${selectedSize === size
-                          ? "bg-blue-600 text-white"
-                          : "bg-gray-200 text-gray-800"
-                          }`}
+                        className={`px-4 py-2 rounded-md border transition ${
+                          selectedSize === size
+                            ? "bg-blue-600 text-white"
+                            : "bg-gray-200 text-gray-800"
+                        }`}
                         onClick={() => handleSizeSelect(size)}
                       >
                         {size}
@@ -295,14 +309,6 @@ const SinglePro = () => {
                 </div>
               )}
 
-              {/* <ul>
-                {product.variants.map((variant, index) => (
-                  <li key={index} className="text-lg">
-                    <span className="font-bold">Length:</span>{" "}
-                    {variant.productLength}
-                  </li>
-                ))}
-              </ul> */}
               {selectedColor && (
                 <div className="mt-4">
                   {product.variants
@@ -316,19 +322,15 @@ const SinglePro = () => {
                 </div>
               )}
 
-
-
-
-
               {/* Action Buttons */}
               <div className="mt-4">
                 <button
                   className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition"
                   onClick={addToCart}
                   // disabled={product.quantity <= 0}
-                  disabled={product.variants.some((variant) => variant.quantity <= 0)}
-
-
+                  disabled={product.variants.some(
+                    (variant) => variant.quantity <= 0
+                  )}
                 >
                   Add to Cart
                 </button>
@@ -336,9 +338,9 @@ const SinglePro = () => {
                   className="ml-4 bg-yellow-500 text-white px-4 py-2 rounded-md hover:bg-yellow-600 transition"
                   onClick={handleBuyNow}
                   // disabled={product.quantity <= 0}
-                  disabled={product.variants.some((variant) => variant.quantity <= 0)}
-
-
+                  disabled={product.variants.some(
+                    (variant) => variant.quantity <= 0
+                  )}
                 >
                   Buy Now
                 </button>
