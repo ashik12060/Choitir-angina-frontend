@@ -106,20 +106,27 @@ const CreateProduct = () => {
 
       categories: [],
       variants: [
-        { size: "", color: "", quantity: 0, productLength: 0, subBarcode: "", subBarcodeSvg: "" },
+        {
+          size: "",
+          color: "",
+          quantity: 0,
+          productLength: 0,
+          subBarcode: "",
+          subBarcodeSvg: "",
+        },
       ],
       barcode: "",
       subcategory: "", // Add subcategory to form values
       images: [],
     },
     validationSchema: validationSchema,
-   
 
     onSubmit: async (values, actions) => {
       generateSubBarcodeImages(); // 🆕 Add this line
       await createNewProduct(values);
       actions.resetForm();
-    }
+      console.log("Form values before submit:", values);
+    },
   });
 
   // Add a new size to the list
@@ -264,7 +271,6 @@ const CreateProduct = () => {
     }
   };
 
-  
   const handleBarcodeChange = (e) => {
     const mainBarcode = e.target.value;
     setBarcode(mainBarcode);
@@ -277,37 +283,39 @@ const CreateProduct = () => {
     setImageFields([...imageFields, { image: null, colorName: "" }]);
   };
 
+// image compression added below
 
-  // const handleImageDrop = (index, acceptedFiles) => {
-  //   const file = acceptedFiles[0];
-  //   const reader = new FileReader();
+const handleImageDrop = async (index, acceptedFiles) => {
+  const file = acceptedFiles[0];
+  if (!file) return;
 
-  //   reader.onloadend = () => {
-  //     const updatedVariants = [...values.variants];
-  //     updatedVariants[index].image = reader.result;
-  //     setFieldValue('variants', updatedVariants);
-  //   };
+  try {
+    // Compression options
+    const options = {
+      maxSizeMB: 0.5,            // Target max size in MB
+      maxWidthOrHeight: 800,     // Resize image dimensions if too large
+      useWebWorker: true,
+    };
 
-  //   if (file) {
-  //     reader.readAsDataURL(file);
-  //   }
-  // };
+    // Compress image
+    const compressedFile = await imageCompression(file, options);
 
-  const handleImageDrop = (index, acceptedFiles) => {
-    const file = acceptedFiles[0];
+    // Convert to base64
     const reader = new FileReader();
-  
     reader.onloadend = () => {
       const updatedVariants = [...values.variants];
-      updatedVariants[index].image = reader.result;
-      setFieldValue('variants', updatedVariants);
+      updatedVariants[index].imageUrl = reader.result;
+      setFieldValue("variants", updatedVariants);
     };
-  
-    if (file) {
-      reader.readAsDataURL(file);
-    }
-  };
-  
+    reader.readAsDataURL(compressedFile);
+
+  } catch (error) {
+    console.error("Image compression error:", error);
+    toast.error("Failed to compress image");
+  }
+};
+
+
 
   const handleColorNameChange = (index, event) => {
     const updatedFields = [...imageFields];
@@ -315,24 +323,21 @@ const CreateProduct = () => {
     setImageFields(updatedFields);
   };
 
-
   const handleSubmitForm = (event) => {
-  event.preventDefault();
+    event.preventDefault();
 
-  const variantsWithImages = values.variants.filter(
-    (variant) => variant.image
-  );
+    const variantsWithImages = values.variants.filter(
+      (variant) => variant.imageUrl
+    );
 
-  if (variantsWithImages.length === 0) {
-    setError("Please upload at least one image.");
-    return;
-  }
+    if (variantsWithImages.length === 0) {
+      setError("Please upload at least one image.");
+      return;
+    }
 
-  setError(""); // Clear error
-  handleSubmit(); // Proceed with form submission
-};
-
-
+    setError(""); // Clear error
+    handleSubmit(); // Proceed with form submission
+  };
 
   const generateSubBarcodeImages = () => {
     const container = document.createElement("div");
@@ -341,7 +346,12 @@ const CreateProduct = () => {
       if (!subBarcode) return variant;
 
       const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-      JsBarcode(svg, subBarcode, { format: "CODE128", displayValue: true, fontSize: 14, height: 50 });
+      JsBarcode(svg, subBarcode, {
+        format: "CODE128",
+        displayValue: true,
+        fontSize: 14,
+        height: 50,
+      });
       container.appendChild(svg);
 
       return {
@@ -352,9 +362,6 @@ const CreateProduct = () => {
 
     setFieldValue("variants", updatedVariants);
   };
-
-
-  
 
   return (
     <div ref={observedElementRef}>
@@ -625,7 +632,7 @@ const CreateProduct = () => {
 
                   <Box key={`image-${index}`} sx={{ mb: 3 }}>
                     <Box border="2px dashed blue" sx={{ p: 1, mb: 3 }}>
-                      {/* <Dropzone
+                      <Dropzone
                         acceptedFiles=".jpg,.jpeg,.png"
                         multiple={false}
                         onDrop={(acceptedFiles) => handleImageDrop(index, acceptedFiles)}
@@ -642,10 +649,10 @@ const CreateProduct = () => {
                             <input {...getInputProps()} />
                             {isDragActive ? (
                               <Typography>Drop the file here</Typography>
-                            ) : variant.image ? (
+                            ) : variant.imageUrl ? (
                               <img
                                 style={{ maxWidth: "100px" }}
-                                src={variant.image}
+                                src={variant.imageUrl}
                                 alt="Uploaded"
                               />
                             ) : (
@@ -655,21 +662,11 @@ const CreateProduct = () => {
                             )}
                           </Box>
                         )}
-                      </Dropzone> */}
-                      <Dropzone onDrop={(acceptedFiles) => handleImageDrop(index, acceptedFiles)}>
-  {({ getRootProps, getInputProps }) => (
-    <Box {...getRootProps()}>
-      <input {...getInputProps()} />
-      <CloudUploadIcon />
-      <Typography>Upload Image</Typography>
-    </Box>
-  )}
-</Dropzone>
+                      </Dropzone>
 
+                      
                     </Box>
                   </Box>
-
-
 
                   <Button
                     onClick={() => removeVariant(index)}
@@ -695,7 +692,7 @@ const CreateProduct = () => {
                 name="barcode"
                 value={barcode}
                 onChange={handleBarcodeChange}
-              // Add your validation logic here
+                // Add your validation logic here
               />
               <Button
                 variant="outlined"
@@ -722,8 +719,6 @@ const CreateProduct = () => {
                 )}
               </div>
             </div>
-
-            
 
             <Button
               type="submit"

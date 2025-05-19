@@ -41,20 +41,6 @@ const SinglePro = () => {
   const { id } = useParams();
 
   const displaySingleProduct = async () => {
-    //   setLoading(true);
-    //   try {
-    //     const { data } = await axiosInstance.get(
-    //       `${process.env.REACT_APP_API_URL}/api/product/${id}`
-    //     );
-    //     setProduct(data.product);
-
-    //     setMainImage(data.product.images[0]?.url); // Set the first image as the main image
-    //     setLoading(false);
-    //     console.log(product);
-    //   } catch (error) {
-    //     console.log(error);
-    //   }
-    // };
     setLoading(true);
     try {
       const { data } = await axiosInstance.get(
@@ -133,17 +119,10 @@ const SinglePro = () => {
     addCartItem(selectedProduct);
   };
 
-  //   const productLength = product.variants[1].productLength;
-  // console.log(productLength); // Outputs: 10
-
   const handleBuyNow = () => {
     navigate("/cart");
   };
 
-  // const handleImageClick = (color, imageUrl) => {
-  //   setMainImage(imageUrl);
-  //   setSelectedColor(color); // Set the color when image is clicked
-  // };
   const handleImageClick = (color, imageUrl) => {
     setMainImage(imageUrl);
     setSelectedColor(color); // Set the color when image is clicked
@@ -187,7 +166,6 @@ const SinglePro = () => {
                     onMouseMove={handleMouseMove}
                     onMouseLeave={resetZoom}
                   >
-                   
                     {/* Main Image */}
                     <img
                       src={mainImage}
@@ -197,28 +175,29 @@ const SinglePro = () => {
                     />
 
                     {/* Zoom Modal */}
+
                     {isZoomed && (
-                      <div className="fixed inset-0 z-50 bg-black bg-opacity-50 flex items-center justify-center">
-                        <div className="relative bg-white p-4 rounded-md max-w-3xl w-[80%]">
+                      <div
+                        className="fixed inset-0 z-50 bg-black bg-opacity-50 flex items-center justify-center"
+                        onClick={() => setIsZoomed(false)} // Close when background is clicked
+                      >
+                        <div
+                          className="relative bg-white p-4 rounded-md max-w-3xl w-[80%]"
+                          onClick={(e) => e.stopPropagation()} // Prevent close when clicking inside
+                        >
                           {/* Close Button */}
                           <button
-                            onClick={(e) => {
-                              e.stopPropagation(); // Prevent background click from closing
-                              setIsZoomed(false);
-                            }}
-                            className="absolute top-2 right-2 text-gray-800 hover:text-red-600 border-2 bg-red-600"
+                            onClick={() => setIsZoomed(false)}
+                            className="absolute top-2 right-2 text-white bg-red-600 rounded-full w-8 h-8 flex items-center justify-center hover:bg-red-700"
                           >
-                            X
-                            {/* <X size={24} /> */}
-                            {/* OR: <span className="text-lg font-bold">X</span> */}
+                            <X size={18} />
                           </button>
 
                           {/* Zoomed Image */}
                           <img
                             src={mainImage}
                             alt={product.title}
-                            className="w-full object-contain rounded-md transition-transform duration-300"
-                            style={{ transform: "scale(1.2)" }} // Moderate zoom
+                            className="w-full object-contain rounded-md transition-transform duration-300 "
                           />
                         </div>
                       </div>
