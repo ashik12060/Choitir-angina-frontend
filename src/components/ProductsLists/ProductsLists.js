@@ -8,6 +8,7 @@ import ComingSoon from "../ComingSoon/ComingSoon";
 import TopBrands from "../TopBrands/TopBrands";
 import NewArrival from "../NewArrival/NewArrival";
 import Unstitched from "../Unstitched/Unstitched";
+import Stitched from "../Stitched/Stitched";
 // import Carousel from "../Carousel/Carousel";
 
 const ProductsLists = ({ searchQuery }) => {
@@ -18,6 +19,7 @@ const ProductsLists = ({ searchQuery }) => {
         <ComingSoon />
         <TopBrands />
         <NewArrival />
+        <Stitched />
         <Unstitched />
         
     

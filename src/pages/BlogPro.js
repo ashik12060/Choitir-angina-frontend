@@ -37,18 +37,7 @@ const BlogPro = ({ searchQuery }) => {
     showProducts();
   }, []);
 
-  // useEffect(() => {
-  //   socket.on("add-like", (newPosts) => {
-  //     setPostAddLike(newPosts);
-  //     setPostRemoveLike("");
-  //   });
-  //   socket.on("remove-like", (newPosts) => {
-  //     setPostRemoveLike(newPosts);
-  //     setPostAddLike("");
-  //   });
-  // }, []);
-
-  let uiPosts =
+   let uiPosts =
     postAddLike.length > 0
       ? postAddLike
       : postRemoveLike.length > 0
@@ -112,11 +101,7 @@ const BlogPro = ({ searchQuery }) => {
                   likesId={product.likes}
                   showProducts={showProducts}
                   variants={product.variants} 
-                  // image={
-                  //   product?.variants?.length > 0
-                  //     ? product.variants.find(v => v.image)?.image || ""
-                  //     : ""
-                  // }
+                  
                 />
 
               </div>

@@ -83,7 +83,7 @@ const CreateProduct = () => {
 
   const [subBarcodeImages, setSubBarcodeImages] = useState([]);
 
-  const categoriesList = ["All", "Top Brands", "New Arrival", "Unstitched"];
+  const categoriesList = ["All", "Top Brands", "New Arrival","Stitched", "Unstitched"];
 
   const {
     values,
@@ -283,39 +283,36 @@ const CreateProduct = () => {
     setImageFields([...imageFields, { image: null, colorName: "" }]);
   };
 
-// image compression added below
+  // image compression added below
 
-const handleImageDrop = async (index, acceptedFiles) => {
-  const file = acceptedFiles[0];
-  if (!file) return;
+  const handleImageDrop = async (index, acceptedFiles) => {
+    const file = acceptedFiles[0];
+    if (!file) return;
 
-  try {
-    // Compression options
-    const options = {
-      maxSizeMB: 0.5,            // Target max size in MB
-      maxWidthOrHeight: 800,     // Resize image dimensions if too large
-      useWebWorker: true,
-    };
+    try {
+      // Compression options
+      const options = {
+        maxSizeMB: 0.5, // Target max size in MB
+        maxWidthOrHeight: 800, // Resize image dimensions if too large
+        useWebWorker: true,
+      };
 
-    // Compress image
-    const compressedFile = await imageCompression(file, options);
+      // Compress image
+      const compressedFile = await imageCompression(file, options);
 
-    // Convert to base64
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      const updatedVariants = [...values.variants];
-      updatedVariants[index].imageUrl = reader.result;
-      setFieldValue("variants", updatedVariants);
-    };
-    reader.readAsDataURL(compressedFile);
-
-  } catch (error) {
-    console.error("Image compression error:", error);
-    toast.error("Failed to compress image");
-  }
-};
-
-
+      // Convert to base64
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        const updatedVariants = [...values.variants];
+        updatedVariants[index].imageUrl = reader.result;
+        setFieldValue("variants", updatedVariants);
+      };
+      reader.readAsDataURL(compressedFile);
+    } catch (error) {
+      console.error("Image compression error:", error);
+      toast.error("Failed to compress image");
+    }
+  };
 
   const handleColorNameChange = (index, event) => {
     const updatedFields = [...imageFields];
@@ -508,6 +505,8 @@ const handleImageDrop = async (index, acceptedFiles) => {
               sx={{ mb: 3, width: "100%" }}
               id="categories"
               name="categories"
+              label="categories"
+              className="text-black"
               multiple
               value={values.categories}
               onChange={(e) => setFieldValue("categories", e.target.value)}
@@ -635,7 +634,9 @@ const handleImageDrop = async (index, acceptedFiles) => {
                       <Dropzone
                         acceptedFiles=".jpg,.jpeg,.png"
                         multiple={false}
-                        onDrop={(acceptedFiles) => handleImageDrop(index, acceptedFiles)}
+                        onDrop={(acceptedFiles) =>
+                          handleImageDrop(index, acceptedFiles)
+                        }
                       >
                         {({ getRootProps, getInputProps, isDragActive }) => (
                           <Box
@@ -663,8 +664,6 @@ const handleImageDrop = async (index, acceptedFiles) => {
                           </Box>
                         )}
                       </Dropzone>
-
-                      
                     </Box>
                   </Box>
 
@@ -694,14 +693,14 @@ const handleImageDrop = async (index, acceptedFiles) => {
                 onChange={handleBarcodeChange}
                 // Add your validation logic here
               />
-              <Button
+              {/* <Button
                 variant="outlined"
                 onClick={generateBarcode}
                 sx={{ mb: 3 }}
                 disabled={!barcode || barcode.length < 6}
               >
                 Generate Barcode
-              </Button>
+              </Button> */}
 
               {/* Display the generated barcode image */}
               <div>

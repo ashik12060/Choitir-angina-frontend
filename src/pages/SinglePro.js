@@ -170,7 +170,9 @@ const SinglePro = () => {
                     <img
                       src={mainImage}
                       alt={product.title}
-                      className="w-full h-96 object-cover rounded-md transition-transform duration-300 cursor-zoom-in"
+                      // className="w-full h-96 object-cover rounded-md transition-transform duration-300 cursor-zoom-in"
+                      className="w-full h-64 sm:h-80 md:h-96 lg:h-[28rem] xl:h-[32rem] object-cover rounded-md transition-transform duration-300 cursor-zoom-in"
+
                       onClick={() => setIsZoomed(true)}
                     />
 
@@ -182,13 +184,13 @@ const SinglePro = () => {
                         onClick={() => setIsZoomed(false)} // Close when background is clicked
                       >
                         <div
-                          className="relative bg-white p-4 rounded-md max-w-3xl w-[80%]"
+                          className="relative  p-4 rounded-md max-w-3xl w-[80%]"
                           onClick={(e) => e.stopPropagation()} // Prevent close when clicking inside
                         >
                           {/* Close Button */}
                           <button
                             onClick={() => setIsZoomed(false)}
-                            className="absolute top-2 right-2 text-white bg-red-600 rounded-full w-8 h-8 flex items-center justify-center hover:bg-red-700"
+                            className="absolute top-1 right-1 text-white bg-red-600 rounded-full w-8 h-8 flex items-center justify-center hover:bg-red-700"
                           >
                             <X size={18} />
                           </button>

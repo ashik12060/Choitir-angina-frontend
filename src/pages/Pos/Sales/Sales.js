@@ -20,6 +20,9 @@ const Sales = () => {
   const [paymentMethod, setPaymentMethod] = useState(""); // New state for payment method
   const [amountGiven, setAmountGiven] = useState(0.0); // Amount customer gave
   const [changeReturned, setChangeReturned] = useState(0.0); // Change to return
+  // const [paymentMethod, setPaymentMethod] = useState("");
+const [cardNumber, setCardNumber] = useState("");
+
 
   // Fetch products from the API
   useEffect(() => {
@@ -72,7 +75,6 @@ const Sales = () => {
     );
   };
 
-  
   // Handle VAT and Discount calculations
   const calculateNetPayable = () => {
     let subtotal = 0;
@@ -400,40 +402,37 @@ const Sales = () => {
                         }
                       /> */}
                       <input
-  type="number"
-  min={1}
-  max={product.availableQty || 1}
-  value={product.qty}
-  className={`w-full px-1 py-0.5 border rounded ${
-    invalidQty ? "border-red-500" : "border-gray-300"
-  }`}
-  onChange={(e) => {
-    // Let user type freely
-    handleQtyChange(product._id, e.target.value);
-  }}
-  onBlur={(e) => {
-    const value = parseInt(e.target.value, 10);
+                        type="number"
+                        min={1}
+                        max={product.availableQty || 1}
+                        value={product.qty}
+                        className={`w-full px-1 py-0.5 border rounded ${
+                          invalidQty ? "border-red-500" : "border-gray-300"
+                        }`}
+                        onChange={(e) => {
+                          // Let user type freely
+                          handleQtyChange(product._id, e.target.value);
+                        }}
+                        onBlur={(e) => {
+                          const value = parseInt(e.target.value, 10);
 
-    if (isNaN(value) || value < 1) {
-      alert("Quantity must be at least 1.");
-      handleQtyChange(product._id, 1);
-    } else if (value > product.availableQty) {
-      alert(
-        `Only ${product.availableQty} item(s) available for Size "${product.selectedSize}" and Color "${product.selectedColor}".`
-      );
-      handleQtyChange(product._id, product.availableQty);
-    } else {
-      // Set the valid parsed number back
-      handleQtyChange(product._id, value);
-    }
-  }}
-  disabled={!product.selectedSize || !product.selectedColor}
-/>
-
-
-
-
-
+                          if (isNaN(value) || value < 1) {
+                            alert("Quantity must be at least 1.");
+                            handleQtyChange(product._id, 1);
+                          } else if (value > product.availableQty) {
+                            alert(
+                              `Only ${product.availableQty} item(s) available for Size "${product.selectedSize}" and Color "${product.selectedColor}".`
+                            );
+                            handleQtyChange(product._id, product.availableQty);
+                          } else {
+                            // Set the valid parsed number back
+                            handleQtyChange(product._id, value);
+                          }
+                        }}
+                        disabled={
+                          !product.selectedSize || !product.selectedColor
+                        }
+                      />
 
                       <td className="border border-gray-300 p-2">
                         $
@@ -555,6 +554,18 @@ const Sales = () => {
                 <option value="Cash">Cash</option>
                 <option value="Card">Card</option>
               </select>
+              {paymentMethod === "Card" && (
+                <div className="mt-4">
+                  <label className="text-sm text-gray-700">Card Number</label>
+                  <input
+                    type="text"
+                    className="w-full border border-gray-300 rounded-md p-2"
+                    placeholder="Enter Card Number"
+                    value={cardNumber}
+                    onChange={(e) => setCardNumber(e.target.value)}
+                  />
+                </div>
+              )}
             </div>
 
             {/* Submit Button */}

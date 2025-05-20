@@ -1,13 +1,13 @@
-import React, { useEffect, useState } from 'react';
-import axiosInstance from '../pages/axiosInstance';
-import { toast } from 'react-toastify';
-import moment from 'moment';
-import { Link } from 'react-router-dom';
-import { Box, Button, IconButton, Paper, Grid } from '@mui/material';  // Added Grid for responsiveness
-import { DataGrid, GridAddIcon, gridClasses } from '@mui/x-data-grid';
+import React, { useEffect, useState } from "react";
+import axiosInstance from "../pages/axiosInstance";
+import { toast } from "react-toastify";
+import moment from "moment";
+import { Link } from "react-router-dom";
+import { Box, Button, IconButton, Paper, Grid } from "@mui/material"; // Added Grid for responsiveness
+import { DataGrid, GridAddIcon, gridClasses } from "@mui/x-data-grid";
 // import { GridAddIcon } from '@mui/icons-material';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPenToSquare, faTrashCan } from '@fortawesome/free-regular-svg-icons';
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faPenToSquare, faTrashCan } from "@fortawesome/free-regular-svg-icons";
 
 const ProductsInfo = () => {
   const [products, setProducts] = useState([]);
@@ -97,16 +97,24 @@ const ProductsInfo = () => {
           }}
         >
           <Link to={`/admin/product/edit/${value.row._id}`}>
-            <IconButton aria-label="edit" className='text-sm'>
-            <FontAwesomeIcon icon={faPenToSquare} />
+            <IconButton aria-label="edit" className="text-sm">
+              <FontAwesomeIcon icon={faPenToSquare} />
             </IconButton>
-         
           </Link>
-          <IconButton
+          {/* <IconButton
             aria-label="delete"
             onClick={(e) => deleteProductById(e, value.row._id)}
           >
             <FontAwesomeIcon className='text-red-500' icon={faTrashCan} />
+          </IconButton> */}
+          <IconButton
+            aria-label="delete"
+            onClick={(e) => {
+              e.stopPropagation(); // Prevent row click conflict
+              deleteProductById(e, value.row._id);
+            }}
+          >
+            <FontAwesomeIcon className="text-red-500" icon={faTrashCan} />
           </IconButton>
         </Box>
       ),
@@ -140,7 +148,7 @@ const ProductsInfo = () => {
         </Grid>
 
         <Paper sx={{ bgColor: "white" }}>
-          <Box sx={{ height: 'auto', width: "100%" }}>
+          <Box sx={{ height: "auto", width: "100%" }}>
             <DataGrid
               getRowId={(row) => row._id}
               sx={{
