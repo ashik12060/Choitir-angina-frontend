@@ -56,10 +56,16 @@ const validationSchema = yup.object({
           .number("Add quantity")
           .min(1, "Quantity must be at least 1")
           .required("Quantity is required"),
+        // productLength: yup
+        //   .number("Add length")
+        //   .min(1, "Length must be at least 1")
+        //   .required("Length is required"),
         productLength: yup
           .number("Add length")
-          .min(1, "Length must be at least 1")
-          .required("Length is required"),
+          .nullable() // Accepts null values if needed
+          .transform((value, originalValue) =>
+            String(originalValue).trim() === "" ? null : value
+          ),
       })
     )
     .min(1, "At least one variant is required")
@@ -78,12 +84,18 @@ const CreateProduct = () => {
   const [filteredSubcategories, setFilteredSubcategories] = useState([]); // State for filtered subcategories
   const [sizes, setSizes] = useState([]);
   const [variants, setVariants] = useState([
-    { size: "", color: "", quantity: 0, productLength: 0 }, //variant added
+    { size: "", color: "", quantity: 0, productLength: null }, //variant added
   ]);
 
   const [subBarcodeImages, setSubBarcodeImages] = useState([]);
 
-  const categoriesList = ["All", "Top Brands", "New Arrival","Stitched", "Unstitched"];
+  const categoriesList = [
+    "All",
+    "Top Brands",
+    "New Arrival",
+    "Stitched",
+    "Unstitched",
+  ];
 
   const {
     values,
@@ -110,7 +122,7 @@ const CreateProduct = () => {
           size: "",
           color: "",
           quantity: 0,
-          productLength: 0,
+          productLength: null,
           subBarcode: "",
           subBarcodeSvg: "",
         },
