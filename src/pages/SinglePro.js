@@ -322,7 +322,7 @@ const SinglePro = () => {
                 </div>
               )}
 
-              {selectedColor && (
+              {/* {selectedColor && (
                 <div className="mt-4">
                   {product.variants
                     .filter((variant) => variant.color === selectedColor)
@@ -332,8 +332,22 @@ const SinglePro = () => {
                         {variant.productLength}
                       </p>
                     ))}
-                </div>
-              )}
+                </div> */}
+              {/* )} */}
+              {selectedColor && (
+  <div className="mt-4">
+    {product.variants
+      .filter((variant) => variant.color === selectedColor)
+      .map((variant, index) => (
+        typeof variant.productLength === "number" ? (
+          <p key={index} className="text-lg">
+            <span className="font-bold">Length:</span> {variant.productLength}
+          </p>
+        ) : null
+      ))}
+  </div>
+)}
+
 
               {/* Action Buttons */}
               <div className="mt-4">
