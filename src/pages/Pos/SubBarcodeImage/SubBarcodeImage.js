@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useRef } from "react";
 import axiosInstance from "../../axiosInstance";
+import { Link } from "react-router-dom";
 
 const SubBarcodeImage = () => {
   const [variants, setVariants] = useState([]);
@@ -36,90 +37,46 @@ const SubBarcodeImage = () => {
     fetchVariants();
   }, []);
 
-
-const handlePrint = () => {
-  if (!selectedVariant) return;
-
-  const svgContent = selectedVariant.subBarcodeSvg; // Could be inline SVG string or base64 image URL
-
-  // Decide how to embed the barcode in print window:
-  // If svgContent starts with '<svg', embed inline.
-  // Else if it starts with 'data:image', embed as <img src="..."/>
-  let barcodeHtml = "";
-  if (svgContent?.startsWith("<svg")) {
-    barcodeHtml = svgContent;
-  } else if (svgContent?.startsWith("data:image")) {
-    barcodeHtml = `<img src="${svgContent}" alt="Barcode Image" style="max-width:100%; max-height:50px;" />`;
-  } else {
-    barcodeHtml = "<p>No barcode image available</p>";
-  }
-
-  const printWindow = window.open("", "_blank");
-  printWindow.document.write(`
-    <html>
-      <head>
-        <title>Print Barcode</title>
-        <style>
-          @media print {
-            body {
-              margin: 0;
-              padding: 0;
-            }
-            .barcode-box {
-              width: 1.5in;
-              height: 1.2in;
-              display: flex;
-              flex-direction: column;
-              align-items: center;
-              justify-content: center;
-              font-family: Arial, sans-serif;
-              font-size: 10px;
-              text-align: center;
-              border: 1px solid #000;
-              box-sizing: border-box;
-              page-break-after: always;
-              padding: 8px;
-            }
-            svg {
-              width: 100%;
-              height: auto;
-              max-height: 50px;
-            }
-            img {
-              max-width: 100%;
-              max-height: 50px;
-            }
-          }
-        </style>
-      </head>
-      <body>
-        <div class="barcode-box">
-          <div><strong>CHAITYR ANGINA</strong></div>
-          <div>${selectedVariant.productTitle}</div>
-          <div>Size: ${selectedVariant.size || "N/A"} | Color: ${selectedVariant.color || "N/A"}</div>
-          ${barcodeHtml}
-          <div>Price: ${selectedVariant.productPrice}</div>
-        </div>
-        <script>
-          window.onload = function() {
-            window.print();
-            window.close();
-          };
-        </script>
-      </body>
-    </html>
-  `);
-  printWindow.document.close();
-};
+  const handlePrint = () => {
+    if (!selectedVariant) return;
+    window.print();
+  };
 
   const uniqueSubBarcodes = [...new Set(variants.map((v) => v.subBarcode))];
-  const selectedVariant = variants.find((v) => v.subBarcode === selectedSubBarcode);
+  const selectedVariant = variants.find(
+    (v) => v.subBarcode === selectedSubBarcode
+  );
 
-  if (loading) return <p className="text-center mt-10">Loading variant barcodes...</p>;
+  if (loading)
+    return <p className="text-center mt-10">Loading variant barcodes...</p>;
 
   return (
+    <>
+  
+    
     <div className="min-h-screen flex flex-col items-center justify-center p-4 bg-gray-50">
+      <style>
+        {`
+          @media print {
+            body * {
+              visibility: hidden;
+            }
+            #print-area, #print-area * {
+              visibility: visible;
+            }
+            #print-area {
+              position: absolute;
+              top: 0;
+              left: 0;
+              width: 100%;
+              padding: 20px;
+            }
+          }
+        `}
+      </style>
+
       <div className="w-full max-w-xl space-y-6 bg-white shadow-md rounded-lg p-6">
+        <Link to='/' className="bg-black text-white p-2 rounded">Home</Link>
         <h2 className="text-2xl font-bold text-center text-gray-800">
           Print Variant Barcode
         </h2>
@@ -156,25 +113,31 @@ const handlePrint = () => {
         {selectedVariant && (
           <div
             ref={printRef}
+            id="print-area"
             className="barcode-box border border-gray-300 p-4 rounded text-center mx-auto bg-white w-full max-w-sm"
           >
             <p className="font-bold text-lg">CHAITYR ANGINA</p>
-            <p className="font-semibold">{selectedVariant.productTitle} | {selectedVariant.size || "N/A"} | {selectedVariant.color || "N/A"} </p>
-            
+            <p className="font-semibold">
+              {selectedVariant.productTitle} | {selectedVariant.size || "N/A"} |{" "}
+              {selectedVariant.color || "N/A"}
+            </p>
+
             {selectedVariant.subBarcodeSvg ? (
               <img
                 src={selectedVariant.subBarcodeSvg}
                 alt={`Barcode ${selectedVariant.subBarcode}`}
-                className="mx-auto h-20 my-2"
+                className="mx-auto h-8 my-2"
               />
             ) : (
               <p>No barcode image</p>
             )}
-            <p className="font-semibold">Price: {selectedVariant.productPrice}</p>
+            <p className="font-bold">Price: ৳{selectedVariant.productPrice}</p>
           </div>
         )}
       </div>
     </div>
+    
+    </>
   );
 };
 
