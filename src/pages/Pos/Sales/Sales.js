@@ -119,6 +119,7 @@ const [cardNumber, setCardNumber] = useState("");
       discountAmount,
       netPayable,
       paymentMethod,
+      ...(paymentMethod === "Card" && { cardNumber }),
     };
 
     axiosInstance
