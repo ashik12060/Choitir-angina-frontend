@@ -115,7 +115,6 @@ const CreateProduct = () => {
       title: "",
       content: "",
       // description: "",
-
       price: "",
 
       brand: "",
