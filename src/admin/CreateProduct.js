@@ -27,10 +27,10 @@ const validationSchema = yup.object({
     .min(1, "Text content should have a minimum of 1 character")
     .required("Text content is required"),
 
-  description: yup
-    .string("Add text description")
-    .min(1, "Text content should have a minimum of 1 character")
-    .required("Text content is required"),
+  // description: yup
+  //   .string("Add text description")
+  //   .min(1, "Text content should have a minimum of 1 character")
+  //   .required("Text content is required"),
 
   price: yup.number("Add Price").required("Price is required"),
   // quantity: yup.number("Add quantity").required("quantity is required"),
@@ -56,6 +56,11 @@ const validationSchema = yup.object({
           .number("Add quantity")
           .min(1, "Quantity must be at least 1")
           .required("Quantity is required"),
+
+        description: yup
+          .string("Add text description")
+          .min(1, "Text content should have a minimum of 1 character")
+          .required("Text content is required"),
         // productLength: yup
         //   .number("Add length")
         //   .min(1, "Length must be at least 1")
@@ -84,7 +89,7 @@ const CreateProduct = () => {
   const [filteredSubcategories, setFilteredSubcategories] = useState([]); // State for filtered subcategories
   const [sizes, setSizes] = useState([]);
   const [variants, setVariants] = useState([
-    { size: "", color: "", quantity: 0, productLength: null }, //variant added
+    { size: "", color: "", quantity: 0, productLength: null, description: "" }, //variant added
   ]);
 
   const [subBarcodeImages, setSubBarcodeImages] = useState([]);
@@ -109,7 +114,7 @@ const CreateProduct = () => {
     initialValues: {
       title: "",
       content: "",
-      description: "",
+      // description: "",
 
       price: "",
 
@@ -122,6 +127,7 @@ const CreateProduct = () => {
           size: "",
           color: "",
           quantity: 0,
+          description: "",
           productLength: null,
           subBarcode: "",
           subBarcodeSvg: "",
@@ -418,7 +424,7 @@ const CreateProduct = () => {
               helperText={touched.content && errors.content}
             />
 
-            <TextField
+            {/* <TextField
               sx={{ mb: 3 }}
               fullWidth
               id="description"
@@ -431,7 +437,7 @@ const CreateProduct = () => {
               onBlur={handleBlur}
               error={touched.description && Boolean(errors.description)}
               helperText={touched.description && errors.description}
-            />
+            /> */}
 
             <TextField
               sx={{ mb: 3 }}
@@ -629,6 +635,45 @@ const CreateProduct = () => {
                     }
                     sx={{ mb: 2 }}
                   />
+                  <TextField
+                    fullWidth
+                    label={`Description ${index + 1}`}
+                    name={`variants[${index}].description`}
+                    type="string"
+                    value={variant.description}
+                    onChange={(e) =>
+                      handleVariantChange(
+                        index,
+                        "description",
+                        e.target.value
+                      )
+                    }
+                    onBlur={handleBlur}
+                    error={
+                      touched.variants?.[index]?.description &&
+                      Boolean(errors.variants?.[index]?.description)
+                    }
+                    helperText={
+                      touched.variants?.[index]?.description &&
+                      errors.variants?.[index]?.description
+                    }
+                    sx={{ mb: 2 }}
+                  />
+{/* 
+                  <TextField
+                    sx={{ mb: 3 }}
+                    fullWidth
+                    id="description"
+                    label="Description"
+                    name="description"
+                    multiline
+                    rows={4}
+                    value={values.description}
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    error={touched.description && Boolean(errors.description)}
+                    helperText={touched.description && errors.description}
+                  /> */}
 
                   {/* new added sub barcode */}
                   <TextField
