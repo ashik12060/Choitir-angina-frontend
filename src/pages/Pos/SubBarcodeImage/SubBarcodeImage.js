@@ -55,7 +55,7 @@ const SubBarcodeImage = () => {
   
     
     <div className="min-h-screen flex flex-col items-center justify-center p-4 bg-gray-50">
-      <style>
+      {/* <style>
         {`
           @media print {
             body * {
@@ -73,7 +73,34 @@ const SubBarcodeImage = () => {
             }
           }
         `}
-      </style>
+      </style> */}
+      <style>
+  {`
+    @media print {
+      body * {
+        visibility: hidden;
+      }
+      #print-area, #print-area * {
+        visibility: visible;
+      }
+      #print-area {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        padding: 20px;
+      }
+
+      /* ✅ Make barcode image exactly 1in x 1.5in when printing */
+      #print-area img {
+        height: 1in !important;
+        width: 1.5in !important;
+        object-fit: contain;
+      }
+    }
+  `}
+</style>
+
 
       <div className="w-full max-w-xl space-y-6 bg-white shadow-md rounded-lg p-6">
         <Link to='/' className="bg-black text-white p-2 rounded">Home</Link>
@@ -126,7 +153,7 @@ const SubBarcodeImage = () => {
               <img
                 src={selectedVariant.subBarcodeSvg}
                 alt={`Barcode ${selectedVariant.subBarcode}`}
-                className="mx-auto h-8 my-2"
+                className="mx-auto my-2"
               />
             ) : (
               <p>No barcode image</p>
