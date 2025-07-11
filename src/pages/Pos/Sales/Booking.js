@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import axiosInstance from "../../axiosInstance";
 import { Link } from "react-router-dom";
 
-const Sales = () => {
+const Booking = () => {
   const [products, setProducts] = useState([]);
   const [selectedProducts, setSelectedProducts] = useState([]); // Array to store selected products
   const [qty, setQty] = useState(1);
@@ -123,7 +123,7 @@ const [cardNumber, setCardNumber] = useState("");
     };
 
     axiosInstance
-      .post(`${process.env.REACT_APP_API_URL}/api/sales/create`, saleData)
+      .post(`${process.env.REACT_APP_API_URL}/api/bookings/create`, saleData)
       .then((response) => {
         alert("Sale submitted successfully!");
         // Reset fields after submission
@@ -202,7 +202,7 @@ const [cardNumber, setCardNumber] = useState("");
           Chaityr Angina
         </Link>
         <p className="font-bold">
-          <i>Green Software Technology</i>
+          <i>Book Products</i>
         </p>
         <img
           src="https://via.placeholder.com/150"
@@ -556,4 +556,4 @@ const [cardNumber, setCardNumber] = useState("");
   );
 };
 
-export default Sales;
+export default Booking;

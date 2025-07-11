@@ -32,6 +32,7 @@ const Dashboard = () => {
         { name: 'Promotion', path: '/promotion' },
         { name: 'Package', path: '/package' },
         { name: 'Inventory', path: '/inventory' },
+        { name: 'Booking', path: '/booking' },
       ],
     },
     {

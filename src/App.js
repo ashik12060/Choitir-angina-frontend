@@ -74,6 +74,7 @@ import CreateWarehouseProduct from "./admin/CreateWarehouseProduct";
 import WarehouseSale from "./pages/Pos/Sales/WarehouseSale";
 import WarehouseSales from "./admin/WarehouseSales";
 import SubBarcodeImage from "./pages/Pos/SubBarcodeImage/SubBarcodeImage";
+import Booking from "./pages/Pos/Sales/Booking";
 //HOC
 const AdminDashboardHOC = Layout(AdminDashboard);
 
@@ -137,6 +138,7 @@ function App() {
                 {/* pos start */}
                 <Route path="/pos" element={<Dashboard />} />
                 <Route path="/sales" element={<Sales />} />
+                <Route path="/booking" element={<Booking />} />
                 <Route path="/barcode-print" element={<BarcodePrint />} />
                 <Route path="/sub-barcode-print" element={<SubBarcodeImage />} />
                 <Route path="/sales-report" element={<SalesReport />} />
