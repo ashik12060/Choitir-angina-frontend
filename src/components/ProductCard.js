@@ -233,32 +233,33 @@ const ProductCard = ({
     <div>
       <div
         id="productInfo"
-        className="w-full p-2 shadow-md rounded-lg border-2 border-[#d5c085] bg-white flex flex-col"
+        className="w-full p-2 shadow-md rounded-lg  bg-white flex flex-col"
+        // className="w-full p-2 shadow-md rounded-lg border-2 border-[#d5c085] bg-white flex flex-col"
       >
         <Link to={`/product/${id}`}>
           <img
-            className="w-full h-44 object-cover rounded-md"
+            className="w-full h-52 object-cover rounded-md"
             src={firstVariantImageUrl || "/default-image.jpg"} // Fallback to a default image if no variant exists
             alt="product"
           />
         </Link>
-        <p className="pt-2 text-lg font-bold text-gray-800 truncate">{title}</p>
+        <p className="pt-2 text-lg font-serif text-gray-800 truncate">{title}</p>
         <p className="text-gray-600 text-sm">
-          <span className="font-bold">Origin:</span> {truncatedContent}
+          {/* <span className="font-bold">Origin:</span> {truncatedContent} */}
         </p>
-        <div className="flex items-center mt-1 space-x-1">
+        {/* <div className="flex items-center mt-1 space-x-1">
           <FontAwesomeIcon icon={faStar} className="text-yellow-500" />
           <FontAwesomeIcon icon={faStar} className="text-yellow-500" />
           <FontAwesomeIcon icon={faStar} className="text-yellow-500" />
           <FontAwesomeIcon icon={faStar} className="text-yellow-500" />
           <FontAwesomeIcon icon={faStar} className="text-yellow-500" />
-        </div>
-        <p className="text-lg font-bold text-green-600">${price}</p>
-        <Link to={`/product/${id}`}>
+        </div> */}
+        <p className="text-lg font-mono ">${price}</p>
+        {/* <Link to={`/product/${id}`}>
           <button className="bg-blue-600 text-white text-sm px-4 py-2 mt-4 rounded-md hover:bg-blue-700 transition">
             Buy Now
           </button>
-        </Link>
+        </Link> */}
       </div>
     </div>
   );

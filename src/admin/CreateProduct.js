@@ -645,21 +645,6 @@ const CreateProduct = () => {
                     }
                     sx={{ mb: 2 }}
                   />
-{/* 
-                  <TextField
-                    sx={{ mb: 3 }}
-                    fullWidth
-                    id="description"
-                    label="Description"
-                    name="description"
-                    multiline
-                    rows={4}
-                    value={values.description}
-                    onChange={handleChange}
-                    onBlur={handleBlur}
-                    error={touched.description && Boolean(errors.description)}
-                    helperText={touched.description && errors.description}
-                  /> */}
 
                   {/* new added sub barcode */}
                   <TextField
