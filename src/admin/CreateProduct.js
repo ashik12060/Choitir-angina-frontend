@@ -423,20 +423,7 @@ const CreateProduct = () => {
               helperText={touched.content && errors.content}
             />
 
-            {/* <TextField
-              sx={{ mb: 3 }}
-              fullWidth
-              id="description"
-              label="Description"
-              name="description"
-              multiline
-              rows={4}
-              value={values.description}
-              onChange={handleChange}
-              onBlur={handleBlur}
-              error={touched.description && Boolean(errors.description)}
-              helperText={touched.description && errors.description}
-            /> */}
+          
 
             <TextField
               sx={{ mb: 3 }}

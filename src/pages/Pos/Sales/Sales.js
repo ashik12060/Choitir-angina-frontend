@@ -154,6 +154,59 @@ const [cardNumber, setCardNumber] = useState("");
     return matchedVariant ? matchedVariant.quantity : 0;
   };
 
+  // barcode number based 
+ const handleBarcodeInput = (e) => {
+  if (e.key === "Enter") {
+    const barcode = e.target.value.trim();
+    if (!barcode) return;
+
+    let foundProduct = null;
+    let matchedVariant = null;
+
+    for (const product of products) {
+      const variant = product.variants.find((v) => v.subBarcode === barcode);
+      if (variant) {
+        foundProduct = product;
+        matchedVariant = variant;
+        break;
+      }
+    }
+
+    if (!foundProduct || !matchedVariant) {
+      alert("❌ Product with this barcode was not found.");
+      e.target.value = "";
+      return;
+    }
+
+    setSelectedProducts((prevSelected) => {
+      const updatedProducts = [...prevSelected];
+      const existingProduct = updatedProducts.find(
+        (p) =>
+          p._id === foundProduct._id &&
+          p.selectedSize === matchedVariant.size &&
+          p.selectedColor === matchedVariant.color
+      );
+
+      if (existingProduct) {
+        existingProduct.qty = existingProduct.qty + 1;
+      } else {
+        updatedProducts.push({
+          ...foundProduct,
+          qty: 1,
+          selectedSize: matchedVariant.size,
+          selectedColor: matchedVariant.color,
+          availableQty: matchedVariant.quantity,
+        });
+      }
+
+      return updatedProducts;
+    });
+
+    e.target.value = "";
+  }
+};
+
+
   const handleSizeChange = (productId, selectedSize) => {
     setSelectedProducts((prev) =>
       prev.map((product) => {
@@ -217,7 +270,7 @@ const [cardNumber, setCardNumber] = useState("");
         <div className="col-span-9 bg-white shadow-md p-4 rounded-md">
           {/* Input Fields */}
           <div className="grid grid-cols-6 gap-4">
-            <div>
+            {/* <div>
               <label className="text-sm text-gray-700">Product</label>
               <select
                 className="w-full border border-gray-300 rounded-md p-2"
@@ -230,7 +283,17 @@ const [cardNumber, setCardNumber] = useState("");
                   </option>
                 ))}
               </select>
-            </div>
+            </div> */}
+            <div>
+  <label className="text-sm text-gray-700">Scan or Enter Barcode</label>
+  <input
+    type="text"
+    className="w-full border border-gray-300 rounded-md p-2"
+    placeholder="Enter or scan barcode and press Enter"
+    onKeyDown={handleBarcodeInput}
+  />
+</div>
+
 
             {/* Customer Details */}
             <div>
