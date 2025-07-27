@@ -254,7 +254,7 @@ const ProductCard = ({
           <FontAwesomeIcon icon={faStar} className="text-yellow-500" />
           <FontAwesomeIcon icon={faStar} className="text-yellow-500" />
         </div> */}
-        <p className="text-lg font-mono ">${price}</p>
+        <p className="text-lg font-mono ">৳ {price}</p>
         {/* <Link to={`/product/${id}`}>
           <button className="bg-blue-600 text-white text-sm px-4 py-2 mt-4 rounded-md hover:bg-blue-700 transition">
             Buy Now
