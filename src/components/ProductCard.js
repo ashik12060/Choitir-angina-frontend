@@ -247,19 +247,9 @@ const ProductCard = ({
         <p className="text-gray-600 text-sm">
           {/* <span className="font-bold">Origin:</span> {truncatedContent} */}
         </p>
-        {/* <div className="flex items-center mt-1 space-x-1">
-          <FontAwesomeIcon icon={faStar} className="text-yellow-500" />
-          <FontAwesomeIcon icon={faStar} className="text-yellow-500" />
-          <FontAwesomeIcon icon={faStar} className="text-yellow-500" />
-          <FontAwesomeIcon icon={faStar} className="text-yellow-500" />
-          <FontAwesomeIcon icon={faStar} className="text-yellow-500" />
-        </div> */}
+       
         <p className="text-lg font-mono ">৳ {price}</p>
-        {/* <Link to={`/product/${id}`}>
-          <button className="bg-blue-600 text-white text-sm px-4 py-2 mt-4 rounded-md hover:bg-blue-700 transition">
-            Buy Now
-          </button>
-        </Link> */}
+    
       </div>
     </div>
   );

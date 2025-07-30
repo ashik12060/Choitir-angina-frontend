@@ -32,6 +32,7 @@ const SinglePro = () => {
   const [commentsRealTime, setCommentsRealTime] = useState([]);
   const [selectedColor, setSelectedColor] = useState(null);
   const [selectedLength, setSelectedLength] = useState(null);
+  const [colorStockQuantity, setColorStockQuantity] = useState(0);
 
   const [availableSizes, setAvailableSizes] = useState([]);
   const [selectedSize, setSelectedSize] = useState(null);
@@ -89,14 +90,21 @@ const SinglePro = () => {
   const uiCommentUpdate =
     commentsRealTime.length > 0 ? commentsRealTime : product?.comments;
 
+
   const handleColorSelect = (color) => {
     setSelectedColor(color);
+
     const sizesForColor = product.variants
       .filter((variant) => variant.color === color)
       .map((variant) => variant.size);
     setAvailableSizes(sizesForColor);
     setSelectedSize(null);
-    console.log(product.variants);
+
+    const totalColorQuantity = product.variants
+      .filter((variant) => variant.color === color)
+      .reduce((sum, variant) => sum + variant.quantity, 0);
+
+    setColorStockQuantity(totalColorQuantity);
   };
 
   const handleSizeSelect = (size) => {
@@ -172,7 +180,6 @@ const SinglePro = () => {
                       alt={product.title}
                       // className="w-full h-96 object-cover rounded-md transition-transform duration-300 cursor-zoom-in"
                       className="w-full h-64 sm:h-80 md:h-96 lg:h-[28rem] xl:h-[32rem] object-cover rounded-md transition-transform duration-300 cursor-zoom-in"
-
                       onClick={() => setIsZoomed(true)}
                     />
 
@@ -248,19 +255,22 @@ const SinglePro = () => {
                 {product.title}
               </h2>
 
-              <p className="text-lg">
-                <span className="text-sm">Quantity available:</span>{" "}
+              <p className="text-lg  font-serif">
+                <span className="text-sm   font-serif">
+                  Quantity available:
+                </span>{" "}
                 {product.variants.reduce(
                   (total, variant) => total + variant.quantity,
                   0
                 )}
               </p>
 
-              <div className="mt-4">
-                <p className="text-xl  font-semibold text-black">
-                  ৳{product.price}
+              <div className="mt-2">
+                <p className="font-serif text-black">
+
+                  Price: <span className="text-xl ">৳{product.price}</span>
                 </p>
-                {/* <p className="line-through text-gray-400">$30</p> */}
+                
               </div>
 
               {/* Color Selector */}
@@ -281,15 +291,6 @@ const SinglePro = () => {
                     </button>
                   ))}
                 </div>
-                {/* Selected Color Display */}
-                {selectedColor && (
-                  <div className="mt-4">
-                    <p className="text-sm text-gray-700">
-                      Selected Color:{" "}
-                      <span className="font-bold">{selectedColor}</span>
-                    </p>
-                  </div>
-                )}
               </div>
 
               {/* Size Selector */}
@@ -314,7 +315,7 @@ const SinglePro = () => {
                     ))}
                   </div>
                   {selectedSize && (
-                    <p className="mt-2 text-sm text-gray-600">
+                    <p className="mt-2 text-sm font-serif text-gray-600">
                       Selected Size:{" "}
                       <span className="font-bold">{selectedSize}</span>
                     </p>
@@ -322,32 +323,28 @@ const SinglePro = () => {
                 </div>
               )}
 
-              {/* {selectedColor && (
-                <div className="mt-4">
-                  {product.variants
-                    .filter((variant) => variant.color === selectedColor)
-                    .map((variant, index) => (
-                      <p key={index} className="text-lg">
-                        <span className="font-bold">Length:</span>{" "}
-                        {variant.productLength}
-                      </p>
-                    ))}
-                </div> */}
-              {/* )} */}
               {selectedColor && (
-  <div className="mt-4">
-    {product.variants
-      .filter((variant) => variant.color === selectedColor)
-      .map((variant, index) => (
-        typeof variant.productLength === "number" ? (
-          <p key={index} className="text-lg">
-            <span className="font-bold">Length:</span> {variant.productLength}
-          </p>
-        ) : null
-      ))}
-  </div>
-)}
-
+                <div className="mt-4 font-serif">
+                  <p className="text-sm font-serif text-gray-700">
+                    Selected Color:{" "}
+                    <span className="font-bold text-md">{selectedColor}</span>
+                  </p>
+                  <p
+                    className={`text-sm ${
+                      colorStockQuantity > 0 ? "text-black" : "text-red-600"
+                    }`}
+                  >
+                    {colorStockQuantity > 0 ? (
+                      <>
+                        Available Quantity:{" "}
+                        <span className="font-bold">{colorStockQuantity}</span>
+                      </>
+                    ) : (
+                      "Out of Stock"
+                    )}
+                  </p>
+                </div>
+              )}
 
               {/* Action Buttons */}
               <div className="mt-4">

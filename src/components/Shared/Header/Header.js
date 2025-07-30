@@ -187,7 +187,7 @@ const Header = ({ totalServices, name, searchQuery, setSearchQuery }) => {
     { label: "NEW ARRIVALS", dropdown: ["Summer Collection", "Winter Collection"] },
     { label: "READY TO WEAR", dropdown: ["Casual", "Formal"] },
     { label: "UNSTITCHED" },
-    { label: "KID'S COLLECTION", dropdown: ["Boys", "Girls"] },
+    // { label: "KID'S COLLECTION", dropdown: ["Boys", "Girls"] },
    
   ];
 

@@ -16,7 +16,7 @@ const BlogPro = ({ searchQuery }) => {
   const [postRemoveLike, setPostRemoveLike] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-  const itemsPerPage = 12;
+  const itemsPerPage = 50;
 
   const showProducts = async (page = 1) => {
     setLoading(true);

@@ -75,6 +75,15 @@ import WarehouseSale from "./pages/Pos/Sales/WarehouseSale";
 import WarehouseSales from "./admin/WarehouseSales";
 import SubBarcodeImage from "./pages/Pos/SubBarcodeImage/SubBarcodeImage";
 import Booking from "./pages/Pos/Sales/Booking";
+import ProductsShow from "./pages/ProductsShow";
+import ProductsByBrand from "./pages/ProductsByBrand";
+import ProductGroupByTitle from "./pages/ProductGroupByTitle";
+import ProductByCategory from "./pages/ProductsByCategory";
+import TopBrands from "./components/TopBrands/TopBrands";
+import NewArrival from "./components/NewArrival/NewArrival";
+import Stitched from "./components/Stitched/Stitched";
+import Unstitched from "./components/Unstitched/Unstitched";
+
 //HOC
 const AdminDashboardHOC = Layout(AdminDashboard);
 
@@ -127,6 +136,78 @@ function App() {
                     </>
                   }
                 ></Route>
+                <Route
+                  path="/products-gallery/:title"
+                  element={
+                    <>
+                      <CartProvider>
+                        <Header />
+                      </CartProvider>
+                      <ProductGroupByTitle />
+                    </>
+                  }
+                ></Route>
+                <Route
+                  path="/category/top-brands"
+                  element={
+                    <>
+                      <CartProvider>
+                        <Header />
+                      </CartProvider>
+                      <TopBrands />
+                    </>
+                  }
+                ></Route>
+                <Route
+                  path="/category/new-arrival"
+                  element={
+                    <>
+                      <CartProvider>
+                        <Header />
+                      </CartProvider>
+                      <NewArrival />
+                    </>
+                  }
+                ></Route>
+                <Route
+                  path="/category/stitched"
+                  element={
+                    <>
+                      <CartProvider>
+                        <Header />
+                      </CartProvider>
+                      <Stitched />
+                    </>
+                  }
+                ></Route>
+                <Route
+                  path="/category/unstitched"
+                  element={
+                    <>
+                      <CartProvider>
+                        <Header />
+                      </CartProvider>
+                      <Unstitched  />
+                    </>
+                  }
+                ></Route>
+
+                
+
+  <Route path="/category/top-brands" element={<TopBrands />} />
+  <Route path="/category/new-arrival" element={<NewArrival />} />
+  <Route path="/category/stitched" element={<Stitched />} />
+  <Route path="/category/unstitched" element={<Unstitched />} />
+
+<Route path="/products/show" element={<ProductsShow />} />
+  <Route path="/products/brand/:brand" element={<ProductsByBrand />} />
+  <Route path="/products-category" element={<ProductByCategory />} />
+  <Route path="/products-gallery/:title" element={<ProductGroupByTitle />} />
+
+
+
+
+
                 <Route path="/contact" element={<Contact />}></Route>
                 <Route path="/seller-login" element={<LoginUser />}></Route>
                 <Route path="/seller" element={<Seller />} />
@@ -189,6 +270,7 @@ function App() {
                     </PrivateRoute>
                   }
                 />
+                
 
                 <Route
                   path="/login"
