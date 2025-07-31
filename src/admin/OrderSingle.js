@@ -8,28 +8,55 @@ const OrderSingle = () => {
   const [itemsPerPage] = useState(8);
   const [selectedOrder, setSelectedOrder] = useState(null); // To store the selected order for details
 
-  useEffect(() => {
-    const fetchOrders = async () => {
-      try {
-        const response = await axiosInstance.get(
-          `${process.env.REACT_APP_API_URL}/api/orders`,
-          {
-            headers: {
-              Authorization: `Bearer ${localStorage.getItem("authToken")}`,
-            },
-          }
-        );
-        setOrders(response.data.orders);
-        console.log(response.data.orders);
-      } catch (error) {
-        console.error("Error fetching orders:", error);
-      }
-    };
+  // useEffect(() => {
+  //   const fetchOrders = async () => {
+  //     try {
+  //       const response = await axiosInstance.get(
+  //         `${process.env.REACT_APP_API_URL}/api/orders`,
+  //         {
+  //           headers: {
+  //             Authorization: `Bearer ${localStorage.getItem("authToken")}`,
+  //           },
+  //         }
+  //       );
+  //       setOrders(response.data.orders);
+  //       console.log(response.data.orders);
+  //     } catch (error) {
+  //       console.error("Error fetching orders:", error);
+  //     }
+  //   };
 
-    fetchOrders();
-  }, []);
+  //   fetchOrders();
+  // }, []);
 
   // Pagination logic
+  useEffect(() => {
+  const fetchOrders = async () => {
+    try {
+      const response = await axiosInstance.get(
+        `${process.env.REACT_APP_API_URL}/api/orders`,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("authToken")}`,
+          },
+        }
+      );
+
+      const fetchedOrders = response?.data?.orders ?? [];
+
+      setOrders(fetchedOrders);
+      console.log("Fetched orders:", fetchedOrders);
+    } catch (error) {
+      console.error("Error fetching orders:", error);
+      setOrders([]); // fallback to empty array to prevent crash
+    }
+  };
+
+  fetchOrders();
+}, []);
+
+  
+  
   const indexOfLastOrder = currentPage * itemsPerPage;
   const indexOfFirstOrder = indexOfLastOrder - itemsPerPage;
   const currentOrders = orders.slice(indexOfFirstOrder, indexOfLastOrder);
