@@ -14,10 +14,10 @@ const ProductsLists = ({ searchQuery }) => {
       <div className="">
         <TopCarousel />
 
-        <ProductByCategory />
-        <InfoSection />
-        <ProductsShow />
+        {/* <ProductByCategory /> */}
 
+        <ProductsShow />
+        <InfoSection />
         <BlogPro searchQuery={searchQuery} />
       </div>
     </div>

@@ -40,12 +40,12 @@ const ProductsShow = () => {
   return (
    
     <div className="pt-10 px-4 my-14">
-  <h2 className="text-2xl font-serif px-32 text-gray-700">
-    NEW ARRIVAL
+  <h2 className="text-xl sm:text-2xl font-serif px-4 sm:px-8 text-gray-700">
+    SHOP BY PRODUCT TITLE
   </h2>
- <span> <hr className="mx-20 text-center font-bold  border-black"/></span>
+  <hr className="mx-4 sm:mx-8 border-black my-2" />
 
-  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4  xl:px-32 gap-4  sm:px-6 md:px-12 lg:px-20 pt-10">
+  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6 px-4 sm:px-6 md:px-8 lg:px-12 xl:px-20 pt-8">
     {uniqueProducts.length === 0 ? (
       <p className="col-span-full text-center text-gray-500">
         No products to show.
@@ -54,10 +54,10 @@ const ProductsShow = () => {
       uniqueProducts.map((product) => (
         <div
           key={product._id}
-          className="transition-transform duration-300 cursor-pointer overflow-hidden transform hover:scale-105"
+          className="transition-transform duration-300 cursor-pointer overflow-hidden transform hover:scale-105 text-center"
           onClick={() => handleNavigate(product.title)}
         >
-          <div className="aspect-square w-full rounded-full p-4 sm:p-6 md:p-8">
+          <div className="w-full aspect-[3/4] bg-white p-2 sm:p-4">
             <img
               src={
                 product.variants?.[0]?.imageUrl?.startsWith("http")
@@ -65,11 +65,11 @@ const ProductsShow = () => {
                   : "https://via.placeholder.com/200"
               }
               alt={product.title}
-              className="w-full h-full object-cover rounded-full"
+              className="w-full h-full object-cover"
             />
           </div>
-          <div className="p-2 text-center">
-            <h3 className="text-lg sm:text-xl font-serif text-gray-800 truncate">
+          <div className="mt-2">
+            <h3 className="text-base sm:text-lg md:text-xl font-serif text-gray-800">
               {product.title || "No Title"}
             </h3>
           </div>
