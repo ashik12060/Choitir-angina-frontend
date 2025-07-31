@@ -7,24 +7,27 @@ const ProductGroupByTitle = () => {
   const { title } = useParams();
   const [matchedProducts, setMatchedProducts] = useState([]);
 
+
   useEffect(() => {
-    const fetchProducts = async () => {
-      try {
-        const res = await axiosInstance.get(`/api/products/show`);
-        const allProducts = res.data.products;
+  const fetchProducts = async () => {
+    try {
+      const res = await axiosInstance.get(`${process.env.REACT_APP_API_URL}/api/products/show`);
+      const allProducts = res.data.products;
 
-        const filtered = allProducts.filter(
-          (product) => product.title?.toLowerCase() === title.toLowerCase()
-        );
+      const filtered = allProducts.filter(
+        (product) =>
+          product.title?.toLowerCase().replace(/\s+/g, "-") === title.toLowerCase()
+      );
 
-        setMatchedProducts(filtered);
-      } catch (error) {
-        console.error("Error fetching products by title:", error);
-      }
-    };
+      setMatchedProducts(filtered);
+    } catch (error) {
+      console.error("Error fetching products by title:", error);
+    }
+  };
 
-    fetchProducts();
-  }, [title]);
+  fetchProducts();
+}, [title]);
+
 
   return (
    
