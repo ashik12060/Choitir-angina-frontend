@@ -33,6 +33,7 @@ const SinglePro = () => {
   const [selectedColor, setSelectedColor] = useState(null);
   const [selectedLength, setSelectedLength] = useState(null);
   const [colorStockQuantity, setColorStockQuantity] = useState(0);
+  const [selectedImageIndex, setSelectedImageIndex] = useState(0);
 
   const [availableSizes, setAvailableSizes] = useState([]);
   const [selectedSize, setSelectedSize] = useState(null);
@@ -89,7 +90,6 @@ const SinglePro = () => {
 
   const uiCommentUpdate =
     commentsRealTime.length > 0 ? commentsRealTime : product?.comments;
-
 
   const handleColorSelect = (color) => {
     setSelectedColor(color);
@@ -165,23 +165,30 @@ const SinglePro = () => {
         {loading || !product ? (
           <Loader />
         ) : (
-          <div className="flex flex-col lg:flex-row bg-gray-50 p-6 shadow-md rounded-md">
+          <div className="flex flex-col lg:flex-row bg-gray-50 p-6 shadow-md ">
             <div className="lg:w-1/3 p-4">
               {product.variants && product.variants.length > 0 ? (
                 <div className="relative">
                   <div
-                    className="border rounded-md mb-4 overflow-hidden group relative"
+                    className="border mb-4 overflow-hidden group relative"
                     onMouseMove={handleMouseMove}
                     onMouseLeave={resetZoom}
                   >
-                    {/* Main Image */}
-                    <img
-                      src={mainImage}
-                      alt={product.title}
-                      // className="w-full h-96 object-cover rounded-md transition-transform duration-300 cursor-zoom-in"
-                      className="w-full h-64 sm:h-80 md:h-96 lg:h-[28rem] xl:h-[32rem] object-cover rounded-md transition-transform duration-300 cursor-zoom-in"
-                      onClick={() => setIsZoomed(true)}
-                    />
+                   
+                    <div className="relative w-full max-h-[450px]">
+                      <img
+                        src={mainImage}
+                        alt={product.title}
+                        className="w-full h-full object-contain"
+                      />
+
+                      {/* Show the subBarcode at bottom right */}
+                      {product.variants[selectedImageIndex]?.subBarcode && (
+                        <span className="absolute bottom-0 right-0 bg-black text-white text-xs px-2 py-1">
+                          {product.variants[selectedImageIndex].subBarcode}
+                        </span>
+                      )}
+                    </div>
 
                     {/* Zoom Modal */}
 
@@ -267,10 +274,8 @@ const SinglePro = () => {
 
               <div className="mt-2">
                 <p className="font-serif text-black">
-
                   Price: <span className="text-xl ">৳{product.price}</span>
                 </p>
-                
               </div>
 
               {/* Color Selector */}
