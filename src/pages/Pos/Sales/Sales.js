@@ -15,14 +15,16 @@ const Sales = () => {
   const [netPayable, setNetPayable] = useState(0.0);
   const [vatRate, setVatRate] = useState(0); // VAT rate in percentage
   const [discountRate, setDiscountRate] = useState(0); // Discount rate in percentage
+
   const [vatAmount, setVatAmount] = useState(0.0); // VAT amount
-  const [discountAmount, setDiscountAmount] = useState(0.0); // Discount amount
+  // const [discountAmount, setDiscountAmount] = useState(0.0); 
+  const [discountAmount, setDiscountAmount] = useState(0);
+
   const [paymentMethod, setPaymentMethod] = useState(""); // New state for payment method
   const [amountGiven, setAmountGiven] = useState(0.0); // Amount customer gave
   const [changeReturned, setChangeReturned] = useState(0.0); // Change to return
   // const [paymentMethod, setPaymentMethod] = useState("");
-const [cardNumber, setCardNumber] = useState("");
-
+  const [cardNumber, setCardNumber] = useState("");
 
   // Fetch products from the API
   useEffect(() => {
@@ -76,29 +78,45 @@ const [cardNumber, setCardNumber] = useState("");
   };
 
   // Handle VAT and Discount calculations
-  const calculateNetPayable = () => {
-    let subtotal = 0;
-    let vat = 0;
-    let discount = 0;
+  // const calculateNetPayable = () => {
+  //   let subtotal = 0;
+  //   let vat = 0;
+  //   let discount = 0;
 
-    selectedProducts.forEach((product) => {
-      const productTotal = parseFloat(product.price) * product.qty;
-      subtotal += productTotal;
-      vat += (productTotal * vatRate) / 100;
-      discount += (productTotal * discountRate) / 100;
-    });
+  //   selectedProducts.forEach((product) => {
+  //     const productTotal = parseFloat(product.price) * product.qty;
+  //     subtotal += productTotal;
+  //     vat += (productTotal * vatRate) / 100;
+  //     discount += (productTotal * discountRate) / 100;
+  //   });
 
-    const finalAmount = subtotal - discount + vat;
-    setTotalPrice(subtotal);
-    setVatAmount(vat);
-    setDiscountAmount(discount);
-    setNetPayable(finalAmount);
-  };
+  //   const finalAmount = subtotal - discount + vat;
+  //   setTotalPrice(subtotal);
+  //   setVatAmount(vat);
+  //   setDiscountAmount(discount);
+  //   setNetPayable(finalAmount);
+  // };
+ const calculateNetPayable = () => {
+  let subtotal = 0;
+  let vat = 0;
+
+  selectedProducts.forEach((product) => {
+    const productTotal = parseFloat(product.price) * product.qty;
+    subtotal += productTotal;
+    vat += (productTotal * vatRate) / 100;
+  });
+
+  const finalAmount = subtotal - discountAmount + vat;
+
+  setTotalPrice(subtotal);
+  setVatAmount(vat);
+  setNetPayable(finalAmount);
+};
 
   // Update net payable whenever total price, VAT or discount changes
   useEffect(() => {
     calculateNetPayable();
-  }, [selectedProducts, vatRate, discountRate]);
+  }, [selectedProducts, vatRate, discountAmount]);
 
   const handleSubmit = () => {
     const saleData = {
@@ -133,7 +151,7 @@ const [cardNumber, setCardNumber] = useState("");
         setTotalPrice(0.0);
         setNetPayable(0.0);
         setVatAmount(0.0);
-        setDiscountAmount(0.0);
+        setDiscountAmount(0);
         setVatRate(0);
         setDiscountRate(0);
       });
@@ -154,58 +172,57 @@ const [cardNumber, setCardNumber] = useState("");
     return matchedVariant ? matchedVariant.quantity : 0;
   };
 
-  // barcode number based 
- const handleBarcodeInput = (e) => {
-  if (e.key === "Enter") {
-    const barcode = e.target.value.trim();
-    if (!barcode) return;
+  // barcode number based
+  const handleBarcodeInput = (e) => {
+    if (e.key === "Enter") {
+      const barcode = e.target.value.trim();
+      if (!barcode) return;
 
-    let foundProduct = null;
-    let matchedVariant = null;
+      let foundProduct = null;
+      let matchedVariant = null;
 
-    for (const product of products) {
-      const variant = product.variants.find((v) => v.subBarcode === barcode);
-      if (variant) {
-        foundProduct = product;
-        matchedVariant = variant;
-        break;
+      for (const product of products) {
+        const variant = product.variants.find((v) => v.subBarcode === barcode);
+        if (variant) {
+          foundProduct = product;
+          matchedVariant = variant;
+          break;
+        }
       }
-    }
 
-    if (!foundProduct || !matchedVariant) {
-      alert("❌ Product with this barcode was not found.");
+      if (!foundProduct || !matchedVariant) {
+        alert("❌ Product with this barcode was not found.");
+        e.target.value = "";
+        return;
+      }
+
+      setSelectedProducts((prevSelected) => {
+        const updatedProducts = [...prevSelected];
+        const existingProduct = updatedProducts.find(
+          (p) =>
+            p._id === foundProduct._id &&
+            p.selectedSize === matchedVariant.size &&
+            p.selectedColor === matchedVariant.color
+        );
+
+        if (existingProduct) {
+          existingProduct.qty = existingProduct.qty + 1;
+        } else {
+          updatedProducts.push({
+            ...foundProduct,
+            qty: 1,
+            selectedSize: matchedVariant.size,
+            selectedColor: matchedVariant.color,
+            availableQty: matchedVariant.quantity,
+          });
+        }
+
+        return updatedProducts;
+      });
+
       e.target.value = "";
-      return;
     }
-
-    setSelectedProducts((prevSelected) => {
-      const updatedProducts = [...prevSelected];
-      const existingProduct = updatedProducts.find(
-        (p) =>
-          p._id === foundProduct._id &&
-          p.selectedSize === matchedVariant.size &&
-          p.selectedColor === matchedVariant.color
-      );
-
-      if (existingProduct) {
-        existingProduct.qty = existingProduct.qty + 1;
-      } else {
-        updatedProducts.push({
-          ...foundProduct,
-          qty: 1,
-          selectedSize: matchedVariant.size,
-          selectedColor: matchedVariant.color,
-          availableQty: matchedVariant.quantity,
-        });
-      }
-
-      return updatedProducts;
-    });
-
-    e.target.value = "";
-  }
-};
-
+  };
 
   const handleSizeChange = (productId, selectedSize) => {
     setSelectedProducts((prev) =>
@@ -270,30 +287,18 @@ const [cardNumber, setCardNumber] = useState("");
         <div className="col-span-9 bg-white shadow-md p-4 rounded-md">
           {/* Input Fields */}
           <div className="grid grid-cols-6 gap-4">
-            {/* <div>
-              <label className="text-sm text-gray-700">Product</label>
-              <select
-                className="w-full border border-gray-300 rounded-md p-2"
-                onChange={(e) => handleProductSelect(e.target.value)}
-              >
-                <option value="">Select a product</option>
-                {products.map((product) => (
-                  <option key={product._id} value={product._id}>
-                    {product.title}
-                  </option>
-                ))}
-              </select>
-            </div> */}
+          
             <div>
-  <label className="text-sm text-gray-700">Scan or Enter Barcode</label>
-  <input
-    type="text"
-    className="w-full border border-gray-300 rounded-md p-2"
-    placeholder="Enter or scan barcode and press Enter"
-    onKeyDown={handleBarcodeInput}
-  />
-</div>
-
+              <label className="text-sm text-gray-700">
+                Scan or Enter Barcode
+              </label>
+              <input
+                type="text"
+                className="w-full border border-gray-300 rounded-md p-2"
+                placeholder="Enter or scan barcode and press Enter"
+                onKeyDown={handleBarcodeInput}
+              />
+            </div>
 
             {/* Customer Details */}
             <div>
@@ -344,13 +349,16 @@ const [cardNumber, setCardNumber] = useState("");
               />
             </div>
 
+           
             <div>
-              <label className="text-sm text-gray-700">Discount Rate (%)</label>
+              <label className="text-sm text-gray-700">Discount (৳)</label>
               <input
                 type="number"
                 className="w-full border border-gray-300 rounded-md p-2"
-                value={discountRate}
-                onChange={(e) => setDiscountRate(e.target.value)}
+                value={discountAmount}
+                onChange={(e) =>
+                  setDiscountAmount(parseFloat(e.target.value) || 0)
+                }
               />
             </div>
           </div>
@@ -436,7 +444,6 @@ const [cardNumber, setCardNumber] = useState("");
                         </div>
                       </td>
 
-                      
                       <input
                         type="number"
                         min={1}

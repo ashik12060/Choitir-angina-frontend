@@ -8,6 +8,8 @@ import { useAuth } from "../../../AuthContext";
 import { useDispatch } from "react-redux";
 import { userLogoutAction } from "../../../redux/actions/userAction";
 import { ChevronDown, Search } from "lucide-react";
+import { motion } from "framer-motion";
+import logo from "../../../assets/chaityr-angina-logo.png";
 
 const Header = ({ totalServices, name, searchQuery, setSearchQuery }) => {
   const navigate = useNavigate();
@@ -36,13 +38,42 @@ const Header = ({ totalServices, name, searchQuery, setSearchQuery }) => {
       {/* Top bar */}
       <div className="max-w-7xl mx-auto flex justify-between items-center px-4 py-3">
         {/* Left: Search */}
-        <Search className="w-5 h-5 cursor-pointer" />
+        {/* <Search className="w-5 h-5 cursor-pointer" /> */}
+        <Link to="/">
+          <img src={logo} alt="logo" className="w-32" />
+        </Link>
 
         {/* Center: Logo */}
-        <h1 className="text-xl sm:text-2xl  tracking-wide text-center font-serif">
-          <Link to="/">CHAITYR ANGINA</Link>{" "}
-          <span className="font-light text-sm align-top">fabrics</span>
-        </h1>
+
+        <motion.h1
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, ease: "easeOut" }}
+          className="flex items-center space-x-2 text-xl sm:text-2xl tracking-wide font-serif font-semibold text-gray-800"
+        >
+          <Link to="/" className="flex items-center space-x-2 ">
+            <span className="text-lg font-serif sm:text-xl md:text-2xl tracking-wider text-green-700 flex items-center gap-1">
+              CHAITYR AN
+              <motion.span
+                animate={{ rotateY: 360 }}
+                transition={{
+                  repeat: Infinity,
+                  duration: 4,
+                  ease: "linear",
+                }}
+                className="text-gray-600 inline-block"
+                style={{
+                  display: "inline-block",
+                  transformOrigin: "center",
+                  transformStyle: "preserve-3d",
+                }}
+              >
+                GI
+              </motion.span>
+              NA
+            </span>
+          </Link>
+        </motion.h1>
 
         {/* Right: Icons */}
         <div className="flex items-center gap-4">

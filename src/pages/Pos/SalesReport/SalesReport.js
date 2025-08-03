@@ -128,6 +128,7 @@ const handlePrint = () => {
       rawDate: sale.timestamp,
       date: new Date(sale.timestamp).toLocaleDateString(),
       items: product.title,
+       discount: product.discountAmount || 0,
       quantity: product.quantity,
       price: product.price ? product.price * product.quantity : 0,
       payment: sale.paymentMethod,
@@ -213,6 +214,7 @@ const handlePrint = () => {
           <th className="p-2 border">Date</th>
           <th className="p-2 border">Items</th>
           <th className="p-2 border">Quantity</th>
+          <th className="p-2 border">Discount</th>
           <th className="p-2 border">Price</th>
           <th className="p-2 border">Payment</th>
         </tr>
@@ -224,6 +226,7 @@ const handlePrint = () => {
             <td className="p-2 border">{row.date}</td>
             <td className="p-2 border">{row.items}</td>
             <td className="p-2 border">{row.quantity}</td>
+            <td className="p-2 border">৳{(row.discount || 0).toLocaleString()}</td>
             <td className="p-2 border">৳{row.price.toLocaleString()}</td>
             <td className="p-2 border">{row.payment}</td>
           </tr>
@@ -231,6 +234,7 @@ const handlePrint = () => {
         <tr className="totals-row bg-gray-300 font-bold">
           <td colSpan="3" className="p-2 border text-right">Total:</td>
           <td className="p-2 border">{totals.totalQuantity}</td>
+          
           <td className="p-2 border">৳{totals.totalPrice.toLocaleString()}</td>
           <td className="p-2 border"></td>
         </tr>
