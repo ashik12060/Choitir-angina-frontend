@@ -27,10 +27,7 @@ const validationSchema = yup.object({
     .min(1, "Text content should have a minimum of 1 character")
     .required("Text content is required"),
 
-  // description: yup
-  //   .string("Add text description")
-  //   .min(1, "Text content should have a minimum of 1 character")
-  //   .required("Text content is required"),
+ 
 
   price: yup.number("Add Price").required("Price is required"),
   // quantity: yup.number("Add quantity").required("quantity is required"),
@@ -61,10 +58,7 @@ const validationSchema = yup.object({
           .string("Add text description")
           .min(1, "Text content should have a minimum of 1 character")
           .required("Text content is required"),
-        // productLength: yup
-        //   .number("Add length")
-        //   .min(1, "Length must be at least 1")
-        //   .required("Length is required"),
+       
         productLength: yup
           .number("Add length")
           .nullable() // Accepts null values if needed
@@ -719,16 +713,9 @@ const CreateProduct = () => {
                 name="barcode"
                 value={barcode}
                 onChange={handleBarcodeChange}
-                // Add your validation logic here
+               
               />
-              {/* <Button
-                variant="outlined"
-                onClick={generateBarcode}
-                sx={{ mb: 3 }}
-                disabled={!barcode || barcode.length < 6}
-              >
-                Generate Barcode
-              </Button> */}
+              
 
               {/* Display the generated barcode image */}
               <div>
@@ -738,9 +725,7 @@ const CreateProduct = () => {
                   <div className="py-2">
                     <h3>Custom Number: {barcode}</h3>
                     <div
-                    // dangerouslySetInnerHTML={{
-                    //   __html: generatedBarcode, // Display the barcode image
-                    // }}
+                    
                     />
                   </div>
                 )}
@@ -763,3 +748,7 @@ const CreateProduct = () => {
 };
 
 export default CreateProduct;
+
+
+
+

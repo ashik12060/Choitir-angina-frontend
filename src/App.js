@@ -83,6 +83,7 @@ import TopBrands from "./components/TopBrands/TopBrands";
 import NewArrival from "./components/NewArrival/NewArrival";
 import Stitched from "./components/Stitched/Stitched";
 import Unstitched from "./components/Unstitched/Unstitched";
+import PosRoute from "./PosRoute";
 
 //HOC
 const AdminDashboardHOC = Layout(AdminDashboard);
@@ -187,26 +188,29 @@ function App() {
                       <CartProvider>
                         <Header />
                       </CartProvider>
-                      <Unstitched  />
+                      <Unstitched />
                     </>
                   }
                 ></Route>
 
-                
+                <Route path="/category/top-brands" element={<TopBrands />} />
+                <Route path="/category/new-arrival" element={<NewArrival />} />
+                <Route path="/category/stitched" element={<Stitched />} />
+                <Route path="/category/unstitched" element={<Unstitched />} />
 
-  <Route path="/category/top-brands" element={<TopBrands />} />
-  <Route path="/category/new-arrival" element={<NewArrival />} />
-  <Route path="/category/stitched" element={<Stitched />} />
-  <Route path="/category/unstitched" element={<Unstitched />} />
-
-<Route path="/products/show" element={<ProductsShow />} />
-  <Route path="/products/brand/:brand" element={<ProductsByBrand />} />
-  <Route path="/products-category" element={<ProductByCategory />} />
-  <Route path="/products-gallery/:title" element={<ProductGroupByTitle />} />
-
-
-
-
+                <Route path="/products/show" element={<ProductsShow />} />
+                <Route
+                  path="/products/brand/:brand"
+                  element={<ProductsByBrand />}
+                />
+                <Route
+                  path="/products-category"
+                  element={<ProductByCategory />}
+                />
+                <Route
+                  path="/products-gallery/:title"
+                  element={<ProductGroupByTitle />}
+                />
 
                 <Route path="/contact" element={<Contact />}></Route>
                 <Route path="/seller-login" element={<LoginUser />}></Route>
@@ -217,11 +221,23 @@ function App() {
                 <Route path="/warehouse-sale" element={<WarehouseSale />} />
 
                 {/* pos start */}
-                <Route path="/pos" element={<Dashboard />} />
+                {/* <Route path="/pos" element={<Dashboard />} /> */}
+                <Route
+                  path="/pos"
+                  element={
+                    <PosRoute>
+                      <Dashboard />
+                    </PosRoute>
+                  }
+                />
+
                 <Route path="/sales" element={<Sales />} />
                 <Route path="/booking" element={<Booking />} />
                 <Route path="/barcode-print" element={<BarcodePrint />} />
-                <Route path="/sub-barcode-print" element={<SubBarcodeImage />} />
+                <Route
+                  path="/sub-barcode-print"
+                  element={<SubBarcodeImage />}
+                />
                 <Route path="/sales-report" element={<SalesReport />} />
                 <Route path="/sales-cancel" element={<SalesCancel />} />
                 <Route path="/customer-report" element={<CustomerReport />} />
@@ -270,7 +286,6 @@ function App() {
                     </PrivateRoute>
                   }
                 />
-                
 
                 <Route
                   path="/login"

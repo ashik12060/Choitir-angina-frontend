@@ -21,6 +21,9 @@ code {
 .card2-bg{
   background-color: rgb(240, 240, 245);
 }
+.custom-color-name{
+background-color: #F36A1E;
+}
 .font-color{
   color: #BF006A;
 }
