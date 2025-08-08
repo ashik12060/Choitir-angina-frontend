@@ -27,7 +27,10 @@ const validationSchema = yup.object({
     .min(1, "Text content should have a minimum of 1 character")
     .required("Text content is required"),
 
- 
+  // categories: Yup.array().min(1, "Select at least one category"),
+  
+
+
 
   price: yup.number("Add Price").required("Price is required"),
   // quantity: yup.number("Add quantity").required("quantity is required"),
@@ -58,7 +61,7 @@ const validationSchema = yup.object({
           .string("Add text description")
           .min(1, "Text content should have a minimum of 1 character")
           .required("Text content is required"),
-       
+
         productLength: yup
           .number("Add length")
           .nullable() // Accepts null values if needed
@@ -86,6 +89,15 @@ const CreateProduct = () => {
     { size: "", color: "", quantity: 0, productLength: null, description: "" }, //variant added
   ]);
 
+  //   const [categories, setCategories] = useState([]);
+  // const [multipleVariants, setMultipleVariants] = useState([]);
+  // const [isStitched, setIsStitched] = useState(false);
+  const [multipleSizes, setMultipleSizes] = useState([]);
+
+
+  const [multipleVariants, setMultipleVariants] = useState([]);
+
+
   const [subBarcodeImages, setSubBarcodeImages] = useState([]);
 
   const categoriesList = [
@@ -109,6 +121,7 @@ const CreateProduct = () => {
       title: "",
       content: "",
       // description: "",
+
       price: "",
 
       brand: "",
@@ -124,6 +137,7 @@ const CreateProduct = () => {
           productLength: null,
           subBarcode: "",
           subBarcodeSvg: "",
+          multipleSizes: [],
         },
       ],
       barcode: "",
@@ -133,7 +147,18 @@ const CreateProduct = () => {
     validationSchema: validationSchema,
 
     onSubmit: async (values, actions) => {
+
+       console.log("Formik onSubmit called with values:", values);
       generateSubBarcodeImages(); // 🆕 Add this line
+
+
+      if (values.categories.includes("Stitched")) {
+        values.variants = values.variants.map((variant, index) => ({
+          ...variant,
+          multipleSizes: multipleSizes[index]?.sizes || [],
+        }));
+      }
+
       await createNewProduct(values);
       actions.resetForm();
       console.log("Form values before submit:", values);
@@ -141,14 +166,35 @@ const CreateProduct = () => {
   });
 
   // Add a new size to the list
-  const handleAddSize = (size) => {
-    if (size && !sizes.includes(size)) {
-      setSizes([...sizes, size]);
-      setFieldValue("sizes", [...sizes, size]); // Update Formik values
-    }
+  // const handleAddSize = (size) => {
+  //   if (size && !sizes.includes(size)) {
+  //     setSizes([...sizes, size]);
+  //     setFieldValue("sizes", [...sizes, size]); // Update Formik values
+  //   }
+  // };
+  // const handleAddSize = () => {
+  //   const currentSizes = values.variants[0]?.multipleSizes || [];
+  //   const newSizes = [...currentSizes, { size: "", quantity: 0, productLength: null, subBarcode: "" }];
+  //   const newVariant = { ...values.variants[0], multipleSizes: newSizes };
+  //   setFieldValue("variants", [newVariant]);
+  // };
+  const handleAddSize = () => {
+  const currentSizes = values.variants[0]?.multipleSizes || [];
+  const newSizes = [...currentSizes, { size: "", quantity: 0, productLength: null }];
+
+  const newVariant = {
+    ...values.variants[0],
+    multipleSizes: newSizes,
   };
 
-  // Remove a size from the list
+  setFieldValue("variants", [newVariant]);
+};
+
+
+
+  // Remove a size from the list<Button variant="contained" onClick={handleAddSize}>
+
+
   const handleRemoveSize = (sizeToRemove) => {
     const updatedSizes = sizes.filter((size) => size !== sizeToRemove);
     setSizes(updatedSizes);
@@ -243,20 +289,61 @@ const CreateProduct = () => {
   };
 
   // new product add
+  // const createNewProduct = async (values) => {
+  //   try {
+  //     const payload = { ...values, barcodeSvg: generatedBarcode };
+
+  //     const result = await axiosInstance.post(
+  //       `${process.env.REACT_APP_API_URL}/api/product/create`,
+  //       payload
+  //     );
+  //     console.log("API response:", result); // Debugging line
+  //     if (result?.data?.success) {
+  //       toast.success("Product created");
+  //       setImageFields([]); // Clear the image fields here
+  //       setBarcode(""); // Clear the barcode input field
+  //       setGeneratedBarcode(""); // Clear the generated barcode image
+  //     } else {
+  //       toast.error("Failed to create product");
+  //     }
+  //   } catch (error) {
+  //     console.error("Error:", error);
+  //     toast.error(error.message || "Error creating product");
+  //   }
+  // };
+
   const createNewProduct = async (values) => {
     try {
       const payload = { ...values, barcodeSvg: generatedBarcode };
+
+      const isStitched = values.categories.includes("Stitched");
+
+      if (isStitched) {
+        const stitchedVariantsFormatted = multipleVariants.map((variant) => ({
+          color: variant.color,
+          description: variant.description,
+          multipleSizes: variant.multipleSizes.map((ms) => ({
+            size: ms.size,
+            quantity: ms.quantity,
+          })),
+          subBarcode: variant.subBarcode,
+          subBarcodeSvg: variant.subBarcodeSvg,
+          imageUrl: variant.imageUrl,
+        }));
+
+        payload.variants = stitchedVariantsFormatted;
+      }
 
       const result = await axiosInstance.post(
         `${process.env.REACT_APP_API_URL}/api/product/create`,
         payload
       );
-      console.log("API response:", result); // Debugging line
+
       if (result?.data?.success) {
         toast.success("Product created");
-        setImageFields([]); // Clear the image fields here
-        setBarcode(""); // Clear the barcode input field
-        setGeneratedBarcode(""); // Clear the generated barcode image
+        setImageFields([]);
+        setBarcode("");
+        setGeneratedBarcode("");
       } else {
         toast.error("Failed to create product");
       }
@@ -265,6 +352,8 @@ const CreateProduct = () => {
       toast.error(error.message || "Error creating product");
     }
   };
+
+
 
   const generateBarcode = () => {
     if (barcode) {
@@ -331,21 +420,72 @@ const CreateProduct = () => {
     setImageFields(updatedFields);
   };
 
+  // const handleSubmitForm = (event) => {
+  //   event.preventDefault();
+  //   console.log("Form values:", values); // Add this line
+
+  //   console.log("Variants:", values.variants);
+  //   console.log("Multiple Sizes:", values.variants[0]?.multipleSizes);
+
+  //   const variantsWithImages = values.variants.filter(
+  //     (variant) => variant.imageUrl
+  //   );
+
+  //   if (variantsWithImages.length === 0) {
+  //     setError("Please upload at least one image.");
+  //     return;
+  //   }
+
+  //   setError(""); // Clear error
+  //   handleSubmit(); // Proceed with form submission
+  // };
+
+
   const handleSubmitForm = (event) => {
-    event.preventDefault();
+  event.preventDefault();
+  console.log("Submitting variants multipleSizes:", values.variants[0]?.multipleSizes);
+  console.log("Form values:", values);
 
-    const variantsWithImages = values.variants.filter(
-      (variant) => variant.imageUrl
-    );
+  const isStitched = values.categories.includes("Stitched");
 
-    if (variantsWithImages.length === 0) {
-      setError("Please upload at least one image.");
-      return;
-    }
+  
 
-    setError(""); // Clear error
-    handleSubmit(); // Proceed with form submission
-  };
+  setError("");
+  handleSubmit(); // triggers Formik submit
+};
+
+
+
+  // const handleSubmitForm = (event) => {
+  //   event.preventDefault();
+  // console.log("Submitting variants multipleSizes:", values.variants[0]?.multipleSizes);
+
+  //   console.log("Form values:", values);
+
+  //   const isStitched = values.categories.includes("Stitched");
+
+  //   // Inject multipleSizes into each variant if Stitched
+  //   if (isStitched) {
+  //     values.variants = values.variants.map((variant, index) => ({
+  //       ...variant,
+  //       multipleSizes: multipleSizes, // assumes multipleSizes is from state
+  //     }));
+  //   }
+
+  //   const variantsWithImages = values.variants.filter(
+  //     (variant) => variant.imageUrl
+  //   );
+
+  //   if (variantsWithImages.length === 0) {
+  //     setError("Please upload at least one image.");
+  //     return;
+  //   }
+
+  //   setError("");
+  //   handleSubmit(); // formik submission
+  // };
+
+
 
   const generateSubBarcodeImages = () => {
     const container = document.createElement("div");
@@ -370,6 +510,24 @@ const CreateProduct = () => {
 
     setFieldValue("variants", updatedVariants);
   };
+
+
+  const isStitched = values.categories.includes("Stitched");
+  //   if (categories.includes("Stitched")) {
+  //   const stitchedVariantsFormatted = multipleVariants.map((variant) => ({
+  //     color: variant.color,
+  //     description: variant.description,
+  //     multipleSizes: variant.multipleSizes.map((ms) => ({
+  //       size: ms.size,
+  //       quantity: ms.quantity,
+  //     })),
+  //   }));
+
+  //   formData.append("variants", JSON.stringify(stitchedVariantsFormatted));
+  // }
+
+
+
 
   return (
     <div ref={observedElementRef}>
@@ -417,7 +575,7 @@ const CreateProduct = () => {
               helperText={touched.content && errors.content}
             />
 
-          
+
 
             <TextField
               sx={{ mb: 3 }}
@@ -523,186 +681,188 @@ const CreateProduct = () => {
                   {category}
                 </MenuItem>
               ))}
-            </Select>
+            </Select>          
 
-            <Box sx={{ mb: 3 }}>
-              <Typography variant="h6">Variants</Typography>
+              <Box sx={{ mb: 3 }}>
+                <Typography variant="h6">Variants</Typography>
 
-              {values.variants.map((variant, index) => (
-                <Box
-                  key={index}
-                  sx={{ display: "flex", flexDirection: "column", mb: 2 }}
-                >
-                  <TextField
-                    fullWidth
-                    label={`Size ${index + 1}`}
-                    name={`variants[${index}].size`}
-                    value={variant.size}
-                    onChange={(e) =>
-                      handleVariantChange(index, "size", e.target.value)
-                    }
-                    onBlur={handleBlur}
-                    error={
-                      touched.variants?.[index]?.size &&
-                      Boolean(errors.variants?.[index]?.size)
-                    }
-                    helperText={
-                      touched.variants?.[index]?.size &&
-                      errors.variants?.[index]?.size
-                    }
-                    sx={{ mb: 2 }}
-                  />
-                  <TextField
-                    fullWidth
-                    label={`Color ${index + 1}`}
-                    name={`variants[${index}].color`}
-                    value={variant.color}
-                    onChange={(e) =>
-                      handleVariantChange(index, "color", e.target.value)
-                    }
-                    onBlur={handleBlur}
-                    error={
-                      touched.variants?.[index]?.color &&
-                      Boolean(errors.variants?.[index]?.color)
-                    }
-                    helperText={
-                      touched.variants?.[index]?.color &&
-                      errors.variants?.[index]?.color
-                    }
-                    sx={{ mb: 2 }}
-                  />
-                  <TextField
-                    fullWidth
-                    label={`Quantity ${index + 1}`}
-                    name={`variants[${index}].quantity`}
-                    type="number"
-                    value={variant.quantity}
-                    onChange={(e) =>
-                      handleVariantChange(index, "quantity", e.target.value)
-                    }
-                    onBlur={handleBlur}
-                    error={
-                      touched.variants?.[index]?.quantity &&
-                      Boolean(errors.variants?.[index]?.quantity)
-                    }
-                    helperText={
-                      touched.variants?.[index]?.quantity &&
-                      errors.variants?.[index]?.quantity
-                    }
-                    sx={{ mb: 2 }}
-                  />
-                  <TextField
-                    fullWidth
-                    label={`Length ${index + 1}`}
-                    name={`variants[${index}].productLength`}
-                    type="number"
-                    value={variant.productLength}
-                    onChange={(e) =>
-                      handleVariantChange(
-                        index,
-                        "productLength",
-                        e.target.value
-                      )
-                    }
-                    onBlur={handleBlur}
-                    error={
-                      touched.variants?.[index]?.productLength &&
-                      Boolean(errors.variants?.[index]?.productLength)
-                    }
-                    helperText={
-                      touched.variants?.[index]?.productLength &&
-                      errors.variants?.[index]?.productLength
-                    }
-                    sx={{ mb: 2 }}
-                  />
-                  <TextField
-                    fullWidth
-                    label={`Description ${index + 1}`}
-                    name={`variants[${index}].description`}
-                    type="string"
-                    value={variant.description}
-                    onChange={(e) =>
-                      handleVariantChange(
-                        index,
-                        "description",
-                        e.target.value
-                      )
-                    }
-                    onBlur={handleBlur}
-                    error={
-                      touched.variants?.[index]?.description &&
-                      Boolean(errors.variants?.[index]?.description)
-                    }
-                    helperText={
-                      touched.variants?.[index]?.description &&
-                      errors.variants?.[index]?.description
-                    }
-                    sx={{ mb: 2 }}
-                  />
-
-                  {/* new added sub barcode */}
-                  <TextField
-                    fullWidth
-                    label={`Sub Barcode ${index + 1}`}
-                    value={variant.subBarcode || ""}
-                    InputProps={{
-                      readOnly: true,
-                    }}
-                    sx={{ mb: 2 }}
-                  />
-
-                  <Box key={`image-${index}`} sx={{ mb: 3 }}>
-                    <Box border="2px dashed blue" sx={{ p: 1, mb: 3 }}>
-                      <Dropzone
-                        acceptedFiles=".jpg,.jpeg,.png"
-                        multiple={false}
-                        onDrop={(acceptedFiles) =>
-                          handleImageDrop(index, acceptedFiles)
-                        }
-                      >
-                        {({ getRootProps, getInputProps, isDragActive }) => (
-                          <Box
-                            {...getRootProps()}
-                            p="1rem"
-                            sx={{
-                              "&:hover": { cursor: "pointer" },
-                              bgColor: isDragActive ? "#cceffc" : "#fafafa",
-                            }}
-                          >
-                            <input {...getInputProps()} />
-                            {isDragActive ? (
-                              <Typography>Drop the file here</Typography>
-                            ) : variant.imageUrl ? (
-                              <img
-                                style={{ maxWidth: "100px" }}
-                                src={variant.imageUrl}
-                                alt="Uploaded"
-                              />
-                            ) : (
-                              <Typography>
-                                Drag and drop here or click to upload
-                              </Typography>
-                            )}
-                          </Box>
-                        )}
-                      </Dropzone>
-                    </Box>
-                  </Box>
-
-                  <Button
-                    onClick={() => removeVariant(index)}
-                    color="error"
-                    variant="outlined"
+                {values.variants.map((variant, index) => (
+                  <Box
+                    key={index}
+                    sx={{ display: "flex", flexDirection: "column", mb: 2 }}
                   >
-                    Remove Variant
-                  </Button>
-                </Box>
-              ))}
+                    <TextField
+                      fullWidth
+                      label={`Size ${index + 1}`}
+                      name={`variants[${index}].size`}
+                      value={variant.size}
+                      onChange={(e) =>
+                        handleVariantChange(index, "size", e.target.value)
+                      }
+                      onBlur={handleBlur}
+                      error={
+                        touched.variants?.[index]?.size &&
+                        Boolean(errors.variants?.[index]?.size)
+                      }
+                      helperText={
+                        touched.variants?.[index]?.size &&
+                        errors.variants?.[index]?.size
+                      }
+                      sx={{ mb: 2 }}
+                    />
+                    <TextField
+                      fullWidth
+                      label={`Color ${index + 1}`}
+                      name={`variants[${index}].color`}
+                      value={variant.color}
+                      onChange={(e) =>
+                        handleVariantChange(index, "color", e.target.value)
+                      }
+                      onBlur={handleBlur}
+                      error={
+                        touched.variants?.[index]?.color &&
+                        Boolean(errors.variants?.[index]?.color)
+                      }
+                      helperText={
+                        touched.variants?.[index]?.color &&
+                        errors.variants?.[index]?.color
+                      }
+                      sx={{ mb: 2 }}
+                    />
+                    <TextField
+                      fullWidth
+                      label={`Quantity ${index + 1}`}
+                      name={`variants[${index}].quantity`}
+                      type="number"
+                      value={variant.quantity}
+                      onChange={(e) =>
+                        handleVariantChange(index, "quantity", e.target.value)
+                      }
+                      onBlur={handleBlur}
+                      error={
+                        touched.variants?.[index]?.quantity &&
+                        Boolean(errors.variants?.[index]?.quantity)
+                      }
+                      helperText={
+                        touched.variants?.[index]?.quantity &&
+                        errors.variants?.[index]?.quantity
+                      }
+                      sx={{ mb: 2 }}
+                    />
+                    <TextField
+                      fullWidth
+                      label={`Length ${index + 1}`}
+                      name={`variants[${index}].productLength`}
+                      type="number"
+                      value={variant.productLength}
+                      onChange={(e) =>
+                        handleVariantChange(
+                          index,
+                          "productLength",
+                          e.target.value
+                        )
+                      }
+                      onBlur={handleBlur}
+                      error={
+                        touched.variants?.[index]?.productLength &&
+                        Boolean(errors.variants?.[index]?.productLength)
+                      }
+                      helperText={
+                        touched.variants?.[index]?.productLength &&
+                        errors.variants?.[index]?.productLength
+                      }
+                      sx={{ mb: 2 }}
+                    />
+                    <TextField
+                      fullWidth
+                      label={`Description ${index + 1}`}
+                      name={`variants[${index}].description`}
+                      type="string"
+                      value={variant.description}
+                      onChange={(e) =>
+                        handleVariantChange(
+                          index,
+                          "description",
+                          e.target.value
+                        )
+                      }
+                      onBlur={handleBlur}
+                      error={
+                        touched.variants?.[index]?.description &&
+                        Boolean(errors.variants?.[index]?.description)
+                      }
+                      helperText={
+                        touched.variants?.[index]?.description &&
+                        errors.variants?.[index]?.description
+                      }
+                      sx={{ mb: 2 }}
+                    />
 
-              <Button onClick={addVariant} variant="contained" sx={{ mt: 2 }}>
-                Add Variant
-              </Button>
-            </Box>
+                    {/* new added sub barcode */}
+                    <TextField
+                      fullWidth
+                      label={`Sub Barcode ${index + 1}`}
+                      value={variant.subBarcode || ""}
+                      InputProps={{
+                        readOnly: true,
+                      }}
+                      sx={{ mb: 2 }}
+                    />
+
+                    <Box key={`image-${index}`} sx={{ mb: 3 }}>
+                      <Box border="2px dashed blue" sx={{ p: 1, mb: 3 }}>
+                        <Dropzone
+                          acceptedFiles=".jpg,.jpeg,.png"
+                          multiple={false}
+                          onDrop={(acceptedFiles) =>
+                            handleImageDrop(index, acceptedFiles)
+                          }
+                        >
+                          {({ getRootProps, getInputProps, isDragActive }) => (
+                            <Box
+                              {...getRootProps()}
+                              p="1rem"
+                              sx={{
+                                "&:hover": { cursor: "pointer" },
+                                bgColor: isDragActive ? "#cceffc" : "#fafafa",
+                              }}
+                            >
+                              <input {...getInputProps()} />
+                              {isDragActive ? (
+                                <Typography>Drop the file here</Typography>
+                              ) : variant.imageUrl ? (
+                                <img
+                                  style={{ maxWidth: "100px" }}
+                                  src={variant.imageUrl}
+                                  alt="Uploaded"
+                                />
+                              ) : (
+                                <Typography>
+                                  Drag and drop here or click to upload
+                                </Typography>
+                              )}
+                            </Box>
+                          )}
+                        </Dropzone>
+                      </Box>
+                    </Box>
+
+                    <Button
+                      onClick={() => removeVariant(index)}
+                      color="error"
+                      variant="outlined"
+                    >
+                      Remove Variant
+                    </Button>
+                  </Box>
+                ))}
+
+                <Button onClick={addVariant} variant="contained" sx={{ mt: 2 }}>
+                  Add Variant
+                </Button>
+              </Box>
+
+            
 
             <div>
               <TextField
@@ -713,9 +873,9 @@ const CreateProduct = () => {
                 name="barcode"
                 value={barcode}
                 onChange={handleBarcodeChange}
-               
+
               />
-              
+
 
               {/* Display the generated barcode image */}
               <div>
@@ -725,7 +885,7 @@ const CreateProduct = () => {
                   <div className="py-2">
                     <h3>Custom Number: {barcode}</h3>
                     <div
-                    
+
                     />
                   </div>
                 )}

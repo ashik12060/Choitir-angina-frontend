@@ -91,6 +91,21 @@ const SinglePro = () => {
   const uiCommentUpdate =
     commentsRealTime.length > 0 ? commentsRealTime : product?.comments;
 
+  // const handleColorSelect = (color) => {
+  //   setSelectedColor(color);
+
+  //   const sizesForColor = product.variants
+  //     .filter((variant) => variant.color === color)
+  //     .map((variant) => variant.size);
+  //   setAvailableSizes(sizesForColor);
+  //   setSelectedSize(null);
+
+  //   const totalColorQuantity = product.variants
+  //     .filter((variant) => variant.color === color)
+  //     .reduce((sum, variant) => sum + variant.quantity, 0);
+
+  //   setColorStockQuantity(totalColorQuantity);
+  // };
   const handleColorSelect = (color) => {
     setSelectedColor(color);
 
@@ -99,17 +114,25 @@ const SinglePro = () => {
       .map((variant) => variant.size);
     setAvailableSizes(sizesForColor);
     setSelectedSize(null);
-
-    const totalColorQuantity = product.variants
-      .filter((variant) => variant.color === color)
-      .reduce((sum, variant) => sum + variant.quantity, 0);
-
-    setColorStockQuantity(totalColorQuantity);
+    setColorStockQuantity(0); // Reset quantity until size is selected
   };
 
+
+  // const handleSizeSelect = (size) => {
+  //   setSelectedSize(size);
+  // };
   const handleSizeSelect = (size) => {
     setSelectedSize(size);
+
+    const variant = product.variants.find(
+      (variant) =>
+        variant.color === selectedColor && variant.size === size
+    );
+
+    const quantity = variant ? variant.quantity : 0;
+    setColorStockQuantity(quantity);
   };
+
 
   const addToCart = () => {
     if (!selectedSize || !selectedColor) {
@@ -159,6 +182,9 @@ const SinglePro = () => {
 
   // image bigger showing
 
+
+
+
   return (
     <div className="bg-white min-h-screen">
       <div className="container mx-auto py-8">
@@ -174,7 +200,7 @@ const SinglePro = () => {
                     onMouseMove={handleMouseMove}
                     onMouseLeave={resetZoom}
                   >
-                   
+
                     <div className="relative w-full max-h-[450px]">
                       <img
                         src={mainImage}
@@ -182,7 +208,7 @@ const SinglePro = () => {
                         className="w-full h-full object-contain"
                       />
 
-                      {/* Show the subBarcode at bottom right */}
+                     
                       {product.variants[selectedImageIndex]?.subBarcode && (
                         <span className="absolute bottom-0 right-0 bg-black text-white text-xs px-2 py-1">
                           {product.variants[selectedImageIndex].subBarcode}
@@ -190,18 +216,17 @@ const SinglePro = () => {
                       )}
                     </div>
 
-                    {/* Zoom Modal */}
+                 
 
                     {isZoomed && (
                       <div
                         className="fixed inset-0 z-50 bg-black bg-opacity-50 flex items-center justify-center"
-                        onClick={() => setIsZoomed(false)} // Close when background is clicked
+                        onClick={() => setIsZoomed(false)} 
                       >
                         <div
                           className="relative  p-4 rounded-md max-w-3xl w-[80%]"
-                          onClick={(e) => e.stopPropagation()} // Prevent close when clicking inside
+                          onClick={(e) => e.stopPropagation()} 
                         >
-                          {/* Close Button */}
                           <button
                             onClick={() => setIsZoomed(false)}
                             className="absolute top-1 right-1 text-white bg-red-600 rounded-full w-8 h-8 flex items-center justify-center hover:bg-red-700"
@@ -209,7 +234,6 @@ const SinglePro = () => {
                             <X size={18} />
                           </button>
 
-                          {/* Zoomed Image */}
                           <img
                             src={mainImage}
                             alt={product.title}
@@ -225,25 +249,57 @@ const SinglePro = () => {
                       Color: {selectedColor || "N/A"}
                     </p>
                   </div>
-
-                  <div className="flex space-x-2 overflow-x-auto">
+                  {/* <div className="flex space-x-2 overflow-x-auto">
                     {product.variants.map((variant, index) => (
                       <div key={index} className="text-center">
                         <img
-                          src={variant.imageUrl} // Get image from variant
-                          className={`w-16 h-16 object-cover rounded-md border cursor-pointer hover:shadow-lg transition ${
-                            mainImage === variant.imageUrl
+                          src={variant.imageUrl}
+                          className={`w-16 h-16 object-cover rounded-md border cursor-pointer hover:shadow-lg transition ${mainImage === variant.imageUrl
                               ? "border-blue-500"
                               : ""
-                          }`}
+                            }`}
                           alt={`Thumbnail ${index + 1}`}
                           onClick={() =>
                             handleImageClick(variant.color, variant.imageUrl)
-                          } // Update selected image and color
+                          }
                         />
                       </div>
                     ))}
+                  </div> */}
+                  <div className="flex space-x-2 overflow-x-auto">
+              {product.category === "Stitched" ? (
+                product.variants[0]?.imageUrl && (
+                  <div className="text-center">
+                    <img
+                      src={product.variants[0].imageUrl}
+                      className={`w-16 h-16 object-cover rounded-md border cursor-pointer hover:shadow-lg transition ${mainImage === product.variants[0].imageUrl ? "border-blue-500" : ""
+                        }`}
+                      alt="Thumbnail"
+                      onClick={() =>
+                        handleImageClick(
+                          product.variants[0].color,
+                          product.variants[0].imageUrl
+                        )
+                      }
+                    />
                   </div>
+                )
+              ) : (
+                product.variants
+                  .filter((variant) => variant.imageUrl)
+                  .map((variant, index) => (
+                    <div key={index} className="text-center">
+                      <img
+                        src={variant.imageUrl}
+                        className={`w-16 h-16 object-cover rounded-md border cursor-pointer hover:shadow-lg transition ${mainImage === variant.imageUrl ? "border-blue-500" : ""
+                          }`}
+                        alt={`Thumbnail ${index + 1}`}
+                        onClick={() => handleImageClick(variant.color, variant.imageUrl)}
+                      />
+                    </div>
+                  ))
+              )}
+            </div>
                 </div>
               ) : (
                 <p className="text-gray-500">No images available</p>
@@ -254,6 +310,9 @@ const SinglePro = () => {
                 <p>{product.description}</p>
               </div>
             </div>
+
+            
+
             {/* </div> */}
 
             {/* Product Details */}
@@ -285,11 +344,10 @@ const SinglePro = () => {
                   {uniqueColors.map((color, index) => (
                     <button
                       key={index}
-                      className={`px-4 py-2 rounded-md border transition ${
-                        selectedColor === color
-                          ? "bg-blue-600 text-white"
-                          : "bg-gray-200 text-gray-800"
-                      }`}
+                      className={`px-4 py-2 rounded-md border transition ${selectedColor === color
+                        ? "bg-blue-600 text-white"
+                        : "bg-gray-200 text-gray-800"
+                        }`}
                       onClick={() => handleColorSelect(color)}
                     >
                       {color}
@@ -308,11 +366,10 @@ const SinglePro = () => {
                     {availableSizes.map((size, index) => (
                       <button
                         key={index}
-                        className={`px-4 py-2 rounded-md border transition ${
-                          selectedSize === size
-                            ? "bg-blue-600 text-white"
-                            : "bg-gray-200 text-gray-800"
-                        }`}
+                        className={`px-4 py-2 rounded-md border transition ${selectedSize === size
+                          ? "bg-blue-600 text-white"
+                          : "bg-gray-200 text-gray-800"
+                          }`}
                         onClick={() => handleSizeSelect(size)}
                       >
                         {size}
@@ -328,7 +385,7 @@ const SinglePro = () => {
                 </div>
               )}
 
-              {selectedColor && (
+              {/* {selectedColor && (
                 <div className="mt-4 font-serif">
                   <p className="text-sm font-serif text-gray-700">
                     Selected Color:{" "}
@@ -349,7 +406,30 @@ const SinglePro = () => {
                     )}
                   </p>
                 </div>
+              )} */}
+              {selectedColor && selectedSize && (
+                <div className="mt-4 font-serif">
+                  <p className="text-sm font-serif text-gray-700">
+                    Selected Variant:{" "}
+                    <span className="font-bold text-md">{selectedColor} / {selectedSize}</span>
+                  </p>
+                  <p
+                    className={`text-sm ${colorStockQuantity > 0 ? "text-black" : "text-red-600"
+                      }`}
+                  >
+                    {colorStockQuantity > 0 ? (
+                      <>
+                        Available Quantity:{" "}
+                        <span className="font-bold">{colorStockQuantity}</span>
+                      </>
+                    ) : (
+                      "Out of Stock"
+                    )}
+                  </p>
+                </div>
               )}
+
+
 
               {/* Action Buttons */}
               <div className="mt-4">
