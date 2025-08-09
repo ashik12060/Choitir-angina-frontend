@@ -606,9 +606,9 @@ const CreateProduct = () => {
               error={touched.brand && Boolean(errors.brand)}
               helperText={touched.brand && errors.brand}
             >
-              {brands.map((brand) => (
-                <MenuItem key={brand._id} value={brand._id}>
-                  {brand.brandName}
+              {brands.map((brande) => (
+                <MenuItem key={brande._id} value={brande._id}>
+                  {brande.brand}
                 </MenuItem>
               ))}
             </TextField>
@@ -627,9 +627,9 @@ const CreateProduct = () => {
               error={touched.subcategory && Boolean(errors.subcategory)}
               helperText={touched.subcategory && errors.subcategory}
             >
-              {filteredSubcategories.map((subcategory) => (
-                <MenuItem key={subcategory._id} value={subcategory._id}>
-                  {subcategory.name}
+              {filteredSubcategories.map((subcategories) => (
+                <MenuItem key={subcategories._id} value={subcategories._id}>
+                  {subcategories.subcategory}
                 </MenuItem>
               ))}
             </TextField>

@@ -1,4 +1,3 @@
-
 // import React, { useState, useEffect, useRef } from "react";
 // import {
 //   Box,
@@ -455,8 +454,6 @@
 //   );
 // }
 
-
-
 import React, { useState, useEffect } from "react";
 import {
   Box,
@@ -595,14 +592,19 @@ export default function EditProduct() {
         setFieldValue("supplier", product.supplier);
         setFieldValue("categories", product.categories);
         setFieldValue("subcategory", product.subcategory);
-        setFieldValue("barcode", product.barcodeNumber || "");
+        // setFieldValue("barcode", product.barcodeNumber || "");
+        setFieldValue("barcode", product.barcodeNumber || product.barcode || "");
         setFieldValue("variants", product.variants || []);
-        setBarcode(product.barcodeNumber || "");
+        // setBarcode(product.barcodeNumber || "");
+        setBarcode(product.barcodeNumber || product.barcode || "");
+
 
         const [brandsRes, suppliersRes, subsRes] = await Promise.all([
           axiosInstance.get(`${process.env.REACT_APP_API_URL}/api/brands`),
           axiosInstance.get(`${process.env.REACT_APP_API_URL}/api/suppliers`),
-          axiosInstance.get(`${process.env.REACT_APP_API_URL}/api/subcategories`),
+          axiosInstance.get(
+            `${process.env.REACT_APP_API_URL}/api/subcategories`
+          ),
         ]);
 
         setBrands(brandsRes.data);
@@ -621,9 +623,7 @@ export default function EditProduct() {
   const handleBrandChange = (e) => {
     const selectedBrand = e.target.value;
     setFieldValue("brand", selectedBrand);
-    const filtered = subcategories.filter(
-      (sub) => sub.brand === selectedBrand
-    );
+    const filtered = subcategories.filter((sub) => sub.brand === selectedBrand);
     setFilteredSubcategories(filtered);
   };
 
@@ -814,13 +814,16 @@ export default function EditProduct() {
             </MenuItem>
           ))}
         </Select>
+        
         <TextField
+          sx={{ mb: 3 }}
           fullWidth
+          id="barcode"
           label="Barcode"
           name="barcode"
-          value={barcode}
+          // value={barcode}
+          value={values.barcode}
           onChange={handleBarcodeChange}
-          sx={{ mb: 2 }}
         />
 
         {values.variants.map((variant, index) => (
@@ -873,6 +876,15 @@ export default function EditProduct() {
               }
               sx={{ mb: 1 }}
             />
+
+            <TextField
+              fullWidth
+              label={`Sub Barcode ${index + 1}`}
+              value={variant.subBarcode || ""}
+              InputProps={{ readOnly: true }}
+              sx={{ mb: 2 }}
+            />
+
             <Dropzone
               onDrop={(acceptedFiles) => handleImageDrop(index, acceptedFiles)}
               multiple={false}

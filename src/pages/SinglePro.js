@@ -177,13 +177,8 @@ const SinglePro = () => {
   };
 
   if (!product) {
-    return <div>Loading...</div>; // You can show a loading state or a fallback message
+    return <div>Loading...</div>; 
   }
-
-  // image bigger showing
-
-
-
 
   return (
     <div className="bg-white min-h-screen">
