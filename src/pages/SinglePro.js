@@ -117,7 +117,6 @@ const SinglePro = () => {
     setColorStockQuantity(0); // Reset quantity until size is selected
   };
 
-
   // const handleSizeSelect = (size) => {
   //   setSelectedSize(size);
   // };
@@ -125,14 +124,12 @@ const SinglePro = () => {
     setSelectedSize(size);
 
     const variant = product.variants.find(
-      (variant) =>
-        variant.color === selectedColor && variant.size === size
+      (variant) => variant.color === selectedColor && variant.size === size
     );
 
     const quantity = variant ? variant.quantity : 0;
     setColorStockQuantity(quantity);
   };
-
 
   const addToCart = () => {
     if (!selectedSize || !selectedColor) {
@@ -154,9 +151,14 @@ const SinglePro = () => {
     navigate("/cart");
   };
 
-  const handleImageClick = (color, imageUrl) => {
+  // const handleImageClick = (color, imageUrl) => {
+  //   setMainImage(imageUrl);
+  //   setSelectedColor(color); // Set the color when image is clicked
+  // };
+  const handleImageClick = (color, imageUrl, index) => {
     setMainImage(imageUrl);
-    setSelectedColor(color); // Set the color when image is clicked
+    setSelectedColor(color);
+    setSelectedImageIndex(index); // ✅ this updates the barcode
   };
 
   const uniqueColors = [
@@ -177,7 +179,7 @@ const SinglePro = () => {
   };
 
   if (!product) {
-    return <div>Loading...</div>; 
+    return <div>Loading...</div>;
   }
 
   return (
@@ -195,7 +197,6 @@ const SinglePro = () => {
                     onMouseMove={handleMouseMove}
                     onMouseLeave={resetZoom}
                   >
-
                     <div className="relative w-full max-h-[450px]">
                       <img
                         src={mainImage}
@@ -203,7 +204,11 @@ const SinglePro = () => {
                         className="w-full h-full object-contain"
                       />
 
-                     
+                      {/* {product.variants[selectedImageIndex]?.subBarcode && (
+                        <span className="absolute bottom-0 right-0 bg-black text-white text-xs px-2 py-1">
+                          {product.variants[selectedImageIndex].subBarcode}
+                        </span>
+                      )} */}
                       {product.variants[selectedImageIndex]?.subBarcode && (
                         <span className="absolute bottom-0 right-0 bg-black text-white text-xs px-2 py-1">
                           {product.variants[selectedImageIndex].subBarcode}
@@ -211,16 +216,14 @@ const SinglePro = () => {
                       )}
                     </div>
 
-                 
-
                     {isZoomed && (
                       <div
                         className="fixed inset-0 z-50 bg-black bg-opacity-50 flex items-center justify-center"
-                        onClick={() => setIsZoomed(false)} 
+                        onClick={() => setIsZoomed(false)}
                       >
                         <div
                           className="relative  p-4 rounded-md max-w-3xl w-[80%]"
-                          onClick={(e) => e.stopPropagation()} 
+                          onClick={(e) => e.stopPropagation()}
                         >
                           <button
                             onClick={() => setIsZoomed(false)}
@@ -244,57 +247,52 @@ const SinglePro = () => {
                       Color: {selectedColor || "N/A"}
                     </p>
                   </div>
-                  {/* <div className="flex space-x-2 overflow-x-auto">
-                    {product.variants.map((variant, index) => (
-                      <div key={index} className="text-center">
-                        <img
-                          src={variant.imageUrl}
-                          className={`w-16 h-16 object-cover rounded-md border cursor-pointer hover:shadow-lg transition ${mainImage === variant.imageUrl
-                              ? "border-blue-500"
-                              : ""
-                            }`}
-                          alt={`Thumbnail ${index + 1}`}
-                          onClick={() =>
-                            handleImageClick(variant.color, variant.imageUrl)
-                          }
-                        />
-                      </div>
-                    ))}
-                  </div> */}
+
                   <div className="flex space-x-2 overflow-x-auto">
-              {product.category === "Stitched" ? (
-                product.variants[0]?.imageUrl && (
-                  <div className="text-center">
-                    <img
-                      src={product.variants[0].imageUrl}
-                      className={`w-16 h-16 object-cover rounded-md border cursor-pointer hover:shadow-lg transition ${mainImage === product.variants[0].imageUrl ? "border-blue-500" : ""
-                        }`}
-                      alt="Thumbnail"
-                      onClick={() =>
-                        handleImageClick(
-                          product.variants[0].color,
-                          product.variants[0].imageUrl
+                    {product.category === "Stitched"
+                      ? product.variants[0]?.imageUrl && (
+                          <div className="text-center">
+                            <img
+                              src={product.variants[0].imageUrl}
+                              className={`w-16 h-16 object-cover rounded-md border cursor-pointer hover:shadow-lg transition ${
+                                mainImage === product.variants[0].imageUrl
+                                  ? "border-blue-500"
+                                  : ""
+                              }`}
+                              alt="Thumbnail"
+                              onClick={() =>
+                                handleImageClick(
+                                  product.variants[0].color,
+                                  product.variants[0].imageUrl
+                                )
+                              }
+                            />
+                          </div>
                         )
-                      }
-                    />
+                      : product.variants
+                          .filter((variant) => variant.imageUrl)
+                          .map((variant, index) => (
+                            <div key={index} className="text-center">
+                              <img
+                                src={variant.imageUrl}
+                                className={`w-16 h-16 object-cover rounded-md border cursor-pointer hover:shadow-lg transition ${
+                                  mainImage === variant.imageUrl
+                                    ? "border-blue-500"
+                                    : ""
+                                }`}
+                                alt={`Thumbnail ${index + 1}`}
+                                // onClick={() => handleImageClick(variant.color, variant.imageUrl)}
+                                onClick={() =>
+                                  handleImageClick(
+                                    variant.color,
+                                    variant.imageUrl,
+                                    index
+                                  )
+                                }
+                              />
+                            </div>
+                          ))}
                   </div>
-                )
-              ) : (
-                product.variants
-                  .filter((variant) => variant.imageUrl)
-                  .map((variant, index) => (
-                    <div key={index} className="text-center">
-                      <img
-                        src={variant.imageUrl}
-                        className={`w-16 h-16 object-cover rounded-md border cursor-pointer hover:shadow-lg transition ${mainImage === variant.imageUrl ? "border-blue-500" : ""
-                          }`}
-                        alt={`Thumbnail ${index + 1}`}
-                        onClick={() => handleImageClick(variant.color, variant.imageUrl)}
-                      />
-                    </div>
-                  ))
-              )}
-            </div>
                 </div>
               ) : (
                 <p className="text-gray-500">No images available</p>
@@ -305,8 +303,6 @@ const SinglePro = () => {
                 <p>{product.description}</p>
               </div>
             </div>
-
-            
 
             {/* </div> */}
 
@@ -339,10 +335,11 @@ const SinglePro = () => {
                   {uniqueColors.map((color, index) => (
                     <button
                       key={index}
-                      className={`px-4 py-2 rounded-md border transition ${selectedColor === color
-                        ? "bg-blue-600 text-white"
-                        : "bg-gray-200 text-gray-800"
-                        }`}
+                      className={`px-4 py-2 rounded-md border transition ${
+                        selectedColor === color
+                          ? "bg-blue-600 text-white"
+                          : "bg-gray-200 text-gray-800"
+                      }`}
                       onClick={() => handleColorSelect(color)}
                     >
                       {color}
@@ -361,10 +358,11 @@ const SinglePro = () => {
                     {availableSizes.map((size, index) => (
                       <button
                         key={index}
-                        className={`px-4 py-2 rounded-md border transition ${selectedSize === size
-                          ? "bg-blue-600 text-white"
-                          : "bg-gray-200 text-gray-800"
-                          }`}
+                        className={`px-4 py-2 rounded-md border transition ${
+                          selectedSize === size
+                            ? "bg-blue-600 text-white"
+                            : "bg-gray-200 text-gray-800"
+                        }`}
                         onClick={() => handleSizeSelect(size)}
                       >
                         {size}
@@ -380,11 +378,13 @@ const SinglePro = () => {
                 </div>
               )}
 
-              {/* {selectedColor && (
+              {selectedColor && selectedSize && (
                 <div className="mt-4 font-serif">
                   <p className="text-sm font-serif text-gray-700">
-                    Selected Color:{" "}
-                    <span className="font-bold text-md">{selectedColor}</span>
+                    Selected Variant:{" "}
+                    <span className="font-bold text-md">
+                      {selectedColor} / {selectedSize}
+                    </span>
                   </p>
                   <p
                     className={`text-sm ${
@@ -401,30 +401,7 @@ const SinglePro = () => {
                     )}
                   </p>
                 </div>
-              )} */}
-              {selectedColor && selectedSize && (
-                <div className="mt-4 font-serif">
-                  <p className="text-sm font-serif text-gray-700">
-                    Selected Variant:{" "}
-                    <span className="font-bold text-md">{selectedColor} / {selectedSize}</span>
-                  </p>
-                  <p
-                    className={`text-sm ${colorStockQuantity > 0 ? "text-black" : "text-red-600"
-                      }`}
-                  >
-                    {colorStockQuantity > 0 ? (
-                      <>
-                        Available Quantity:{" "}
-                        <span className="font-bold">{colorStockQuantity}</span>
-                      </>
-                    ) : (
-                      "Out of Stock"
-                    )}
-                  </p>
-                </div>
               )}
-
-
 
               {/* Action Buttons */}
               <div className="mt-4">
