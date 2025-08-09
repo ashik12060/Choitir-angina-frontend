@@ -22,6 +22,7 @@ import ProductsInfo from "./ProductsInfo";
 import ShopProductList from "./ShopProductList";
 import WarehouseProductsTable from "./WarehouseProductsTable";
 import WarehouseSales from "./WarehouseSales";
+import ShopProducts from "./ShopProducts";
 
 const AdminDashboard = () => {
   const [posts, setPosts] = useState([]);
@@ -639,9 +640,6 @@ const AdminDashboard = () => {
       <CartProvider>
         <Header />
       </CartProvider>
-      {/* seller info */}
-
-      {/* end */}
 
       <div class="d-flex align-items-start mt-3 ">
         <div
@@ -675,7 +673,7 @@ const AdminDashboard = () => {
           >
             Website Sales
           </button>
-          
+
           <button
             class="nav-link  border border-1"
             id="v-pills-warehouse-sales-tab"
@@ -700,17 +698,29 @@ const AdminDashboard = () => {
           >
             POS Sales
           </button>
-          <button
-            class="nav-link  border border-1"
-            id="shopProductList-tab"
+          {/* <button
+            className="nav-link border border-1 active" // add 'active' if this is default selected tab
+            id="v-pills-shopProductList-tab"
             data-bs-toggle="pill"
-            data-bs-target="#shopProductList"
+            data-bs-target="#v-pills-shopProductList" // must match pane id
             type="button"
             role="tab"
-            aria-controls="shopProductList"
+            aria-controls="v-pills-shopProductList" // must match pane id
             aria-selected="true"
           >
             Shop
+          </button> */}
+          <button
+            class="nav-link  border border-1"
+            id="shopProducts-tab"
+            data-bs-toggle="pill"
+            data-bs-target="#shopProducts"
+            type="button"
+            role="tab"
+            aria-controls="shopProducts"
+            aria-selected="true"
+          >
+            Shop List
           </button>
 
           {/* <button
@@ -793,8 +803,6 @@ const AdminDashboard = () => {
         </div>
 
         <div className=" w-75 tab-content" id="v-pills-tabContent">
-          
-
           <div
             class="tab-pane fade show active"
             id="v-pills-dashboard"
@@ -820,7 +828,6 @@ const AdminDashboard = () => {
             aria-labelledby="v-pills-warehouse-sales-tab"
             tabindex="0"
           >
-            
             <WarehouseSales />
           </div>
           <div
@@ -832,15 +839,26 @@ const AdminDashboard = () => {
           >
             <SalesPos />
           </div>
+
           <div
-            class="tab-pane fade "
-            id="v-pills-shopProductList"
+            className="tab-pane fade show active" // add 'show active' for visible pane
+            id="v-pills-shopProductList" // must match data-bs-target and aria-controls
             role="tabpanel"
             aria-labelledby="v-pills-shopProductList-tab"
-            tabindex="0"
+            tabIndex="0"
           >
             <ShopProductList />
           </div>
+
+          {/* <div
+            class="tab-pane fade "
+            id="v-pills-shopProducts"
+            role="tabpanel"
+            aria-labelledby="v-pills-shopProducts-tab"
+            tabindex="0"
+          >
+            <ShopProducts />
+          </div> */}
 
           <div
             class="tab-pane fade"

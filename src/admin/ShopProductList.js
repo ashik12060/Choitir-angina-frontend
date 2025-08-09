@@ -1,216 +1,227 @@
-// import React, { useEffect, useState } from "react";
-// import axios from "axios";
-
-// const ShopProductList = ({ shopId }) => {
-//   const [shopProducts, setShopProducts] = useState([]);
-//   const [loading, setLoading] = useState(false);
-
-//   useEffect(() => {
-//     if (shopId) {
-//       fetchShopProducts(shopId);
-//     }
-//   }, [shopId]);
-
-//   const fetchShopProducts = async (shopId) => {
-//     setLoading(true);
-//     try {
-//       const response = await axios.get(
-//         `${process.env.REACT_APP_API_URL}/api/shops/${shopId}/products`
-//       );
-//       setShopProducts(response.data);
-//       console.log(response.data);
-//     } catch (error) {
-//       console.error("Error fetching shop products:", error);
-//     } finally {
-//       setLoading(false);
-//     }
-//   };
-
-//   return (
-//     <div className="mt-6 p-4 bg-white shadow rounded">
-//       <h3 className="text-lg font-semibold mb-2">Products in this Shop</h3>
-
-//       {loading ? (
-//         <p>Loading products...</p>
-//       ) : shopProducts.length === 0 ? (
-//         <p>No products assigned to this shop.</p>
-//       ) : (
-//         <ul>
-//           {shopProducts.map(({ product, variants }) => (
-//             <li key={product._id} className="border-b py-3">
-//               <div className="flex items-center gap-4">
-//                 <img
-//                   src={product.images[0]?.url || "/default-image.jpg"}
-//                   alt={product.title}
-//                   className="w-16 h-16 object-cover rounded"
-//                 />
-//                 <div>
-//                   <h4 className="font-semibold">{product.title}</h4>
-//                   <p className="text-sm text-gray-500">
-//                     {product.description || "No description available."}
-//                   </p>
-//                   <p className="text-sm font-medium">Price: ${product.price}</p>
-//                   <p className="text-sm">Variants:</p>
-//                   <ul className="text-sm pl-4 list-disc">
-//                     {variants.map(({ variant, assignedQuantity }) => (
-//                       <li key={variant._id}>
-//                         {variant.size} - {variant.color}: {assignedQuantity} pcs
-//                       </li>
-//                     ))}
-//                   </ul>
-//                 </div>
-//               </div>
-//             </li>
-//           ))}
-//         </ul>
-//       )}
-//     </div>
-//   );
-// };
-
-// export default ShopProductList;
-
 import React, { useEffect, useState } from "react";
-import axios from "axios";
+import axiosInstance from "../pages/axiosInstance";
+import ShopProductManager from "./ShopProductManager";
 
-const ShopProductList = () => {
+export default function ShopProducts() {
   const [shops, setShops] = useState([]);
-  const [selectedShop, setSelectedShop] = useState(null);
-  const [shopProducts, setShopProducts] = useState([]);
-  const [loading, setLoading] = useState(false);
+  const [selectedShopId, setSelectedShopId] = useState("");
+  const [products, setProducts] = useState([]);
 
-  // Fetch all shops when the component loads
+  const [activeTab, setActiveTab] = useState("manager");
+
   useEffect(() => {
-    fetchShops();
+    axiosInstance
+      .get(`${process.env.REACT_APP_API_URL}/api/shops/show`)
+      .then((res) => setShops(res.data))
+      .catch((err) => console.error(err));
   }, []);
 
-  const fetchShops = async () => {
-    try {
-      const response = await axios.get(
-        `${process.env.REACT_APP_API_URL}/api/shops/show`
-      );
-      setShops(response.data);
-    } catch (error) {
-      console.error("Error fetching shops:", error);
+  // useEffect(() => {
+  //   if (selectedShopId) {
+  //     axiosInstance
+  //       .get(
+  //         `${process.env.REACT_APP_API_URL}/api/shops/${selectedShopId}/products`
+  //       )
+        
+  //       .then((res) => setProducts(res.data))
+        
+  //       .catch((err) => console.error(err));
+        
+  //   }
+  // }, [selectedShopId]);
+//   useEffect(() => {
+//   if (selectedShopId) {
+//     axiosInstance
+//       .get(`${process.env.REACT_APP_API_URL}/api/shops/${selectedShopId}/products`)
+//       .then((res) => {
+//         console.log("Products for selected shop:", res.data); // Log products here
+//         console.log("Product titles:", res.data.map(item => item.product?.title));
+
+//         setProducts(res.data);
+//       })
+//       .catch((err) => {
+//         console.error(err);
+//       });
+//   }
+// }, [selectedShopId]);
+
+axiosInstance
+  .get(`${process.env.REACT_APP_API_URL}/api/shops/${selectedShopId}/products`)
+  .then((res) => {
+    console.log("Full response data:", res.data);
+    if (Array.isArray(res.data)) {
+      res.data.forEach((item, idx) => {
+        console.log(`Product ${idx}:`, item.product ? item.product.title : "No product info");
+      });
+    } else {
+      console.log("Response is not an array:", res.data);
     }
-  };
-
-  const handleShopClick = async (shopId) => {
-    if (selectedShop === shopId) {
-      // If the same shop is clicked again, close the products list
-      setSelectedShop(null);
-      setShopProducts([]);
-      return;
-    }
-
-    setSelectedShop(shopId);
-    setLoading(true);
-
-    try {
-      const response = await axios.get(
-        `${process.env.REACT_APP_API_URL}/api/shops/${shopId}/products`
-      );
-      setShopProducts(response.data);
-    } catch (error) {
-      console.error("Error fetching shop products:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
+    setProducts(res.data);
+  })
+  .catch((err) => console.error(err));
 
 
-  useEffect(() => {
-    console.log("Shop Products Response:", shopProducts);
-  }, [shopProducts]);
 
   return (
-    <div className="p-6">
-      <h2 className="text-2xl font-bold mb-4">Shops</h2>
+    <div className="max-w-6xl mx-auto p-6">
+      {/* Tabs Navigation */}
+      <ul
+        className="nav nav-pills mb-6 flex flex-wrap gap-2"
+        id="shopTabs"
+        role="tablist"
+      >
+        <li className="nav-item" role="presentation">
+          <button
+            className={`nav-link ${
+              activeTab === "manager" ? "active" : ""
+            } border border-gray-300 rounded-md px-4 py-2`}
+            id="shopProductManager-tab"
+            type="button"
+            role="tab"
+            onClick={() => setActiveTab("manager")}
+            aria-controls="shopProductManager"
+            aria-selected={activeTab === "manager"}
+          >
+            Product Manager
+          </button>
+        </li>
 
-      {shops.length === 0 ? (
-        <p>No shops available.</p>
-      ) : (
-        <ul className="space-y-4">
-          {shops.map((shop) => (
-            <li
-              key={shop._id}
-              onClick={() => handleShopClick(shop._id)}
-              className={`p-4 border rounded cursor-pointer transition ${
-                selectedShop === shop._id ? "bg-gray-200" : "bg-white"
-              }`}
+        <li className="nav-item" role="presentation">
+          <button
+            className={`nav-link ${
+              activeTab === "products" ? "active" : ""
+            } border border-gray-300 rounded-md px-4 py-2`}
+            id="shopProducts-tab"
+            type="button"
+            role="tab"
+            onClick={() => setActiveTab("products")}
+            aria-controls="shopProducts"
+            aria-selected={activeTab === "products"}
+          >
+            Shop Products
+          </button>
+        </li>
+      </ul>
+
+      {/* Tabs Content */}
+      <div className="tab-content" id="shopTabsContent">
+        {/* Tab 1: ShopProductManager */}
+        <div
+          className={`tab-pane fade ${
+            activeTab === "manager" ? "show active" : ""
+          }`}
+          id="shopProductManager"
+          role="tabpanel"
+          aria-labelledby="shopProductManager-tab"
+          tabIndex="0"
+        >
+          <ShopProductManager />
+        </div>
+
+        {/* Tab 2: Shop Products List */}
+        <div
+          className={`tab-pane fade ${
+            activeTab === "products" ? "show active" : ""
+          }`}
+          id="shopProducts"
+          role="tabpanel"
+          aria-labelledby="shopProducts-tab"
+          tabIndex="0"
+        >
+          <div className="max-w-5xl mx-auto p-6 bg-white rounded-lg shadow-md">
+            <h2 className="text-3xl font-semibold mb-6 text-gray-800">
+              Shop Products
+            </h2>
+
+            <select
+              onChange={(e) => setSelectedShopId(e.target.value)}
+              value={selectedShopId}
+              className="w-full md:w-1/3 mb-8 p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
             >
-              <h3 className="text-lg font-semibold">{shop.name}</h3>
-              <p className="text-sm text-gray-600">{shop.location}</p>
+              <option value="">Select a shop</option>
+              {shops.map((shop) => (
+                <option key={shop._id} value={shop._id}>
+                  {shop.name}
+                </option>
+              ))}
+            </select>
 
-              {/* Show assigned products when shop is clicked */}
-              {selectedShop === shop._id && (
-                <div className="mt-4 p-4 bg-white shadow rounded">
-                  <h4 className="font-semibold">Products in {shop.name}</h4>
+            {selectedShopId &&
+              (products.length === 0 ? (
+                <p className="text-center text-gray-500 text-lg">
+                  No products assigned.
+                </p>
+              ) : (
+                products.map((item) => {
+                  const shopName =
+                    shops.find((shop) => shop._id === selectedShopId)?.name ||
+                    "N/A";
 
-                  {loading ? (
-                    <p>Loading products...</p>
-                  ) : shopProducts.length === 0 ? (
-                    <p>No products assigned to this shop.</p>
-                  ) : (
-                    <ul>
-                      {shopProducts.map(({ product, variants }) => (
-                        <li
-                          key={product._id}
-                          className="border-b py-3 flex gap-4"
-                        >
-                          <img
-                            src={product.images[0]?.url || "/default-image.jpg"}
-                            alt={product.title}
-                            className="w-16 h-16 object-cover rounded"
-                          />
-                          <div>
-                            <h4 className="font-semibold">{product.title}</h4>
-                            <p className="text-sm text-gray-500">
-                              {product.description ||
-                                "No description available."}
-                            </p>
-                            <p className="text-sm font-medium">
-                              Price: ${product.price}
-                            </p>
-                            <p className="text-sm">Variants:</p>
-                            {/* <ul className="text-sm pl-4 list-disc">
-                              {variants.map(({ variant, assignedQuantity }) => (
-                                <li key={variant._id}>
-                                  {variant.size} - {variant.color}: {assignedQuantity} pcs
-                                </li>
-                              ))}
-                            </ul> */}
-                            <ul className="text-sm pl-4 list-disc">
-                              {variants.map(({ variant, assignedQuantity }) =>
-                                variant ? ( // Only render if variant exists
-                                  <li key={variant._id}>
-                                    {variant.size ? `${variant.size} - ` : ""}
-                                    {variant.color ? `${variant.color}: ` : ""}
-                                    {assignedQuantity} pcs
-                                  </li>
-                                ) : (
-                                  <li
-                                    key={Math.random()}
-                                    className="text-red-500"
-                                  >
-                                    Invalid variant data
-                                  </li>
-                                )
-                              )}
-                            </ul>
-                          </div>
-                        </li>
-                      ))}
-                    </ul>
-                  )}
-                </div>
-              )}
-            </li>
-          ))}
-        </ul>
-      )}
+                  return (
+                    <div
+                      key={item._id}
+                      className="mb-8 border border-gray-200 rounded-lg p-6 shadow hover:shadow-lg transition"
+                    >
+                      <h3 className="text-2xl font-bold text-gray-900 mb-2">
+                        {item.product ? item.product.title : "No Product Info"}
+                      </h3>
+                      <p className="text-lg text-gray-700 mb-1">
+                        <span className="font-semibold">Price:</span> $
+                        {item.product ? item.product.price : "N/A"}
+                      </p>
+                      <p className="text-lg text-gray-700 mb-4">
+                        <span className="font-semibold">Brand:</span>{" "}
+                        {item.product?.brand?.name || "N/A"}
+                      </p>
+
+                      <div className="overflow-x-auto">
+                        <table className="min-w-full border-collapse border border-gray-300 text-left">
+                          <thead>
+                            <tr className="bg-blue-100">
+                              <th className="px-4 py-2 border border-gray-300">
+                                Sub Barcode
+                              </th>
+                              <th className="px-4 py-2 border border-gray-300">
+                                Assigned Quantity
+                              </th>
+                              <th className="px-4 py-2 border border-gray-300">
+                                Total Stock (Variant Quantity)
+                              </th>
+                              <th className="px-4 py-2 border border-gray-300">
+                                Shop Name
+                              </th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {item.variants.map((v) => (
+                              <tr
+                                key={v._id}
+                                className="hover:bg-blue-50 transition"
+                              >
+                                <td className="px-4 py-2 border border-gray-300">
+                                  {v.variant ? v.variant.subBarcode : "N/A"}
+                                </td>
+                                <td className="px-4 py-2 border border-gray-300">
+                                  {v.assignedQuantity}
+                                </td>
+                                <td className="px-4 py-2 border border-gray-300">
+                                  {v.variant ? v.variant.quantity : "N/A"}
+                                </td>
+                                <td className="px-4 py-2 border border-gray-300">
+                                  {shopName}
+                                </td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                  );
+                })
+              ))}
+          </div>
+        </div>
+      </div>
     </div>
   );
-};
-
-export default ShopProductList;
+}
