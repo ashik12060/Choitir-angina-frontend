@@ -16,7 +16,7 @@ const ProductsLists = ({ searchQuery }) => {
 
         {/* <ProductByCategory /> */}
 
-        <ProductsShow />
+        {/* <ProductsShow /> */}
         <InfoSection />
         <BlogPro searchQuery={searchQuery} />
       </div>

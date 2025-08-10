@@ -4,8 +4,8 @@ import ProductsLists from "../ProductsLists/ProductsLists";
 import Footer from "../Shared/Footer/Footer";
 import Header from "../Shared/Header/Header";
 import { CartProvider } from "../../hooks";
-const Home = () => {
-  const [searchQuery, setSearchQuery] = useState("");
+const Home = ({ searchQuery }) => {
+  // const [searchQuery, setSearchQuery] = useState("");
   return (
     <div className="overflow-hidden">
       {/* <TableHeader searchQuery={searchQuery} setSearchQuery={setSearchQuery}  /> */}

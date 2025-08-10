@@ -43,6 +43,21 @@ const Header = ({ totalServices, name, searchQuery, setSearchQuery }) => {
           <img src={logo} alt="logo" className="w-32" />
         </Link>
 
+        <input
+          type="text"
+          placeholder="Search products..."
+          aria-label="Search products"
+          value={searchQuery}
+          // onChange={(e) => setSearchQuery(e.target.value)}
+
+          onChange={(e) => {
+    console.log("Header input changed:", e.target.value); // <--- add this
+    setSearchQuery(e.target.value);
+  }}
+          autoComplete="off"
+          className="flex-grow border border-gray-300 rounded px-3 py-1 focus:outline-none focus:ring-2 focus:ring-green-500"
+        />
+
         {/* Center: Logo */}
 
         <motion.h1

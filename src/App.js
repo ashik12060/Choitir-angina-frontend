@@ -106,6 +106,9 @@ const UserDashboardHOC = Layout(UserDashboard);
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+  const [searchQuery, setSearchQuery] = useState("");
+  
   return (
     <>
       <ToastContainer />
@@ -120,9 +123,9 @@ function App() {
                   element={
                     <>
                       <CartProvider>
-                        <Header />
+                        <Header searchQuery={searchQuery} setSearchQuery={setSearchQuery}/>
                       </CartProvider>
-                      <Home />
+                      <Home searchQuery={searchQuery} />
                     </>
                   }
                 ></Route>
@@ -131,9 +134,9 @@ function App() {
                   element={
                     <>
                       <CartProvider>
-                        <Header />
+                        <Header searchQuery={searchQuery} setSearchQuery={setSearchQuery}/>
                       </CartProvider>
-                      <Home />
+                      <Home searchQuery={searchQuery}/>
                     </>
                   }
                 ></Route>
@@ -142,7 +145,7 @@ function App() {
                   element={
                     <>
                       <CartProvider>
-                        <Header />
+                        <Header  searchQuery={searchQuery} setSearchQuery={setSearchQuery}/>
                       </CartProvider>
                       <ProductGroupByTitle />
                     </>
@@ -153,7 +156,7 @@ function App() {
                   element={
                     <>
                       <CartProvider>
-                        <Header />
+                        <Header  searchQuery={searchQuery} setSearchQuery={setSearchQuery}/>
                       </CartProvider>
                       <TopBrands />
                     </>
@@ -164,7 +167,7 @@ function App() {
                   element={
                     <>
                       <CartProvider>
-                        <Header />
+                        <Header  searchQuery={searchQuery} setSearchQuery={setSearchQuery}/>
                       </CartProvider>
                       <NewArrival />
                     </>
@@ -175,7 +178,7 @@ function App() {
                   element={
                     <>
                       <CartProvider>
-                        <Header />
+                        <Header  searchQuery={searchQuery} setSearchQuery={setSearchQuery}/>
                       </CartProvider>
                       <Stitched />
                     </>
@@ -186,7 +189,7 @@ function App() {
                   element={
                     <>
                       <CartProvider>
-                        <Header />
+                        <Header  searchQuery={searchQuery} setSearchQuery={setSearchQuery}/>
                       </CartProvider>
                       <Unstitched />
                     </>
@@ -304,7 +307,7 @@ function App() {
                   path="/product/:id"
                   element={
                     <CartProvider>
-                      <Header />
+                      <Header  searchQuery={searchQuery} setSearchQuery={setSearchQuery}/>
                       <SinglePro />
                     </CartProvider>
                   }
@@ -314,7 +317,7 @@ function App() {
                   element={
                     <PrivateRoute>
                       <CartProvider>
-                        <Header />
+                        <Header  searchQuery={searchQuery} setSearchQuery={setSearchQuery}/>
                         <CartComponent />
                       </CartProvider>
                     </PrivateRoute>
