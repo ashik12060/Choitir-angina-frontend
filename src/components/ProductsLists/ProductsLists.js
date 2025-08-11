@@ -8,7 +8,7 @@ import ProductsShow from "../../pages/ProductsShow";
 import ProductByCategory from "../../pages/ProductsByCategory";
 import InfoSection from "../InfoSection/InfoSection";
 
-const ProductsLists = ({ searchQuery }) => {
+const ProductsLists = ({ searchQuery,setSearchQuery }) => {
   return (
     <div>
       <div className="">
@@ -18,7 +18,7 @@ const ProductsLists = ({ searchQuery }) => {
 
         {/* <ProductsShow /> */}
         <InfoSection />
-        <BlogPro searchQuery={searchQuery} />
+        <BlogPro searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
       </div>
     </div>
   );

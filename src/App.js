@@ -125,7 +125,7 @@ function App() {
                       <CartProvider>
                         <Header searchQuery={searchQuery} setSearchQuery={setSearchQuery}/>
                       </CartProvider>
-                      <Home searchQuery={searchQuery} />
+                      <Home searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
                     </>
                   }
                 ></Route>
@@ -136,7 +136,7 @@ function App() {
                       <CartProvider>
                         <Header searchQuery={searchQuery} setSearchQuery={setSearchQuery}/>
                       </CartProvider>
-                      <Home searchQuery={searchQuery}/>
+                      <Home searchQuery={searchQuery} setSearchQuery={setSearchQuery}/>
                     </>
                   }
                 ></Route>
@@ -200,6 +200,7 @@ function App() {
                 <Route path="/category/new-arrival" element={<NewArrival />} />
                 <Route path="/category/stitched" element={<Stitched />} />
                 <Route path="/category/unstitched" element={<Unstitched />} />
+
 
                 <Route path="/products/show" element={<ProductsShow />} />
                 <Route
@@ -276,7 +277,7 @@ function App() {
                 {/* <Route path="/product-assign-to-shop" element={<ShopProductAssigner />}></Route> */}
 
                 <Route path="/" element={<BlogHome />} />
-                {/* <Route path="/bloghome" element={<BlogHome />} /> */}
+                <Route path="/bloghome" element={<BlogPro  searchQuery={searchQuery} setSearchQuery={setSearchQuery}/>} />
                 <Route path="/buycontact" element={<BuyContact />} />
                 <Route path="/product-sample" element={<ProductCart />} />
                 <Route
