@@ -91,21 +91,6 @@ const SinglePro = () => {
   const uiCommentUpdate =
     commentsRealTime.length > 0 ? commentsRealTime : product?.comments;
 
-  // const handleColorSelect = (color) => {
-  //   setSelectedColor(color);
-
-  //   const sizesForColor = product.variants
-  //     .filter((variant) => variant.color === color)
-  //     .map((variant) => variant.size);
-  //   setAvailableSizes(sizesForColor);
-  //   setSelectedSize(null);
-
-  //   const totalColorQuantity = product.variants
-  //     .filter((variant) => variant.color === color)
-  //     .reduce((sum, variant) => sum + variant.quantity, 0);
-
-  //   setColorStockQuantity(totalColorQuantity);
-  // };
   const handleColorSelect = (color) => {
     setSelectedColor(color);
 
@@ -117,9 +102,6 @@ const SinglePro = () => {
     setColorStockQuantity(0); // Reset quantity until size is selected
   };
 
-  // const handleSizeSelect = (size) => {
-  //   setSelectedSize(size);
-  // };
   const handleSizeSelect = (size) => {
     setSelectedSize(size);
 
@@ -151,10 +133,6 @@ const SinglePro = () => {
     navigate("/cart");
   };
 
-  // const handleImageClick = (color, imageUrl) => {
-  //   setMainImage(imageUrl);
-  //   setSelectedColor(color); // Set the color when image is clicked
-  // };
   const handleImageClick = (color, imageUrl, index) => {
     setMainImage(imageUrl);
     setSelectedColor(color);
@@ -165,7 +143,7 @@ const SinglePro = () => {
     ...new Set(product?.variants.map((variant) => variant.color)),
   ];
 
-  const [zoomStyle, setZoomStyle] = useState({});
+  const [zoomStyle, setZoomStyle] = useState(false);
   const handleMouseMove = (e) => {
     const { left, top, width, height } = e.target.getBoundingClientRect();
     const x = ((e.clientX - left) / width) * 100;
@@ -174,6 +152,7 @@ const SinglePro = () => {
       transformOrigin: `${x}% ${y}%`,
     });
   };
+
   const resetZoom = () => {
     setZoomStyle({});
   };
@@ -194,21 +173,21 @@ const SinglePro = () => {
                 <div className="relative">
                   <div
                     className="border mb-4 overflow-hidden group relative"
-                    onMouseMove={handleMouseMove}
-                    onMouseLeave={resetZoom}
+                    // onMouseMove={handleMouseMove}
+                    // onMouseLeave={resetZoom}
                   >
+                    
+
                     <div className="relative w-full max-h-[450px]">
+                      {/* Main image - click to zoom */}
                       <img
                         src={mainImage}
                         alt={product.title}
-                        className="w-full h-full object-contain"
+                        
+                        className="w-full h-full object-contain cursor-zoom-in"
+                        onClick={() => setZoomStyle(true)}
                       />
 
-                      {/* {product.variants[selectedImageIndex]?.subBarcode && (
-                        <span className="absolute bottom-0 right-0 bg-black text-white text-xs px-2 py-1">
-                          {product.variants[selectedImageIndex].subBarcode}
-                        </span>
-                      )} */}
                       {product.variants[selectedImageIndex]?.subBarcode && (
                         <span className="absolute bottom-0 right-0 bg-black text-white text-xs px-2 py-1">
                           {product.variants[selectedImageIndex].subBarcode}
@@ -216,18 +195,20 @@ const SinglePro = () => {
                       )}
                     </div>
 
-                    {isZoomed && (
+                    {/* Zoomed image (only image, no background) */}
+                    {zoomStyle && (
                       <div
-                        className="fixed inset-0 z-50 bg-black bg-opacity-50 flex items-center justify-center"
-                        onClick={() => setIsZoomed(false)}
+                        className="fixed inset-0 z-50 flex items-center justify-center"
+                        onClick={() => setZoomStyle(false)}
                       >
                         <div
-                          className="relative  p-4 rounded-md max-w-3xl w-[80%]"
-                          onClick={(e) => e.stopPropagation()}
+                          className="relative"
+                          onClick={(e) => e.stopPropagation()} // Prevent closing when clicking on image
                         >
+                          {/* Close button attached to image */}
                           <button
-                            onClick={() => setIsZoomed(false)}
-                            className="absolute top-1 right-1 text-white bg-red-600 rounded-full w-8 h-8 flex items-center justify-center hover:bg-red-700"
+                            onClick={() => setZoomStyle(false)}
+                            className="absolute -top-3 -right-3 text-white bg-red-600 rounded-full w-8 h-8 flex items-center justify-center hover:bg-red-700 shadow-md"
                           >
                             <X size={18} />
                           </button>
@@ -235,7 +216,7 @@ const SinglePro = () => {
                           <img
                             src={mainImage}
                             alt={product.title}
-                            className="w-full object-contain rounded-md transition-transform duration-300 "
+                            className="w-auto h-auto max-h-[90vh] max-w-[90vw] object-contain rounded-md"
                           />
                         </div>
                       </div>
