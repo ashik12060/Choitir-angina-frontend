@@ -43,7 +43,7 @@ const Header = ({ totalServices, name, searchQuery, setSearchQuery }) => {
           <img src={logo} alt="logo" className="w-32" />
         </Link>
 
-        <input
+        {/* <input
           type="text"
           placeholder="Search products..."
           aria-label="Search products"
@@ -51,12 +51,25 @@ const Header = ({ totalServices, name, searchQuery, setSearchQuery }) => {
           // onChange={(e) => setSearchQuery(e.target.value)}
 
           onChange={(e) => {
-    console.log("Header input changed:", e.target.value); // <--- add this
-    setSearchQuery(e.target.value);
-  }}
+            console.log("Header input changed:", e.target.value); // <--- add this
+            setSearchQuery(e.target.value);
+          }}
           autoComplete="off"
           className="flex-grow border border-gray-300 rounded px-3 py-1 focus:outline-none focus:ring-2 focus:ring-green-500"
-        />
+        /> */}
+        <input
+  type="text"
+  placeholder="🔍 Search products..."
+  aria-label="Search products"
+  value={searchQuery}
+  onChange={(e) => {
+    console.log("Header input changed:", e.target.value);
+    setSearchQuery(e.target.value);
+  }}
+  autoComplete="off"
+  className="w-48 sm:w-64 border border-gray-300 rounded-full px-3 py-1 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 transition-all duration-200"
+/>
+
 
         {/* Center: Logo */}
 
