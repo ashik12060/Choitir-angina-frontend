@@ -202,7 +202,7 @@ function App() {
                 <Route path="/category/unstitched" element={<Unstitched />} />
 
 
-                <Route path="/products/show" element={<ProductsShow />} />
+                {/* <Route path="/products/show" element={<ProductsShow />} /> */}
                 <Route
                   path="/products/brand/:brand"
                   element={<ProductsByBrand />}
@@ -304,6 +304,18 @@ function App() {
                 <Route path="/register" element={<Register />} />
 
                 <Route path="/medicine" element={<Products />} />
+
+                <Route
+                  path="/products/show"
+                  element={
+                    <CartProvider>
+                      <Header  searchQuery={searchQuery} setSearchQuery={setSearchQuery}/>
+                
+                      <ProductsShow/>
+                    </CartProvider>
+                    
+                  }
+                />
                 <Route
                   path="/product/:id"
                   element={

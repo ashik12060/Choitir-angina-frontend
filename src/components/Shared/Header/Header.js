@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { faHeart, faUser } from "@fortawesome/free-regular-svg-icons";
-import { faCartShopping } from "@fortawesome/free-solid-svg-icons";
+import { faCartShopping, faSortDown } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useCart } from "../../../hooks";
 import { useAuth } from "../../../AuthContext";
@@ -221,6 +221,7 @@ const Header = ({ totalServices, name, searchQuery, setSearchQuery }) => {
           </div>
 
           <div className="flex gap-4 mt-4 md:mt-0">
+            
             <Link
               to="/dashboard"
               className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 text-sm"

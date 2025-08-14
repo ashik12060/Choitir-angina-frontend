@@ -712,7 +712,7 @@ const AdminDashboard = () => {
           </button> */}
           <button
             class="nav-link  border border-1"
-            id="shopProducts-tab"
+            id="v-pills-shopProductList-tab"
             data-bs-toggle="pill"
             data-bs-target="#shopProducts"
             type="button"
@@ -841,13 +841,14 @@ const AdminDashboard = () => {
           </div>
 
           <div
-            className="tab-pane fade show active" // add 'show active' for visible pane
+            // className="tab-pane fade show active" // add 'show active' for visible pane
+            className="tab-pane fade " // add 'show active' for visible pane
             id="v-pills-shopProductList" // must match data-bs-target and aria-controls
             role="tabpanel"
             aria-labelledby="v-pills-shopProductList-tab"
             tabIndex="0"
           >
-            <ShopProductList />
+            {/* <ShopProductList /> */}
           </div>
 
           {/* <div

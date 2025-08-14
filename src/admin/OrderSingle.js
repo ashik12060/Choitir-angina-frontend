@@ -45,7 +45,7 @@ const OrderSingle = () => {
       const fetchedOrders = response?.data?.orders ?? [];
 
       setOrders(fetchedOrders);
-      console.log("Fetched orders:", fetchedOrders);
+    
     } catch (error) {
       console.error("Error fetching orders:", error);
       setOrders([]); // fallback to empty array to prevent crash
