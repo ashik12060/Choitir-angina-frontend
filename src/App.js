@@ -85,6 +85,7 @@ import Stitched from "./components/Stitched/Stitched";
 import Unstitched from "./components/Unstitched/Unstitched";
 import PosRoute from "./PosRoute";
 import ProductsShowList from "./pages/ProductsShowList";
+import BadhundharaSales from "./pages/Pos/Sales/BadhundharaSales";
 
 //HOC
 const AdminDashboardHOC = Layout(AdminDashboard);
@@ -241,6 +242,7 @@ function App() {
                 />
 
                 <Route path="/sales" element={<Sales />} />
+                <Route path="/badhundhara-sales" element={<BadhundharaSales />} />
                 <Route path="/booking" element={<Booking />} />
                 <Route path="/barcode-print" element={<BarcodePrint />} />
                 <Route

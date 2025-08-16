@@ -268,6 +268,7 @@ const Dashboard = () => {
       items: [
         { name: 'Sales', path: '/sales' },
         { name: 'Warehouse Sales', path: '/warehouse-sale' },
+        { name: 'Bashundhara Sales', path: '/badhundhara-sales' },
         { name: 'Barcode Print', path: '/barcode-print' },
         { name: 'Sub Barcode Print', path: '/sub-barcode-print' },
         { name: 'Sales Cancel', path: '/sales-cancel' },
