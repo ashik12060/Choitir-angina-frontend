@@ -1,5 +1,7 @@
 import React from "react";
 import ShopProductManager from "./ShopProductManager";
+import ShopProducts from "./ShopProductList";
+import ShopProductAssigner from "./ShopProductAssigner";
 
 const Dashboard = () => {
   return (
@@ -41,6 +43,10 @@ const Dashboard = () => {
           <p className="text-3xl font-bold text-purple-600">$15,000</p>
         </div>
       </section>
+
+
+      <ShopProducts />
+      <ShopProductAssigner />
 
       {/* Recent Orders Section */}
       <section className="bg-white p-6 rounded-lg shadow-md mb-8">

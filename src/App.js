@@ -84,6 +84,7 @@ import NewArrival from "./components/NewArrival/NewArrival";
 import Stitched from "./components/Stitched/Stitched";
 import Unstitched from "./components/Unstitched/Unstitched";
 import PosRoute from "./PosRoute";
+import ProductsShowList from "./pages/ProductsShowList";
 
 //HOC
 const AdminDashboardHOC = Layout(AdminDashboard);
@@ -206,6 +207,10 @@ function App() {
                 <Route
                   path="/products/brand/:brand"
                   element={<ProductsByBrand />}
+                />
+                <Route
+                  path="/product-list"
+                  element={<ProductsShowList />}
                 />
                 <Route
                   path="/products-category"
