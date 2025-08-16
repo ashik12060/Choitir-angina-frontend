@@ -149,7 +149,7 @@ const AdminDashboard = () => {
 
   //delete top banner by Id
   const deleteTopBannerById = async (e, id) => {
-    console.log(id);
+    
     if (window.confirm("Are you sure you want to delete this top banner?")) {
       try {
         //
@@ -169,7 +169,7 @@ const AdminDashboard = () => {
 
   //delete gallery by Id
   const deleteGalleryById = async (e, id) => {
-    console.log(id);
+    
     if (window.confirm("Are you sure you want to delete this image?")) {
       try {
         //

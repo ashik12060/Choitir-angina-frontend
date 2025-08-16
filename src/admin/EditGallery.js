@@ -67,7 +67,7 @@ const EditGallery = () => {
       setTitle(data.post.title);
       setContent(data.post.content);
       setImagePreview(data.post.image.url);
-      console.log("single post admin", data.post);
+      
     } catch (error) {
       console.log(error);
       toast.error(error);

@@ -26,6 +26,23 @@ const Sales = () => {
   // const [paymentMethod, setPaymentMethod] = useState("");
   const [cardNumber, setCardNumber] = useState("");
 
+
+  // for shops selecting
+ const [shops, setShops] = useState([]);
+const [selectedShop, setSelectedShop] = useState(""); // To store selected shop
+
+
+  // finding shops list
+  useEffect(() => {
+    axiosInstance
+      .get(`${process.env.REACT_APP_API_URL}/api/shops/show`)
+      .then((res) => setShops(res.data))
+      .catch((err) => console.error(err));
+  }, []);
+
+
+
+
   // Fetch products from the API
   useEffect(() => {
     axiosInstance
@@ -61,14 +78,6 @@ const Sales = () => {
     }
   }, [amountGiven, netPayable]);
 
-  // Handle quantity change for a specific product
-  // const handleQtyChange = (productId, newQty) => {
-  //   setSelectedProducts((prevSelected) =>
-  //     prevSelected.map((product) =>
-  //       product._id === productId ? { ...product, qty: newQty } : product
-  //     )
-  //   );
-  // };
   const handleQtyChange = (productId, newQty) => {
     setSelectedProducts((prevSelected) =>
       prevSelected.map((product) =>
@@ -77,41 +86,23 @@ const Sales = () => {
     );
   };
 
-  // Handle VAT and Discount calculations
-  // const calculateNetPayable = () => {
-  //   let subtotal = 0;
-  //   let vat = 0;
-  //   let discount = 0;
+  ;
+  const calculateNetPayable = () => {
+    let subtotal = 0;
+    let vat = 0;
 
-  //   selectedProducts.forEach((product) => {
-  //     const productTotal = parseFloat(product.price) * product.qty;
-  //     subtotal += productTotal;
-  //     vat += (productTotal * vatRate) / 100;
-  //     discount += (productTotal * discountRate) / 100;
-  //   });
+    selectedProducts.forEach((product) => {
+      const productTotal = parseFloat(product.price) * product.qty;
+      subtotal += productTotal;
+      vat += (productTotal * vatRate) / 100;
+    });
 
-  //   const finalAmount = subtotal - discount + vat;
-  //   setTotalPrice(subtotal);
-  //   setVatAmount(vat);
-  //   setDiscountAmount(discount);
-  //   setNetPayable(finalAmount);
-  // };
- const calculateNetPayable = () => {
-  let subtotal = 0;
-  let vat = 0;
+    const finalAmount = subtotal - discountAmount + vat;
 
-  selectedProducts.forEach((product) => {
-    const productTotal = parseFloat(product.price) * product.qty;
-    subtotal += productTotal;
-    vat += (productTotal * vatRate) / 100;
-  });
-
-  const finalAmount = subtotal - discountAmount + vat;
-
-  setTotalPrice(subtotal);
-  setVatAmount(vat);
-  setNetPayable(finalAmount);
-};
+    setTotalPrice(subtotal);
+    setVatAmount(vat);
+    setNetPayable(finalAmount);
+  };
 
   // Update net payable whenever total price, VAT or discount changes
   useEffect(() => {
@@ -121,6 +112,9 @@ const Sales = () => {
   const handleSubmit = () => {
     const saleData = {
       products: selectedProducts.map((product) => ({
+        // added for shop listing testing purpose
+        shopId: selectedShop,
+
         productId: product._id,
         title: product.title,
         quantity: product.qty, // Change `qty` to `quantity`
@@ -287,7 +281,29 @@ const Sales = () => {
         <div className="col-span-9 bg-white shadow-md p-4 rounded-md">
           {/* Input Fields */}
           <div className="grid grid-cols-6 gap-4">
-          
+
+            {/* new shop list added for testing purpose */}
+
+            <div>
+  <label className="text-sm text-gray-700">Select Shop</label>
+  <select
+    className="w-full border border-gray-300 rounded-md p-2"
+    value={selectedShop}
+    onChange={(e) => setSelectedShop(e.target.value)}
+  >
+    <option value="">Select a Shop</option>
+    {shops.map((shop) => (
+      <option key={shop._id} value={shop._id}>
+        {shop.name}
+      </option>
+    ))}
+  </select>
+</div>
+
+
+
+
+
             <div>
               <label className="text-sm text-gray-700">
                 Scan or Enter Barcode
@@ -349,7 +365,7 @@ const Sales = () => {
               />
             </div>
 
-           
+
             <div>
               <label className="text-sm text-gray-700">Discount (৳)</label>
               <input
@@ -449,9 +465,8 @@ const Sales = () => {
                         min={1}
                         max={product.availableQty || 1}
                         value={product.qty}
-                        className={`w-full px-1 py-0.5 border rounded ${
-                          invalidQty ? "border-red-500" : "border-gray-300"
-                        }`}
+                        className={`w-full px-1 py-0.5 border rounded ${invalidQty ? "border-red-500" : "border-gray-300"
+                          }`}
                         onChange={(e) => {
                           // Let user type freely
                           handleQtyChange(product._id, e.target.value);

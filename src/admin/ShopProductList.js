@@ -16,34 +16,7 @@ export default function ShopProducts() {
       .catch((err) => console.error(err));
   }, []);
 
-  // useEffect(() => {
-  //   if (selectedShopId) {
-  //     axiosInstance
-  //       .get(
-  //         `${process.env.REACT_APP_API_URL}/api/shops/${selectedShopId}/products`
-  //       )
-        
-  //       .then((res) => setProducts(res.data))
-        
-  //       .catch((err) => console.error(err));
-        
-  //   }
-  // }, [selectedShopId]);
-//   useEffect(() => {
-//   if (selectedShopId) {
-//     axiosInstance
-//       .get(`${process.env.REACT_APP_API_URL}/api/shops/${selectedShopId}/products`)
-//       .then((res) => {
-//         console.log("Products for selected shop:", res.data); // Log products here
-//         console.log("Product titles:", res.data.map(item => item.product?.title));
-
-//         setProducts(res.data);
-//       })
-//       .catch((err) => {
-//         console.error(err);
-//       });
-//   }
-// }, [selectedShopId]);
+  
 
 axiosInstance
   .get(`${process.env.REACT_APP_API_URL}/api/shops/${selectedShopId}/products`)
