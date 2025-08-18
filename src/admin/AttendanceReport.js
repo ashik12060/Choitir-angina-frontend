@@ -12,7 +12,6 @@ const AttendanceReport = () => {
         setAttendanceData(response.data);
       } catch (err) {
         setError('Failed to fetch attendance data.');
-        console.error('Error fetching attendance data:', err);
       }
     };
 

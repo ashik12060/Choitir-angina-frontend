@@ -21,13 +21,13 @@ export default function ShopProducts() {
 axiosInstance
   .get(`${process.env.REACT_APP_API_URL}/api/shops/${selectedShopId}/products`)
   .then((res) => {
-    console.log("Full response data:", res.data);
+    // console.log("Full response data:", res.data);
     if (Array.isArray(res.data)) {
       res.data.forEach((item, idx) => {
-        console.log(`Product ${idx}:`, item.product ? item.product.title : "No product info");
+        // console.log(`Product ${idx}:`, item.product ? item.product.title : "No product info");
       });
     } else {
-      console.log("Response is not an array:", res.data);
+      // console.log("Response is not an array:", res.data);
     }
     setProducts(res.data);
   })

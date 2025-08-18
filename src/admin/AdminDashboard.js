@@ -548,7 +548,7 @@ const AdminDashboard = () => {
         const response = await axios.get(
           `${process.env.REACT_APP_API_URL}/api/seller-products`
         );
-        console.log(response.data); // Log the entire response data
+    
         setSellers(response.data.products); // Update state with sellers data
         setLoading(false);
       } catch (error) {
