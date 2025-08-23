@@ -304,6 +304,9 @@ const SinglePro = () => {
               </p>
 
               <div className="mt-2">
+                <p className="font-serif text-gray-500 line-through">
+  Previous Price: <span className="text-lg">৳{product.priceHistory?.[product.priceHistory.length - 1]?.oldPrice}</span>
+</p>
                 <p className="font-serif text-black">
                   Price: <span className="text-xl ">৳{product.price}</span>
                 </p>
