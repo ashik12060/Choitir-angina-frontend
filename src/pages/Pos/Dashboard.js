@@ -355,7 +355,7 @@ const Dashboard = () => {
 
       {/* Main Content */}
       <main className="ml-64 flex-1 p-6 overflow-y-auto">
-        <div className="text-2xl font-semibold text-sky-700 mb-4">Welcome, Mehedi</div>
+        <div className="text-2xl font-semibold text-sky-700 mb-4">Welcome,</div>
         <div className="text-gray-600">
           Please select an option from the sidebar to begin managing your system.
         </div>
