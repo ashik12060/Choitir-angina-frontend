@@ -46,7 +46,7 @@ export default function EditProduct() {
   const [subcategories, setSubcategories] = useState([]);
   const [filteredSubcategories, setFilteredSubcategories] = useState([]);
   const [barcode, setBarcode] = useState("");
-   // 👉 NEW: keep product state for priceHistory
+  // 👉 NEW: keep product state for priceHistory
   const [productData, setProductData] = useState(null);
 
   const categoriesList = [
@@ -133,7 +133,7 @@ export default function EditProduct() {
         );
         const product = productRes.data.product;
 
-          setProductData(product);
+        setProductData(product);
 
         setFieldValue("title", product.title);
         setFieldValue("content", product.content);
@@ -143,11 +143,29 @@ export default function EditProduct() {
         setFieldValue("categories", product.categories);
         setFieldValue("subcategory", product.subcategory);
         // setFieldValue("barcode", product.barcodeNumber || "");
-        setFieldValue("barcode", product.barcodeNumber || product.barcode || "");
-        setFieldValue("variants", product.variants || []);
+        setFieldValue(
+          "barcode",
+          product.barcodeNumber || product.barcode || ""
+        );
+        // setFieldValue("variants", product.variants || []);
+        const mainBarcode = product.barcodeNumber || product.barcode || "";
+        setBarcode(mainBarcode);
+
+        // Rebuild variants with proper subBarcode
+        const variantsWithSub = (product.variants || []).map((v, idx) => ({
+          ...v,
+          subBarcode:
+            v.subBarcode ||
+            (mainBarcode
+              ? `${mainBarcode}${String.fromCharCode(97 + idx)}`
+              : ""),
+          subBarcodeSvg: v.subBarcodeSvg || "",
+        }));
+
+        setFieldValue("variants", variantsWithSub);
+
         // setBarcode(product.barcodeNumber || "");
         setBarcode(product.barcodeNumber || product.barcode || "");
-
 
         const [brandsRes, suppliersRes, subsRes] = await Promise.all([
           axiosInstance.get(`${process.env.REACT_APP_API_URL}/api/brands`),
@@ -177,42 +195,92 @@ export default function EditProduct() {
     setFilteredSubcategories(filtered);
   };
 
-  const handleBarcodeChange = (e) => {
-    const value = e.target.value;
-    setBarcode(value);
-    setFieldValue("barcode", value);
+  // const handleBarcodeChange = (e) => {
+  //   const value = e.target.value;
+  //   setBarcode(value);
+  //   setFieldValue("barcode", value);
 
-    const updatedVariants = values.variants.map((variant, idx) => ({
+  //   const index = values.variants.length;
+  //   let updatedVariants = values.variants.map((variant, idx) => ({
+  //     ...variant,
+  //     // subBarcode: value ? `${value}${String.fromCharCode(97 + idx)}` : "",
+  //     subBarcode: barcode ? `${barcode}${String.fromCharCode(97 + index)}` : "",
+  //   }));
+
+  //   updatedVariants = generateSubBarcodeSvgs(updatedVariants); // only return updated variants
+  //   setFieldValue("variants", updatedVariants); // set Formik once
+  // };
+
+  // const generateSubBarcodeSvgs = (variantsToUpdate) => {
+  //   return variantsToUpdate.map((variant) => {
+  //     if (!variant.subBarcode) return { ...variant, subBarcodeSvg: "" }; // skip empty barcodes
+  //     const canvas = document.createElement("canvas");
+  //     try {
+  //       JsBarcode(canvas, variant.subBarcode, {
+  //         format: "CODE128",
+  //         displayValue: true,
+  //         fontSize: 14,
+  //         height: 40,
+  //       });
+  //     } catch (err) {
+  //       console.error("Invalid subBarcode:", variant.subBarcode, err);
+  //       return { ...variant, subBarcodeSvg: "" };
+  //     }
+  //     return { ...variant, subBarcodeSvg: canvas.toDataURL() };
+  //   });
+  // };
+  const handleBarcodeChange = (e) => {
+    const mainBarcode = e.target.value;
+    setBarcode(mainBarcode);
+    const updatedVariants = values.variants.map((variant, index) => ({
       ...variant,
-      subBarcode: value ? `${value}${String.fromCharCode(97 + idx)}` : "",
+      subBarcode: `${mainBarcode}${String.fromCharCode(97 + index)}`,
+      subBarcodeSvg: `${mainBarcode}${String.fromCharCode(97 + index)}`,
     }));
     setFieldValue("variants", updatedVariants);
-    generateSubBarcodeSvgs(updatedVariants);
   };
 
   const generateSubBarcodeSvgs = (variantsToUpdate) => {
-    const updatedVariants = variantsToUpdate.map((variant) => {
-      if (!variant.subBarcode) return variant;
-      const canvas = document.createElement("canvas");
-      JsBarcode(canvas, variant.subBarcode, {
-        format: "CODE128",
-        displayValue: true,
-        fontSize: 14,
-        height: 40,
-      });
-      return { ...variant, subBarcodeSvg: canvas.toDataURL() };
+    return variantsToUpdate.map((variant) => {
+      let subBarcodeSvg = "";
+      if (variant.subBarcode) {
+        const canvas = document.createElement("canvas");
+        try {
+          JsBarcode(canvas, variant.subBarcode, {
+            format: "CODE128",
+            displayValue: true,
+            fontSize: 14,
+            height: 40,
+          });
+          subBarcodeSvg = canvas.toDataURL();
+        } catch (err) {
+          console.error("Invalid subBarcode:", variant.subBarcode, err);
+        }
+      }
+      return { ...variant, subBarcodeSvg }; // ✅ keep subBarcode string intact
     });
-    setFieldValue("variants", updatedVariants);
   };
 
+  // const handleVariantChange = (index, field, value) => {
+  //   const updatedVariants = [...values.variants];
+  //   updatedVariants[index][field] = value;
+  //   if (field === "size" || field === "color") {
+  //     generateSubBarcodeSvgs(updatedVariants);
+  //   }
+  //   setFieldValue("variants", updatedVariants);
+  // };
+
   const handleVariantChange = (index, field, value) => {
-    const updatedVariants = [...values.variants];
-    updatedVariants[index][field] = value;
-    if (field === "size" || field === "color") {
-      generateSubBarcodeSvgs(updatedVariants);
-    }
+  const updatedVariants = [...values.variants];
+  updatedVariants[index][field] = value;
+
+  // If editing subBarcode, generate SVG
+  if (field === "subBarcode") {
+    setFieldValue("variants", generateSubBarcodeSvgs(updatedVariants));
+  } else {
     setFieldValue("variants", updatedVariants);
-  };
+  }
+};
 
   const handleImageDrop = async (index, files) => {
     if (!files || files.length === 0) return;
@@ -234,21 +302,80 @@ export default function EditProduct() {
     }
   };
 
+  // const addVariant = () => {
+  //   const updated = [
+  //     ...values.variants,
+  //     {
+  //       size: "",
+  //       color: "",
+  //       quantity: 1,
+  //       description: "",
+  //       productLength: null,
+  //       subBarcode: "",
+  //       subBarcodeSvg: "",
+  //       imageUrl: "",
+  //     },
+  //   ];
+  //   setFieldValue("variants", updated);
+  // };
+
+  // const addVariant = () => {
+  //   const updatedExisting = values.variants.map((v, idx) => ({
+  //     ...v,
+  //     subBarcode: v.subBarcode || `${barcode}${String.fromCharCode(97 + idx)}`,
+  //   }));
+
+  //   const newIndex = updatedExisting.length;
+  //   const newVariant = {
+  //     size: "",
+  //     color: "",
+  //     quantity: 1,
+  //     description: "",
+  //     productLength: null,
+  //     subBarcode: `${barcode}${String.fromCharCode(97 + newIndex)}`, // ✅ next subBarcode
+  //     subBarcodeSvg: "",
+  //     imageUrl: "",
+  //   };
+
+  //   const allVariants = [...updatedExisting, newVariant];
+  //   const withSvg = generateSubBarcodeSvgs(allVariants);
+
+  //   setFieldValue("variants", withSvg); // ✅ update Formik properly
+  // };
+
   const addVariant = () => {
-    const updated = [
-      ...values.variants,
-      {
-        size: "",
-        color: "",
-        quantity: 1,
-        description: "",
-        productLength: null,
-        subBarcode: "",
-        subBarcodeSvg: "",
-        imageUrl: "",
-      },
-    ];
-    setFieldValue("variants", updated);
+    const updatedExisting = values.variants.map((v, idx) => ({
+      ...v,
+      subBarcode: v.subBarcode || `${barcode}${String.fromCharCode(97 + idx)}`,
+    }));
+
+    // Find last letter in existing subBarcodes
+    let lastCharCode = 96; // 96 so that first variant will be 'a'
+    updatedExisting.forEach((v) => {
+      const sub = v.subBarcode || "";
+      if (sub.startsWith(barcode)) {
+        const char = sub.slice(barcode.length);
+        if (char.length === 1) {
+          const code = char.charCodeAt(0);
+          if (code > lastCharCode) lastCharCode = code;
+        }
+      }
+    });
+
+    const newChar = String.fromCharCode(lastCharCode + 1);
+    const newVariant = {
+      size: "",
+      color: "",
+      quantity: 1,
+      description: "",
+      productLength: null,
+      subBarcode: `${barcode}${newChar}`, // next in sequence
+      subBarcodeSvg: "",
+      imageUrl: "",
+    };
+
+    const allVariants = [...updatedExisting, newVariant];
+    setFieldValue("variants", generateSubBarcodeSvgs(allVariants));
   };
 
   const removeVariant = (index) => {
@@ -287,18 +414,6 @@ export default function EditProduct() {
           rows={4}
           sx={{ mb: 2 }}
         />
-        {/* <TextField
-          fullWidth
-          label="Price"
-          name="price"
-          type="number"
-          value={values.price}
-          onChange={handleChange}
-          onBlur={handleBlur}
-          error={touched.price && Boolean(errors.price)}
-          helperText={touched.price && errors.price}
-          sx={{ mb: 2 }}
-        /> */}
 
         <TextField
           fullWidth
@@ -326,7 +441,6 @@ export default function EditProduct() {
             <Divider sx={{ mt: 1 }} />
           </Box>
         )}
-
 
         <TextField
           select
@@ -393,7 +507,7 @@ export default function EditProduct() {
             </MenuItem>
           ))}
         </Select>
-        
+
         <TextField
           sx={{ mb: 3 }}
           fullWidth
@@ -456,11 +570,21 @@ export default function EditProduct() {
               sx={{ mb: 1 }}
             />
 
-            <TextField
+            {/* <TextField
               fullWidth
               label={`Sub Barcode ${index + 1}`}
               value={variant.subBarcode || ""}
               InputProps={{ readOnly: true }}
+              sx={{ mb: 2 }}
+            /> */}
+
+            <TextField
+              fullWidth
+              label={`Sub Barcode ${index + 1}`}
+              value={variant.subBarcode || ""}
+              onChange={(e) =>
+                handleVariantChange(index, "subBarcode", e.target.value)
+              } // allow manual edit
               sx={{ mb: 2 }}
             />
 
