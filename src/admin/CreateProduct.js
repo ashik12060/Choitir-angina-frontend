@@ -751,15 +751,15 @@ const CreateProduct = () => {
                 )}
               </div>
             </div>
-            {/* <Button
+            <Button
               type="submit"
               fullWidth
               variant="contained"
               sx={{ mt: 3, p: 1, mb: 2, borderRadius: "25px" }}
             >
               Create Product
-            </Button> */}
-            <Box>
+            </Button> 
+            {/* <Box>
               {showMessage && (
                 <Alert severity="info" sx={{ mb: 2 }}>
                   Website is under maintenance
@@ -775,7 +775,7 @@ const CreateProduct = () => {
               >
                 Create Product
               </Button>
-            </Box>
+            </Box> */}
           </Box>
         </Box>
       )}
