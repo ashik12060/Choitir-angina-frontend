@@ -122,7 +122,7 @@ const NewArrival = () => {
       setFromCache(response.data.cached || false); // detect if response is from cache
       setLoading(false);
     } catch (error) {
-      toast.error("Failed to load New Arrival products");
+      toast.error("Failed to load Top Brands products");
       setLoading(false);
     }
   };
@@ -156,7 +156,7 @@ const NewArrival = () => {
           {/* Optional: show “Loaded from cache” indicator */}
           {fromCache && (
             <p className="text-center text-sm text-green-600 mb-4">
-              Loaded instantly from cache
+             
             </p>
           )}
 

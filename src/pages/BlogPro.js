@@ -11,13 +11,13 @@ const BlogPro = ({ searchQuery, setSearchQuery }) => {
   const [loading, setLoading] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-  const itemsPerPage = 16;
+  const itemsPerPage = 10;
 
   const [progress, setProgress] = useState(0);
 
   const fetchProducts = async (page = 1) => {
     setLoading(true);
-      setProgress(0);
+    setProgress(0);
     try {
       const { data } = await axiosInstance.get(
         `${process.env.REACT_APP_API_URL}/api/products/paginated?page=${page}&limit=${itemsPerPage}`
@@ -28,24 +28,16 @@ const BlogPro = ({ searchQuery, setSearchQuery }) => {
         setProducts(data.products);
         setTotalPages(data.totalPages);
         setCurrentPage(data.currentPage);
-        console.log("Products for page", page, ":", data.products);
-         // Calculate % loaded for the current page
-      setProgress(Math.round((data.products.length / data.totalProducts) * 100));
-       // ✅ Log products with their categories
-      console.log(`Products for page ${page}:`);
-      data.products.forEach((product) => {
-        console.log({
-          id: product._id,
-          title: product.title,
-          categories: product.categories, // here are the categories
-        });
-      });
+
+        setProgress(
+          Math.round((data.products.length / data.totalProducts) * 100)
+        );
       }
-     
-  
-    } catch (error) {
+    } 
+    catch (error) {
       console.error("Error fetching products", error);
-    } finally {
+    } 
+    finally {
       setLoading(false);
     }
   };

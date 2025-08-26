@@ -155,7 +155,7 @@ const NewArrival = () => {
           {/* Optional: show “Loaded from cache” indicator */}
           {fromCache && (
             <p className="text-center text-sm text-green-600 mb-4">
-              Loaded instantly from cache
+            
             </p>
           )}
 

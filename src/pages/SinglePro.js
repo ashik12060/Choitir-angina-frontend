@@ -54,7 +54,7 @@ const SinglePro = () => {
       const firstVariantImage = data.product.variants[0]?.imageUrl;
       setMainImage(firstVariantImage);
       setLoading(false);
-      console.log(data.product);
+     
     } catch (error) {
       console.log(error);
     }
