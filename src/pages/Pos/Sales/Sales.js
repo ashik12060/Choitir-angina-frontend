@@ -42,6 +42,7 @@ const Sales = () => {
     axiosInstance
       .get(`${process.env.REACT_APP_API_URL}/api/products/pos`)
       .then((response) => {
+        // workable
         console.log(response);
         console.log(response.data);
         setProducts(response.data.products);

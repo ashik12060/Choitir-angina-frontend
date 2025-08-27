@@ -31,6 +31,7 @@
     "framer-motion": "^12.23.12",
     "jsbarcode": "^3.11.6",
     "jspdf": "^2.5.2",
+    "jspdf-autotable": "^5.0.2",
     "lottie-react": "^2.4.0",
     "lucide-react": "^0.510.0",
     "moment": "^2.29.4",

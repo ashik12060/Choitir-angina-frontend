@@ -86,6 +86,7 @@ import Unstitched from "./components/Unstitched/Unstitched";
 import PosRoute from "./PosRoute";
 import ProductsShowList from "./pages/ProductsShowList";
 import BadhundharaSales from "./pages/Pos/Sales/BadhundharaSales";
+import Stock from "./pages/Pos/StockReport/Stock";
 
 //HOC
 const AdminDashboardHOC = Layout(AdminDashboard);
@@ -275,6 +276,8 @@ function App() {
                   element={<ProductInformation />}
                 />
                 <Route path="/supplier-setup" element={<SupplierSetup />} />
+
+                 <Route path="/stock" element={<Stock />} />
 
                 {/* pos end */}
 
