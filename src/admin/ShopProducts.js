@@ -14,15 +14,15 @@ export default function ShopProducts() {
   }, []);
 
   useEffect(() => {
-    if (selectedShopId) {
-      axiosInstance
-        .get(`${process.env.REACT_APP_API_URL}/api/shops/${selectedShopId}/products`)
-        .then((res) => setProducts(res.data))
-        .catch((err) => console.error(err));
-    } else {
-      setProducts([]);
-    }
-  }, [selectedShopId]);
+  if (selectedShopId) {
+    axiosInstance
+      .get(`${process.env.REACT_APP_API_URL}/api/shops/${selectedShopId}`)
+      .then((res) => setProducts(res.data.products)) 
+      .catch((err) => console.error(err));
+  } else {
+    setProducts([]);
+  }
+}, [selectedShopId]);
 
   return (
     <div>

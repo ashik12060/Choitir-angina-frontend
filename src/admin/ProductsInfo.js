@@ -13,22 +13,30 @@
 //   const [products, setProducts] = useState([]);
 //   const [loading, setLoading] = useState(true);
 
-//   // pagination state
-//   const [page, setPage] = useState(0); // DataGrid is 0-based
+//   // server-side pagination state
+//   const [page, setPage] = useState(0);         // DataGrid uses 0-based
 //   const [pageSize, setPageSize] = useState(10);
 //   const [rowCount, setRowCount] = useState(0);
 
-//   // Display products with pagination
+//   // Fetch products
 //   const displayProduct = async () => {
 //     setLoading(true);
 //     try {
 //       const { data } = await axiosInstance.get(
 //         `${process.env.REACT_APP_API_URL}/api/products/show?page=${page + 1}&limit=${pageSize}`
 //       );
-//       setProducts(data.products || []);
-//       setRowCount(data.pagination?.total || 0);
+
+//       // add serial number field
+//       const start = page * pageSize;
+//       const withSl = (data?.products || []).map((p, idx) => ({
+//         ...p,
+//         sl: start + idx + 1,
+//       }));
+
+//       setProducts(withSl);
+//       setRowCount(data?.pagination?.total || 0);
 //     } catch (error) {
-//       console.log(error);
+//       console.error(error);
 //       toast.error("Failed to load products in admin");
 //     } finally {
 //       setLoading(false);
@@ -37,9 +45,10 @@
 
 //   useEffect(() => {
 //     displayProduct();
+//     // eslint-disable-next-line react-hooks/exhaustive-deps
 //   }, [page, pageSize]);
 
-//   // Delete product by Id
+//   // Delete product
 //   const deleteProductById = async (e, id) => {
 //     if (window.confirm("Are you sure you want to delete this product?")) {
 //       try {
@@ -48,258 +57,20 @@
 //         );
 //         if (data.success === true) {
 //           toast.success(data.message);
-//           displayProduct();
+//           displayProduct(); // refresh
 //         }
 //       } catch (error) {
-//         console.log(error);
+//         console.error(error);
 //         toast.error("Failed to delete product");
 //       }
 //     }
 //   };
 
-//   // Product columns
-//   // const ProductColumns = [
-//   //   { field: "_id", headerName: "Post ID", width: 150 },
-//   //   { field: "title", headerName: "Post title", width: 150 },
-//   //   {
-//   //     field: "postedBy",
-//   //     headerName: "Posted by",
-//   //     width: 150,
-//   //     valueGetter: (data) => data.row.postedBy?.name || "Unknown",
-//   //   },
-//   //   {
-//   //     field: "createdAt",
-//   //     headerName: "Created At",
-//   //     width: 180,
-//   //     renderCell: (params) =>
-//   //       moment(params.row.createdAt).format("YYYY-MM-DD HH:mm:ss"),
-//   //   },
-//   //   {
-//   //     field: "Actions",
-//   //     width: 100,
-//   //     renderCell: (value) => (
-//   //       <Box
-//   //         sx={{
-//   //           display: "flex",
-//   //           justifyContent: "space-between",
-//   //           width: "250px",
-//   //         }}
-//   //       >
-//   //         <Link to={`/admin/product/edit/${value.row._id}`}>
-//   //           <IconButton aria-label="edit" className="text-sm">
-//   //             <FontAwesomeIcon icon={faPenToSquare} />
-//   //           </IconButton>
-//   //         </Link>
-//   //         <IconButton
-//   //           aria-label="delete"
-//   //           onClick={(e) => {
-//   //             e.stopPropagation();
-//   //             deleteProductById(e, value.row._id);
-//   //           }}
-//   //         >
-//   //           <FontAwesomeIcon className="text-red-500" icon={faTrashCan} />
-//   //         </IconButton>
-//   //       </Box>
-//   //     ),
-//   //   },
-//   // ];
-
+//   // DataGrid columns
 //   const ProductColumns = [
-//   {
-//     field: "sl",
-//     headerName: "SL",
-//     width: 80,
-//     renderCell: (params) => {
-//       return page * pageSize + (params.api.getRowIndex(params.id) + 1);
-//     },
-//   },
-//   { field: "_id", headerName: "Post ID", width: 150 },
-//   { field: "title", headerName: "Post title", width: 150 },
-//   {
-//     field: "postedBy",
-//     headerName: "Posted by",
-//     width: 150,
-//     valueGetter: (data) => data.row.postedBy?.name || "Unknown",
-//   },
-//   {
-//     field: "createdAt",
-//     headerName: "Created At",
-//     width: 180,
-//     renderCell: (params) =>
-//       moment(params.row.createdAt).format("YYYY-MM-DD HH:mm:ss"),
-//   },
-//   {
-//     field: "Actions",
-//     width: 100,
-//     renderCell: (value) => (
-//       <Box
-//         sx={{
-//           display: "flex",
-//           justifyContent: "space-between",
-//           width: "250px",
-//         }}
-//       >
-//         <Link to={`/admin/product/edit/${value.row._id}`}>
-//           <IconButton aria-label="edit" className="text-sm">
-//             <FontAwesomeIcon icon={faPenToSquare} />
-//           </IconButton>
-//         </Link>
-//         <IconButton
-//           aria-label="delete"
-//           onClick={(e) => {
-//             e.stopPropagation();
-//             deleteProductById(e, value.row._id);
-//           }}
-//         >
-//           <FontAwesomeIcon className="text-red-500" icon={faTrashCan} />
-//         </IconButton>
-//       </Box>
-//     ),
-//   },
-// ];
-
-
-//   return (
-//     <div>
-//       <Box>
-//         <h3 className="mt-3">
-//           <span className="py-2 px-4 rounded bg-primary text-white">
-//             PRODUCTS
-//           </span>
-//         </h3>
-
-//         <Grid container spacing={2} justifyContent="flex-end" sx={{ pb: 2 }}>
-//           <Grid item>
-//             <Button
-//               variant="contained"
-//               color="success"
-//               startIcon={<GridAddIcon />}
-//             >
-//               <Link
-//                 style={{ color: "white", textDecoration: "none" }}
-//                 to="/admin/product/create"
-//               >
-//                 Add Products
-//               </Link>
-//             </Button>
-//           </Grid>
-//         </Grid>
-
-//         <Paper sx={{ bgColor: "white", p: 2 }}>
-//           {loading ? (
-//             <p className="text-center text-gray-500">
-//               <Loader />
-//             </p>
-//           ) : products.length > 0 ? (
-//             <Box sx={{ height: "auto", width: "100%" }}>
-//               <DataGrid
-//                 getRowId={(row) => row._id}
-//                 sx={{
-//                   "& .MuiTablePagination-displayedRows": {
-//                     color: "black",
-//                   },
-//                   color: "black",
-//                   [`& .${gridClasses.row}`]: {
-//                     bgColor: "white",
-//                   },
-//                 }}
-//                 rows={products}
-//                 columns={ProductColumns}
-//                 rowCount={rowCount} // total rows from backend
-//                 page={page}
-//                 pageSize={pageSize}
-//                 rowsPerPageOptions={[10, 20, 50]}
-//                 pagination
-//                 paginationMode="server" // server-side mode
-//                 onPageChange={(newPage) => setPage(newPage)}
-//                 onPageSizeChange={(newSize) => setPageSize(newSize)}
-//                 loading={loading}
-//                 autoHeight
-//               />
-//             </Box>
-//           ) : (
-//             <p className="text-center text-gray-500">No products found</p>
-//           )}
-//         </Paper>
-//       </Box>
-//     </div>
-//   );
-// };
-
-// export default ProductsInfo;
-
-
-// import React, { useEffect, useState } from "react";
-// import axiosInstance from "../pages/axiosInstance";
-// import { toast } from "react-toastify";
-// import moment from "moment";
-// import { Link } from "react-router-dom";
-// import { Box, Button, IconButton, Paper, Grid } from "@mui/material";
-// import { DataGrid, GridAddIcon, gridClasses } from "@mui/x-data-grid";
-// import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-// import { faPenToSquare, faTrashCan } from "@fortawesome/free-regular-svg-icons";
-// import Loader from "../components/Loader";
-
-// const ProductsInfo = () => {
-//   const [products, setProducts] = useState([]);
-//   const [loading, setLoading] = useState(true);
-
-//   // Display products
-//   const displayProduct = async () => {
-//     try {
-//       const { data } = await axiosInstance.get(
-//         `${process.env.REACT_APP_API_URL}/api/products/show`
-//       );
-//       setProducts(data.products || []);
-//       console.log(data.products)
-//        console.log("Raw API response:", data);
-//     } catch (error) {
-//       console.log(error);
-//       toast.error("Failed to load products in admin");
-//     } finally {
-//       setLoading(false);
-//     }
-//   };
-
-//   useEffect(() => {
-//     displayProduct();
-//   }, []);
-  
-
-//   // Delete product by Id
-//   const deleteProductById = async (e, id) => {
-//     if (window.confirm("Are you sure you want to delete this product?")) {
-//       try {
-//         const { data } = await axiosInstance.delete(
-//           `${process.env.REACT_APP_API_URL}/api/delete/product/${id}`
-//         );
-//         if (data.success === true) {
-//           toast.success(data.message);
-//           displayProduct();
-//         }
-//       } catch (error) {
-//         console.log(error);
-//         toast.error("Failed to delete product");
-//       }
-//     }
-//   };
-
-//   // Product columns
-//   const ProductColumns = [
+//     { field: "sl", headerName: "SL", width: 80, sortable: false },
 //     { field: "_id", headerName: "Post ID", width: 150 },
 //     { field: "title", headerName: "Post title", width: 150 },
-//     // {
-//     //   field: "likes",
-//     //   headerName: "Likes",
-//     //   width: 150,
-//     //   renderCell: (params) => params.row.likes?.length || 0,
-//     // },
-//     // {
-//     //   field: "comments",
-//     //   headerName: "Comments",
-//     //   width: 150,
-//     //   renderCell: (params) => params.row.comments?.length || 0,
-//     // },
 //     {
 //       field: "postedBy",
 //       headerName: "Posted by",
@@ -315,15 +86,11 @@
 //     },
 //     {
 //       field: "Actions",
-//       width: 100,
+//       headerName: "Actions",
+//       width: 120,
+//       sortable: false,
 //       renderCell: (value) => (
-//         <Box
-//           sx={{
-//             display: "flex",
-//             justifyContent: "space-between",
-//             width: "250px",
-//           }}
-//         >
+//         <Box sx={{ display: "flex", gap: 1 }}>
 //           <Link to={`/admin/product/edit/${value.row._id}`}>
 //             <IconButton aria-label="edit" className="text-sm">
 //               <FontAwesomeIcon icon={faPenToSquare} />
@@ -354,11 +121,7 @@
 
 //         <Grid container spacing={2} justifyContent="flex-end" sx={{ pb: 2 }}>
 //           <Grid item>
-//             <Button
-//               variant="contained"
-//               color="success"
-//               startIcon={<GridAddIcon />}
-//             >
+//             <Button variant="contained" color="success" startIcon={<GridAddIcon />}>
 //               <Link
 //                 style={{ color: "white", textDecoration: "none" }}
 //                 to="/admin/product/create"
@@ -374,25 +137,25 @@
 //             <p className="text-center text-gray-500"><Loader /></p>
 //           ) : products.length > 0 ? (
 //             <Box sx={{ height: "auto", width: "100%" }}>
-              
 //               <DataGrid
 //                 getRowId={(row) => row._id}
-//                 sx={{
-//                   "& .MuiTablePagination-displayedRows": {
-//                     color: "black",
-//                   },
-//                   color: "black",
-//                   [`& .${gridClasses.row}`]: {
-//                     bgColor: "white",
-//                   },
-//                 }}
 //                 rows={products}
 //                 columns={ProductColumns}
-//                 pageSize={10} // ✅ show 10 rows at a time
-//                 rowsPerPageOptions={[10, 20]} // ✅ let user choose per page
-//                 pagination // ✅ enables pagination
-//                 checkboxSelection
+//                 rowCount={rowCount}
+//                 paginationMode="server"
+//                 paginationModel={{ page, pageSize }}
+//                 onPaginationModelChange={(model) => {
+//                   setPage(model.page);
+//                   setPageSize(model.pageSize);
+//                 }}
+//                 rowsPerPageOptions={[10, 20, 50]}
+//                 loading={loading}
 //                 autoHeight
+//                 sx={{
+//                   "& .MuiTablePagination-displayedRows": { color: "black" },
+//                   color: "black",
+//                   [`& .${gridClasses.row}`]: { bgColor: "white" },
+//                 }}
 //               />
 //             </Box>
 //           ) : (
@@ -405,6 +168,7 @@
 // };
 
 // export default ProductsInfo;
+
 
 
 
@@ -423,20 +187,19 @@ const ProductsInfo = () => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // server-side pagination state
-  const [page, setPage] = useState(0);         // DataGrid uses 0-based
+  // server-side pagination
+  const [page, setPage] = useState(0); 
   const [pageSize, setPageSize] = useState(10);
   const [rowCount, setRowCount] = useState(0);
 
-  // Fetch products
   const displayProduct = async () => {
     setLoading(true);
     try {
       const { data } = await axiosInstance.get(
-        `${process.env.REACT_APP_API_URL}/api/products/show?page=${page + 1}&limit=${pageSize}`
+        `${process.env.REACT_APP_API_URL}/api/admin/products/show?page=${page + 1}&limit=${pageSize}`
       );
 
-      // add serial number field
+      // Add serial number
       const start = page * pageSize;
       const withSl = (data?.products || []).map((p, idx) => ({
         ...p,
@@ -455,10 +218,8 @@ const ProductsInfo = () => {
 
   useEffect(() => {
     displayProduct();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [page, pageSize]);
 
-  // Delete product
   const deleteProductById = async (e, id) => {
     if (window.confirm("Are you sure you want to delete this product?")) {
       try {
@@ -467,7 +228,7 @@ const ProductsInfo = () => {
         );
         if (data.success === true) {
           toast.success(data.message);
-          displayProduct(); // refresh
+          displayProduct();
         }
       } catch (error) {
         console.error(error);
@@ -476,14 +237,13 @@ const ProductsInfo = () => {
     }
   };
 
-  // DataGrid columns
   const ProductColumns = [
     { field: "sl", headerName: "SL", width: 80, sortable: false },
     { field: "_id", headerName: "Post ID", width: 150 },
-    { field: "title", headerName: "Post title", width: 150 },
+    { field: "title", headerName: "Post Title", width: 200 },
     {
       field: "postedBy",
-      headerName: "Posted by",
+      headerName: "Posted By",
       width: 150,
       valueGetter: (data) => data.row.postedBy?.name || "Unknown",
     },
@@ -578,4 +338,3 @@ const ProductsInfo = () => {
 };
 
 export default ProductsInfo;
-
