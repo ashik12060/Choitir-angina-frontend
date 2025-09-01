@@ -87,6 +87,7 @@ import PosRoute from "./PosRoute";
 import ProductsShowList from "./pages/ProductsShowList";
 import BadhundharaSales from "./pages/Pos/Sales/BadhundharaSales";
 import Stock from "./pages/Pos/StockReport/Stock";
+import BashundharaSalesPos from "./pages/Pos/Sales/BashundharaSalesPos";
 
 //HOC
 const AdminDashboardHOC = Layout(AdminDashboard);
@@ -244,6 +245,7 @@ function App() {
 
                 <Route path="/sales" element={<Sales />} />
                 <Route path="/badhundhara-sales" element={<BadhundharaSales />} />
+                <Route path="/boshundhara-sales" element={<BashundharaSalesPos />} />
                 <Route path="/booking" element={<Booking />} />
                 <Route path="/barcode-print" element={<BarcodePrint />} />
                 <Route
