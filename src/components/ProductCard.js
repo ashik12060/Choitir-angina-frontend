@@ -33,8 +33,8 @@ const ProductCard = ({
 
   return (
     <div className="w-full p-2 shadow-md rounded-lg bg-white flex flex-col">
-      {/* <Link to={`/product/${id}`}> */}
-      <Link to={`/product/${id}/variants`}>
+      <Link to={`/product/${id}`}>
+      {/* <Link to={`/product/${id}/variants`}> */}
         <img
           loading="lazy"
           className="w-full h-72 object-cover rounded-md"
