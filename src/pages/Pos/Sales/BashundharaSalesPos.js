@@ -99,34 +99,35 @@ const BashundharaSalesPos = () => {
 
     //   return updatedProducts;
     // });
-   
-   setSelectedProducts((prevSelected) => {
-  const updatedProducts = [...prevSelected];
-  const existingProduct = updatedProducts.find(
-    (p) => p.productId === foundProduct._id && p.variantId === matchedVariant.variantId
-  );
 
-  if (existingProduct) {
-    existingProduct.qty += 1;
-  } else {
-    updatedProducts.push({
-      productId: foundProduct._id,
-      variantId: matchedVariant.variantId,
-      title: foundProduct.title,
-      price: foundProduct.price,
-      qty: 1,
-      selectedSize: matchedVariant.size,
-      selectedColor: matchedVariant.color,
-      availableQty: matchedVariant.assignedQuantity,
-    //   availableQty: matchedVariant.quantity,
-      variants: foundProduct.variants, // <-- Add this
+    setSelectedProducts((prevSelected) => {
+      const updatedProducts = [...prevSelected];
+      const existingProduct = updatedProducts.find(
+        (p) =>
+          p.productId === foundProduct._id &&
+          p.variantId === matchedVariant.variantId
+      );
+
+      if (existingProduct) {
+        existingProduct.qty += 1;
+      } else {
+        updatedProducts.push({
+          productId: foundProduct._id,
+          variantId: matchedVariant.variantId,
+          title: foundProduct.title,
+          price: foundProduct.price,
+          qty: 1,
+          selectedSize: matchedVariant.size,
+          selectedColor: matchedVariant.color,
+          availableQty: matchedVariant.assignedQuantity,
+          //   availableQty: matchedVariant.quantity,
+          variants: foundProduct.variants, // <-- Add this
+        });
+      }
+
+      return updatedProducts;
     });
-  }
 
-  return updatedProducts;
-});
-
-   
     // setSelectedProducts((prevSelected) => {
     //   const updatedProducts = [...prevSelected];
     //   const existingProduct = updatedProducts.find(
@@ -156,19 +157,36 @@ const BashundharaSalesPos = () => {
     e.target.value = "";
   };
 
-  const handleQtyChange = (productId, newQty) => {
+  // const handleQtyChange = (productId, newQty) => {
+  //   setSelectedProducts((prevSelected) =>
+  //     prevSelected.map((product) =>
+  //       product._id === productId
+  //         ? { ...product, qty: Number(newQty) }
+  //         : product
+  //     )
+  //   );
+  // };
+  const handleQtyChange = (productId, variantId, newQty) => {
     setSelectedProducts((prevSelected) =>
       prevSelected.map((product) =>
-        product._id === productId
+        product.productId === productId && product.variantId === variantId
           ? { ...product, qty: Number(newQty) }
           : product
       )
     );
   };
 
-  const handleRemoveProduct = (productId) => {
+  // const handleRemoveProduct = (productId) => {
+  //   setSelectedProducts((prevSelected) =>
+  //     prevSelected.filter((product) => product._id !== productId)
+  //   );
+  // };
+  const handleRemoveProduct = (productId, variantId) => {
     setSelectedProducts((prevSelected) =>
-      prevSelected.filter((product) => product._id !== productId)
+      prevSelected.filter(
+        (product) =>
+          !(product.productId === productId && product.variantId === variantId)
+      )
     );
   };
 
@@ -179,10 +197,28 @@ const BashundharaSalesPos = () => {
     return matchedVariant ? matchedVariant.quantity : 0;
   };
 
-  const handleSizeChange = (productId, selectedSize) => {
+  // const handleSizeChange = (productId, selectedSize) => {
+  //   setSelectedProducts((prev) =>
+  //     prev.map((product) => {
+  //       if (product._id === productId) {
+  //         const newAvailableQty = updateAvailableQty(
+  //           product,
+  //           selectedSize,
+  //           product.selectedColor
+  //         );
+  //         return { ...product, selectedSize, availableQty: newAvailableQty };
+  //       }
+  //       return product;
+  //     })
+  //   );
+  // };
+  const handleSizeChange = (productId, variantId, selectedSize) => {
     setSelectedProducts((prev) =>
       prev.map((product) => {
-        if (product._id === productId) {
+        if (
+          product.productId === productId &&
+          product.variantId === variantId
+        ) {
           const newAvailableQty = updateAvailableQty(
             product,
             selectedSize,
@@ -195,10 +231,28 @@ const BashundharaSalesPos = () => {
     );
   };
 
-  const handleColorChange = (productId, selectedColor) => {
+  // const handleColorChange = (productId, selectedColor) => {
+  //   setSelectedProducts((prev) =>
+  //     prev.map((product) => {
+  //       if (product._id === productId) {
+  //         const newAvailableQty = updateAvailableQty(
+  //           product,
+  //           product.selectedSize,
+  //           selectedColor
+  //         );
+  //         return { ...product, selectedColor, availableQty: newAvailableQty };
+  //       }
+  //       return product;
+  //     })
+  //   );
+  // };
+  const handleColorChange = (productId, variantId, selectedColor) => {
     setSelectedProducts((prev) =>
       prev.map((product) => {
-        if (product._id === productId) {
+        if (
+          product.productId === productId &&
+          product.variantId === variantId
+        ) {
           const newAvailableQty = updateAvailableQty(
             product,
             product.selectedSize,
@@ -236,11 +290,60 @@ const BashundharaSalesPos = () => {
     );
   }, [amountGiven, netPayable]);
 
+  // const handleSubmit = () => {
+  //   const saleData = {
+  //     shopId: selectedShop, // <--- You need this
+  //     items: selectedProducts.map((p) => ({
+  //       productId: p.productId,
+  //       variantId: p.variantId,
+  //       subBarcode: p.subBarcode || "",
+  //       title: p.title,
+  //       size: p.selectedSize,
+  //       color: p.selectedColor,
+  //       price: p.price,
+  //       quantity: p.qty,
+  //       subtotal: p.price * p.qty,
+  //     })),
+  //     customerInfo:
+  //       customerInfo.id || customerInfo.name || customerInfo.mobile
+  //         ? customerInfo
+  //         : undefined,
+  //     discountAmount,
+  //     vatRate,
+  //     paymentMethod,
+  //     ...(paymentMethod === "Card" && { cardNumber }),
+  //   };
 
-const handleSubmit = () => {
+  //   axiosInstance
+  //     .post(
+  //       `${process.env.REACT_APP_API_URL}/api/bashundhara-sales/create`,
+  //       saleData
+  //     )
+  //     .then(() => {
+  //       alert("Sale submitted successfully!");
+  //       setSelectedProducts([]);
+  //       setQty(1);
+  //       setCustomerInfo({ id: "", name: "", mobile: "" });
+  //       setTotalPrice(0);
+  //       setNetPayable(0);
+  //       setVatAmount(0);
+  //       setDiscountAmount(0);
+  //       setVatRate(0);
+  //       setAmountGiven(0);
+  //       setChangeReturned(0);
+  //       setPaymentMethod("");
+  //       setCardNumber("");
+  //     })
+  //     .catch((err) => {
+  //       console.error("Sale error:", err);
+  //       alert("Error submitting sale. Check console.");
+  //     });
+  // };
+
+  const handleSubmit = () => {
   const saleData = {
-    shopId: selectedShop,   // <--- You need this
-    items: selectedProducts.map(p => ({
+    shop: selectedShop, // ✅ must be "shop", not "shopId"
+    items: selectedProducts.map((p) => ({
       productId: p.productId,
       variantId: p.variantId,
       subBarcode: p.subBarcode || "",
@@ -249,18 +352,23 @@ const handleSubmit = () => {
       color: p.selectedColor,
       price: p.price,
       quantity: p.qty,
-      subtotal: p.price * p.qty
+      subtotal: p.price * p.qty,
     })),
-    customerInfo: customerInfo.id || customerInfo.name || customerInfo.mobile ? customerInfo : undefined,
+    customerInfo:
+      customerInfo.id || customerInfo.name || customerInfo.mobile
+        ? customerInfo
+        : undefined,
     discountAmount,
     vatRate,
-    paymentMethod,
-    ...(paymentMethod === "Card" && { cardNumber })
+    paymentMethod: paymentMethod.toLowerCase(), // ✅ normalize to lowercase
+    ...(paymentMethod.toLowerCase() === "card" && { cardNumber }),
   };
 
   axiosInstance
-    .post(`${process.env.REACT_APP_API_URL}/api/bashundhara-sales/create`,
-  saleData)
+    .post(
+      `${process.env.REACT_APP_API_URL}/api/bashundhara-sales/create`,
+      saleData
+    )
     .then(() => {
       alert("Sale submitted successfully!");
       setSelectedProducts([]);
@@ -276,12 +384,11 @@ const handleSubmit = () => {
       setPaymentMethod("");
       setCardNumber("");
     })
-    .catch(err => {
+    .catch((err) => {
       console.error("Sale error:", err);
       alert("Error submitting sale. Check console.");
     });
 };
-
 
   return (
     <div className="min-h-screen bg-gray-100 p-4">
@@ -315,7 +422,7 @@ const handleSubmit = () => {
           </div>
 
           {/* Barcode Input */}
-         
+
           {/* Barcode Input */}
           <div className="mb-4">
             <label className="text-sm text-gray-700">
@@ -345,9 +452,10 @@ const handleSubmit = () => {
                   <th className="border p-2">Action</th>
                 </tr>
               </thead>
+
               <tbody>
                 {selectedProducts.map((product, idx) => (
-                  <tr key={product._id}>
+                  <tr key={`${product.productId}-${product.variantId}`}>
                     <td className="border p-2">{idx + 1}</td>
                     <td className="border p-2">{product.title}</td>
                     <td className="border p-2">
@@ -364,7 +472,11 @@ const handleSubmit = () => {
                           className="text-xs border p-1"
                           value={product.selectedSize || ""}
                           onChange={(e) =>
-                            handleSizeChange(product._id, e.target.value)
+                            handleSizeChange(
+                              product.productId,
+                              product.variantId,
+                              e.target.value
+                            )
                           }
                         >
                           <option value="">Select Size</option>
@@ -380,7 +492,11 @@ const handleSubmit = () => {
                           className="text-xs border p-1 ml-1"
                           value={product.selectedColor || ""}
                           onChange={(e) =>
-                            handleColorChange(product._id, e.target.value)
+                            handleColorChange(
+                              product.productId,
+                              product.variantId,
+                              e.target.value
+                            )
                           }
                         >
                           <option value="">Select Color</option>
@@ -402,7 +518,11 @@ const handleSubmit = () => {
                         value={product.qty}
                         className="w-full border rounded px-1 py-0.5"
                         onChange={(e) =>
-                          handleQtyChange(product._id, e.target.value)
+                          handleQtyChange(
+                            product.productId,
+                            product.variantId,
+                            e.target.value
+                          )
                         }
                       />
                     </td>
@@ -412,7 +532,12 @@ const handleSubmit = () => {
                     <td className="border p-2">
                       <button
                         className="bg-red-500 text-white px-2 py-1"
-                        onClick={() => handleRemoveProduct(product._id)}
+                        onClick={() =>
+                          handleRemoveProduct(
+                            product.productId,
+                            product.variantId
+                          )
+                        }
                       >
                         Remove
                       </button>
@@ -427,128 +552,140 @@ const handleSubmit = () => {
         {/* Right Section */}
 
         {/* Right Section */}
-<div className="col-span-3 bg-white shadow-md p-4 rounded-md">
-  <h1 className="bg-green-600 text-white text-left text-lg font-bold p-4">
-    Payable Amount: ৳ {netPayable.toFixed(2)}
-  </h1>
+        <div className="col-span-3 bg-white shadow-md p-4 rounded-md">
+          <h1 className="bg-green-600 text-white text-left text-lg font-bold p-4">
+            Payable Amount: ৳ {netPayable.toFixed(2)}
+          </h1>
 
-  <div className="mt-4 space-y-2">
-    {/* Total Price */}
-    <div className="flex items-center">
-      <label className="text-sm py-2 w-1/3 text-gray-700">Total Price</label>
-      <input
-        type="text"
-        value={`৳ ${totalPrice.toFixed(2)}`}
-        readOnly
-        className="w-2/3 border rounded p-2"
-      />
-    </div>
+          <div className="mt-4 space-y-2">
+            {/* Total Price */}
+            <div className="flex items-center">
+              <label className="text-sm py-2 w-1/3 text-gray-700">
+                Total Price
+              </label>
+              <input
+                type="text"
+                value={`৳ ${totalPrice.toFixed(2)}`}
+                readOnly
+                className="w-2/3 border rounded p-2"
+              />
+            </div>
 
-    {/* Discount Input */}
-    <div className="flex items-center">
-      <label className="text-sm py-2 w-1/3 text-gray-700">Discount</label>
-      <input
-        type="number"
-        value={discountAmount}
-        onChange={(e) => setDiscountAmount(parseFloat(e.target.value) || 0)}
-        className="w-2/3 border rounded p-2"
-        placeholder="Enter discount amount"
-      />
-    </div>
+            {/* Discount Input */}
+            <div className="flex items-center">
+              <label className="text-sm py-2 w-1/3 text-gray-700">
+                Discount
+              </label>
+              <input
+                type="number"
+                value={discountAmount}
+                onChange={(e) =>
+                  setDiscountAmount(parseFloat(e.target.value) || 0)
+                }
+                className="w-2/3 border rounded p-2"
+                placeholder="Enter discount amount"
+              />
+            </div>
 
-    {/* VAT Rate Input */}
-    <div className="flex items-center">
-      <label className="text-sm py-2 w-1/3 text-gray-700">VAT (%)</label>
-      <input
-        type="number"
-        value={vatRate}
-        onChange={(e) => setVatRate(parseFloat(e.target.value) || 0)}
-        className="w-2/3 border rounded p-2"
-        placeholder="Enter VAT rate"
-      />
-    </div>
+            {/* VAT Rate Input */}
+            <div className="flex items-center">
+              <label className="text-sm py-2 w-1/3 text-gray-700">
+                VAT (%)
+              </label>
+              <input
+                type="number"
+                value={vatRate}
+                onChange={(e) => setVatRate(parseFloat(e.target.value) || 0)}
+                className="w-2/3 border rounded p-2"
+                placeholder="Enter VAT rate"
+              />
+            </div>
 
-    {/* VAT Amount Display */}
-    <div className="flex items-center">
-      <label className="text-sm py-2 w-1/3 text-gray-700">VAT Amount</label>
-      <input
-        type="text"
-        value={`+৳ ${vatAmount.toFixed(2)}`}
-        readOnly
-        className="w-2/3 border rounded p-2"
-      />
-    </div>
+            {/* VAT Amount Display */}
+            <div className="flex items-center">
+              <label className="text-sm py-2 w-1/3 text-gray-700">
+                VAT Amount
+              </label>
+              <input
+                type="text"
+                value={`+৳ ${vatAmount.toFixed(2)}`}
+                readOnly
+                className="w-2/3 border rounded p-2"
+              />
+            </div>
 
-    {/* Net Payable */}
-    <div className="flex items-center">
-      <label className="text-sm py-2 w-1/3 font-bold text-gray-700">
-        Net Payable
-      </label>
-      <input
-        type="text"
-        value={`৳ ${netPayable.toFixed(2)}`}
-        readOnly
-        className="w-2/3 border rounded p-2 font-bold"
-      />
-    </div>
+            {/* Net Payable */}
+            <div className="flex items-center">
+              <label className="text-sm py-2 w-1/3 font-bold text-gray-700">
+                Net Payable
+              </label>
+              <input
+                type="text"
+                value={`৳ ${netPayable.toFixed(2)}`}
+                readOnly
+                className="w-2/3 border rounded p-2 font-bold"
+              />
+            </div>
 
-    {/* Amount Given */}
-    <div className="flex items-center">
-      <label className="text-sm py-2 w-1/3 text-gray-700">Amount Given</label>
-      <input
-        type="number"
-        value={amountGiven}
-        onChange={(e) =>
-          setAmountGiven(parseFloat(e.target.value) || 0)
-        }
-        className="w-2/3 border rounded p-2"
-      />
-    </div>
+            {/* Amount Given */}
+            <div className="flex items-center">
+              <label className="text-sm py-2 w-1/3 text-gray-700">
+                Amount Given
+              </label>
+              <input
+                type="number"
+                value={amountGiven}
+                onChange={(e) =>
+                  setAmountGiven(parseFloat(e.target.value) || 0)
+                }
+                className="w-2/3 border rounded p-2"
+              />
+            </div>
 
-    {/* Change */}
-    <div className="flex items-center">
-      <label className="text-sm py-2 w-1/3 font-bold text-gray-700">
-        Change
-      </label>
-      <input
-        type="text"
-        value={`৳ ${changeReturned.toFixed(2)}`}
-        readOnly
-        className="w-2/3 border rounded p-2"
-      />
-    </div>
-  </div>
+            {/* Change */}
+            <div className="flex items-center">
+              <label className="text-sm py-2 w-1/3 font-bold text-gray-700">
+                Change
+              </label>
+              <input
+                type="text"
+                value={`৳ ${changeReturned.toFixed(2)}`}
+                readOnly
+                className="w-2/3 border rounded p-2"
+              />
+            </div>
+          </div>
 
-  {/* Payment */}
-  <div className="mt-4">
-    <label className="text-sm text-gray-700">Payment Method</label>
-    <select
-      value={paymentMethod}
-      onChange={(e) => setPaymentMethod(e.target.value)}
-      className="w-full border rounded p-2"
-    >
-      <option value="">Select Payment Method</option>
-      <option value="Cash">Cash</option>
-      <option value="Card">Card</option>
-    </select>
-    {paymentMethod === "Card" && (
-      <input
-        type="text"
-        placeholder="Card Number"
-        value={cardNumber}
-        onChange={(e) => setCardNumber(e.target.value)}
-        className="w-full border rounded p-2 mt-2"
-      />
-    )}
-  </div>
+          {/* Payment */}
+          <div className="mt-4">
+            <label className="text-sm text-gray-700">Payment Method</label>
+            <select
+              value={paymentMethod}
+              onChange={(e) => setPaymentMethod(e.target.value)}
+              className="w-full border rounded p-2"
+            >
+              <option value="">Select Payment Method</option>
+              <option value="cash">Cash</option>
+              <option value="card">Card</option>
+            </select>
+            {paymentMethod === "card" && (
+              <input
+                type="text"
+                placeholder="Card Number"
+                value={cardNumber}
+                onChange={(e) => setCardNumber(e.target.value)}
+                className="w-full border rounded p-2 mt-2"
+              />
+            )}
+          </div>
 
-  <button
-    onClick={handleSubmit}
-    className="mt-4 bg-green-500 text-white py-2 px-4 rounded-md"
-  >
-    Print & Submit
-  </button>
-</div>
+          <button
+            onClick={handleSubmit}
+            className="mt-4 bg-green-500 text-white py-2 px-4 rounded-md"
+          >
+            Print & Submit
+          </button>
+        </div>
 
         {/* <div className="col-span-3 bg-white shadow-md p-4 rounded-md">
           <h1 className="bg-green-600 text-white text-left text-lg font-bold p-4">
@@ -654,7 +791,6 @@ const handleSubmit = () => {
             Print & Submit
           </button>
         </div> */}
-
       </div>
     </div>
   );
