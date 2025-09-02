@@ -10,19 +10,52 @@ const ShopProductAssigner = () => {
   const [variantAssignments, setVariantAssignments] = useState([]);
   const [successMessage, setSuccessMessage] = useState("");
 
+  // useEffect(() => {
+  //   const fetchShopsAndProducts = async () => {
+  //     try {
+  //       const shopRes = await axiosInstance.get(`${process.env.REACT_APP_API_URL}/api/shops/show`);
+  //       const productRes = await axiosInstance.get(`${process.env.REACT_APP_API_URL}/api/products/show`);
+  //       console.log(shopRes.data);
+  //       setShops(shopRes.data);
+  //       setProducts(Array.isArray(productRes.data.products) ? productRes.data.products : []);
+  //     } catch (error) {
+  //       console.error("Error fetching data:", error);
+  //     }
+  //   };
+  //   fetchShopsAndProducts();
+  // }, []);
   useEffect(() => {
-    const fetchShopsAndProducts = async () => {
-      try {
-        const shopRes = await axiosInstance.get(`${process.env.REACT_APP_API_URL}/api/shops/show`);
-        const productRes = await axiosInstance.get(`${process.env.REACT_APP_API_URL}/api/products/show`);
-        setShops(shopRes.data);
-        setProducts(Array.isArray(productRes.data.products) ? productRes.data.products : []);
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      }
-    };
-    fetchShopsAndProducts();
-  }, []);
+  const fetchShopsAndProducts = async () => {
+    try {
+      const shopRes = await axiosInstance.get(
+        `${process.env.REACT_APP_API_URL}/api/shops/show`
+      );
+      const productRes = await axiosInstance.get(
+        `${process.env.REACT_APP_API_URL}/api/products/show`
+      );
+
+      console.log("Raw Shop Response:", shopRes.data);
+
+      // If your backend returns shops inside shopRes.data.shops
+      const shopList = Array.isArray(shopRes.data.shops)
+        ? shopRes.data.shops
+        : shopRes.data;
+
+      setShops(shopList);
+      setProducts(
+        Array.isArray(productRes.data.products) ? productRes.data.products : []
+      );
+
+      // 👇 This will print the shop list after setting it
+      console.log("Final Shops List:", shopList);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
+
+  fetchShopsAndProducts();
+}, []);
+
 
   const handleProductSelect = (productId) => {
     setSelectedProduct(productId);
