@@ -181,7 +181,7 @@ const ShopProductAssigner = () => {
         );
   console.log("Raw Shop Response:", shopRes.data);
         console.log("Raw Product Response:", productRes.data);
-        
+
         const shopList = Array.isArray(shopRes.data.shops)
           ? shopRes.data.shops
           : shopRes.data;
