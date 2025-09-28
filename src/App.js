@@ -88,6 +88,10 @@ import ProductsShowList from "./pages/ProductsShowList";
 import BadhundharaSales from "./pages/Pos/Sales/BadhundharaSales";
 import Stock from "./pages/Pos/StockReport/Stock";
 import BashundharaSalesPos from "./pages/Pos/Sales/BashundharaSalesPos";
+import BashundharaDashboard from "./admin/BashundharaDashboard";
+import PabnaSalesPos from "./pages/Pos/Sales/PabnaSalesPos";
+import BashundharaSalesReport from "./pages/Pos/Sales/BashundharaSalesReport";
+import ShopStockReport from "./admin/ShopStockReport";
 
 //HOC
 const AdminDashboardHOC = Layout(AdminDashboard);
@@ -101,6 +105,7 @@ const CreateTopBannerHOC = Layout(CreateTopBanner);
 const ProductAssignToShopHOC = Layout(ShopProductAssigner);
 const ShopProductListHOC = Layout(ShopProductList);
 
+const BashundharaDashboardHOC = Layout(BashundharaDashboard);
 const CreateGalleryHOC = Layout(CreateGallery);
 const EditPostHOC = Layout(EditPost);
 const EditItemHOC = Layout(EditItem);
@@ -275,6 +280,23 @@ function App() {
                   path="/boshundhara-sales"
                   element={<BashundharaSalesPos />}
                 />
+                <Route
+                  path="/pabna-sales"
+                  element={<PabnaSalesPos />}
+                />
+
+                {/* 
+                sales report
+                
+                */}
+                <Route
+                  path="/bashundhara-sales-report"
+                  element={<BashundharaSalesReport />}
+                />
+                
+
+                
+
                 <Route path="/booking" element={<Booking />} />
                 <Route path="/barcode-print" element={<BarcodePrint />} />
                 <Route
@@ -404,6 +426,17 @@ function App() {
                   element={
                     <AdminRoute>
                       <AdminDashboardHOC />
+                    </AdminRoute>
+                  }
+                />
+
+                <Route path="/bashundhara-sales-dashboard" element={<BashundharaDashboard />} />
+                <Route path="/shop-stock-report" element={<ShopStockReport />} />
+                <Route
+                  path="/admin/bashundhara-sales-dashboard"
+                  element={
+                    <AdminRoute>
+                      <BashundharaDashboardHOC />
                     </AdminRoute>
                   }
                 />

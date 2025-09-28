@@ -12,8 +12,18 @@ const BlogPro = ({ searchQuery, setSearchQuery }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const itemsPerPage = 10;
+  const [page, setPage] = useState(1);
 
   const [progress, setProgress] = useState(0);
+
+   const handlePrev = () => {
+    if (page > 1) setPage(page - 1);
+  };
+
+  const handleNext = () => {
+    if (page < totalPages) setPage(page + 1);
+  };
+
 
   const fetchProducts = async (page = 1) => {
     setLoading(true);
@@ -101,10 +111,10 @@ const BlogPro = ({ searchQuery, setSearchQuery }) => {
             disabled={currentPage === 1}
             className="px-3 py-1 bg-gray-300 rounded disabled:opacity-50"
           >
-            <FontAwesomeIcon icon={faAngleLeft} />
+            Prev <FontAwesomeIcon icon={faAngleLeft} />
           </button>
 
-          {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+          {/* {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
             <button
               key={page}
               onClick={() => setCurrentPage(page)}
@@ -114,7 +124,11 @@ const BlogPro = ({ searchQuery, setSearchQuery }) => {
             >
               {page}
             </button>
-          ))}
+          ))} */}
+
+          <span className="px-4 py-2 font-semibold">
+              Page {page} of {totalPages}
+            </span>
 
           <button
             onClick={() =>
@@ -123,9 +137,32 @@ const BlogPro = ({ searchQuery, setSearchQuery }) => {
             disabled={currentPage === totalPages}
             className="px-3 py-1 bg-gray-300 rounded disabled:opacity-50"
           >
-            <FontAwesomeIcon icon={faAngleRight} />
+           Next <FontAwesomeIcon icon={faAngleRight} />
           </button>
         </div>
+
+
+        {/* <div className="flex justify-center mt-8 gap-4">
+            <button
+              onClick={() => currentPage > 1 && setCurrentPage(currentPage - 1)}
+            disabled={currentPage === 1}
+            className="px-3 py-1 bg-gray-300 rounded disabled:opacity-50"
+          >
+            <FontAwesomeIcon icon={faAngleLeft} />
+              Prev
+            </button>
+            <span className="px-4 py-2 font-semibold">
+              Page {page} of {totalPages}
+            </span>
+            <button
+             onClick={() => currentPage > 1 && setCurrentPage(currentPage - 1)}
+            disabled={currentPage === 1}
+            className="px-3 py-1 bg-gray-300 rounded disabled:opacity-50"
+          >
+            <FontAwesomeIcon icon={faAngleLeft} />
+              Next
+            </button>
+          </div> */}
       </div>
     </div>
   );
