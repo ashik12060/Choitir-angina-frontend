@@ -105,6 +105,7 @@ const ShopStockReport = () => {
                   <th className="border p-2">Color</th>
                   <th className="border p-2">SubBarcode</th>
                   <th className="border p-2">Available Qty</th>
+                  
                 </tr>
               </thead>
               <tbody>
