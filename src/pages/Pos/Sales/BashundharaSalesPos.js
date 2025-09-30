@@ -76,30 +76,6 @@ const BashundharaSalesPos = () => {
       return;
     }
 
-    // setSelectedProducts((prevSelected) => {
-    //   const updatedProducts = [...prevSelected];
-    //   const existingProduct = updatedProducts.find(
-    //     (p) =>
-    //       p._id === foundProduct._id &&
-    //       p.selectedSize === matchedVariant.size &&
-    //       p.selectedColor === matchedVariant.color
-    //   );
-
-    //   if (existingProduct) {
-    //     existingProduct.qty += 1;
-    //   } else {
-    //     updatedProducts.push({
-    //       ...foundProduct,
-    //       qty: 1,
-    //       selectedSize: matchedVariant.size,
-    //       selectedColor: matchedVariant.color,
-    //       availableQty: matchedVariant.quantity,
-    //     });
-    //   }
-
-    //   return updatedProducts;
-    // });
-
     setSelectedProducts((prevSelected) => {
       const updatedProducts = [...prevSelected];
       const existingProduct = updatedProducts.find(
@@ -128,53 +104,34 @@ const BashundharaSalesPos = () => {
       return updatedProducts;
     });
 
-    // setSelectedProducts((prevSelected) => {
-    //   const updatedProducts = [...prevSelected];
-    //   const existingProduct = updatedProducts.find(
-    //     (p) =>
-    //       p.productId === foundProduct._id &&
-    //       p.variantId === matchedVariant.variantId
-    //   );
-
-    //   if (existingProduct) {
-    //     existingProduct.qty += 1;
-    //   } else {
-    //     updatedProducts.push({
-    //       productId: foundProduct._id,
-    //       variantId: matchedVariant.variantId,
-    //       title: foundProduct.title,
-    //       price: foundProduct.price,
-    //       qty: 1,
-    //       selectedSize: matchedVariant.size,
-    //       selectedColor: matchedVariant.color,
-    //       availableQty: matchedVariant.quantity,
-    //     });
-    //   }
-
-    //   return updatedProducts;
-    // });
-
     e.target.value = "";
   };
 
-  // const handleQtyChange = (productId, newQty) => {
-  //   setSelectedProducts((prevSelected) =>
-  //     prevSelected.map((product) =>
-  //       product._id === productId
-  //         ? { ...product, qty: Number(newQty) }
-  //         : product
-  //     )
-  //   );
-  // };
-  const handleQtyChange = (productId, variantId, newQty) => {
-    setSelectedProducts((prevSelected) =>
-      prevSelected.map((product) =>
-        product.productId === productId && product.variantId === variantId
-          ? { ...product, qty: Number(newQty) }
-          : product
-      )
-    );
-  };
+
+const handleQtyChange = (productId, variantId, newQty) => {
+    console.log(`Changing quantity for ${productId} | ${variantId} => ${newQty}`);
+  setSelectedProducts((prevSelected) =>
+    prevSelected.map((product) => {
+      if (product.productId === productId && product.variantId === variantId) {
+        const updatedProduct = { ...product, qty: Number(newQty) };
+        console.log("Quantity updated for product:", {
+          productId: productId,
+          variantId: variantId,
+          newQty: updatedProduct.qty,
+          availableQty: product.availableQty,
+        });
+        return updatedProduct;
+      }
+      return product;
+    })
+  );
+
+  // Log the entire selectedProducts array after change
+  setTimeout(() => {
+    console.log("Selected Products after quantity change:", selectedProducts);
+  }, 100); // slight delay to allow state update
+};
+
 
   // const handleRemoveProduct = (productId) => {
   //   setSelectedProducts((prevSelected) =>
@@ -197,21 +154,6 @@ const BashundharaSalesPos = () => {
     return matchedVariant ? matchedVariant.quantity : 0;
   };
 
-  // const handleSizeChange = (productId, selectedSize) => {
-  //   setSelectedProducts((prev) =>
-  //     prev.map((product) => {
-  //       if (product._id === productId) {
-  //         const newAvailableQty = updateAvailableQty(
-  //           product,
-  //           selectedSize,
-  //           product.selectedColor
-  //         );
-  //         return { ...product, selectedSize, availableQty: newAvailableQty };
-  //       }
-  //       return product;
-  //     })
-  //   );
-  // };
   const handleSizeChange = (productId, variantId, selectedSize) => {
     setSelectedProducts((prev) =>
       prev.map((product) => {
@@ -341,6 +283,9 @@ const BashundharaSalesPos = () => {
   // };
 
   const handleSubmit = () => {
+      console.log("Submitting sale for shop:", selectedShop);
+  console.log("Selected products:", selectedProducts);
+
   const saleData = {
     shop: selectedShop, // ✅ must be "shop", not "shopId"
     items: selectedProducts.map((p) => ({
