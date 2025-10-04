@@ -1,6 +1,6 @@
 import "./App.css";
 import Home from "./components/Home/Home";
-import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import Contact from "./components/Contact/Contact";
 import NotFound from "./pages/NotFound/NotFound";
 import { ToastContainer } from "react-toastify";
@@ -86,6 +86,12 @@ import Unstitched from "./components/Unstitched/Unstitched";
 import PosRoute from "./PosRoute";
 import ProductsShowList from "./pages/ProductsShowList";
 import BadhundharaSales from "./pages/Pos/Sales/BadhundharaSales";
+import Stock from "./pages/Pos/StockReport/Stock";
+import BashundharaSalesPos from "./pages/Pos/Sales/BashundharaSalesPos";
+import BashundharaDashboard from "./admin/BashundharaDashboard";
+import PabnaSalesPos from "./pages/Pos/Sales/PabnaSalesPos";
+import BashundharaSalesReport from "./pages/Pos/Sales/BashundharaSalesReport";
+import ShopStockReport from "./admin/ShopStockReport";
 
 //HOC
 const AdminDashboardHOC = Layout(AdminDashboard);
@@ -99,6 +105,7 @@ const CreateTopBannerHOC = Layout(CreateTopBanner);
 const ProductAssignToShopHOC = Layout(ShopProductAssigner);
 const ShopProductListHOC = Layout(ShopProductList);
 
+const BashundharaDashboardHOC = Layout(BashundharaDashboard);
 const CreateGalleryHOC = Layout(CreateGallery);
 const EditPostHOC = Layout(EditPost);
 const EditItemHOC = Layout(EditItem);
@@ -110,7 +117,7 @@ function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   const [searchQuery, setSearchQuery] = useState("");
-  
+
   return (
     <>
       <ToastContainer />
@@ -125,9 +132,15 @@ function App() {
                   element={
                     <>
                       <CartProvider>
-                        <Header searchQuery={searchQuery} setSearchQuery={setSearchQuery}/>
+                        <Header
+                          searchQuery={searchQuery}
+                          setSearchQuery={setSearchQuery}
+                        />
                       </CartProvider>
-                      <Home searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
+                      <Home
+                        searchQuery={searchQuery}
+                        setSearchQuery={setSearchQuery}
+                      />
                     </>
                   }
                 ></Route>
@@ -136,9 +149,15 @@ function App() {
                   element={
                     <>
                       <CartProvider>
-                        <Header searchQuery={searchQuery} setSearchQuery={setSearchQuery}/>
+                        <Header
+                          searchQuery={searchQuery}
+                          setSearchQuery={setSearchQuery}
+                        />
                       </CartProvider>
-                      <Home searchQuery={searchQuery} setSearchQuery={setSearchQuery}/>
+                      <Home
+                        searchQuery={searchQuery}
+                        setSearchQuery={setSearchQuery}
+                      />
                     </>
                   }
                 ></Route>
@@ -147,7 +166,10 @@ function App() {
                   element={
                     <>
                       <CartProvider>
-                        <Header  searchQuery={searchQuery} setSearchQuery={setSearchQuery}/>
+                        <Header
+                          searchQuery={searchQuery}
+                          setSearchQuery={setSearchQuery}
+                        />
                       </CartProvider>
                       <ProductGroupByTitle />
                     </>
@@ -158,7 +180,10 @@ function App() {
                   element={
                     <>
                       <CartProvider>
-                        <Header  searchQuery={searchQuery} setSearchQuery={setSearchQuery}/>
+                        <Header
+                          searchQuery={searchQuery}
+                          setSearchQuery={setSearchQuery}
+                        />
                       </CartProvider>
                       <TopBrands />
                     </>
@@ -169,7 +194,10 @@ function App() {
                   element={
                     <>
                       <CartProvider>
-                        <Header  searchQuery={searchQuery} setSearchQuery={setSearchQuery}/>
+                        <Header
+                          searchQuery={searchQuery}
+                          setSearchQuery={setSearchQuery}
+                        />
                       </CartProvider>
                       <NewArrival />
                     </>
@@ -180,7 +208,10 @@ function App() {
                   element={
                     <>
                       <CartProvider>
-                        <Header  searchQuery={searchQuery} setSearchQuery={setSearchQuery}/>
+                        <Header
+                          searchQuery={searchQuery}
+                          setSearchQuery={setSearchQuery}
+                        />
                       </CartProvider>
                       <Stitched />
                     </>
@@ -191,7 +222,10 @@ function App() {
                   element={
                     <>
                       <CartProvider>
-                        <Header  searchQuery={searchQuery} setSearchQuery={setSearchQuery}/>
+                        <Header
+                          searchQuery={searchQuery}
+                          setSearchQuery={setSearchQuery}
+                        />
                       </CartProvider>
                       <Unstitched />
                     </>
@@ -203,16 +237,12 @@ function App() {
                 <Route path="/category/stitched" element={<Stitched />} />
                 <Route path="/category/unstitched" element={<Unstitched />} />
 
-
                 {/* <Route path="/products/show" element={<ProductsShow />} /> */}
                 <Route
                   path="/products/brand/:brand"
                   element={<ProductsByBrand />}
                 />
-                <Route
-                  path="/product-list"
-                  element={<ProductsShowList />}
-                />
+                <Route path="/product-list" element={<ProductsShowList />} />
                 <Route
                   path="/products-category"
                   element={<ProductByCategory />}
@@ -242,7 +272,31 @@ function App() {
                 />
 
                 <Route path="/sales" element={<Sales />} />
-                <Route path="/badhundhara-sales" element={<BadhundharaSales />} />
+                <Route
+                  path="/badhundhara-sales"
+                  element={<BadhundharaSales />}
+                />
+                <Route
+                  path="/boshundhara-sales"
+                  element={<BashundharaSalesPos />}
+                />
+                <Route
+                  path="/pabna-sales"
+                  element={<PabnaSalesPos />}
+                />
+
+                {/* 
+                sales report
+                
+                */}
+                <Route
+                  path="/bashundhara-sales-report"
+                  element={<BashundharaSalesReport />}
+                />
+                
+
+                
+
                 <Route path="/booking" element={<Booking />} />
                 <Route path="/barcode-print" element={<BarcodePrint />} />
                 <Route
@@ -276,6 +330,8 @@ function App() {
                 />
                 <Route path="/supplier-setup" element={<SupplierSetup />} />
 
+                <Route path="/stock" element={<Stock />} />
+
                 {/* pos end */}
 
                 <Route path="/admin-login" element={<AdminLogin />}></Route>
@@ -284,7 +340,20 @@ function App() {
                 {/* <Route path="/product-assign-to-shop" element={<ShopProductAssigner />}></Route> */}
 
                 <Route path="/" element={<BlogHome />} />
-                <Route path="/bloghome" element={<BlogPro  searchQuery={searchQuery} setSearchQuery={setSearchQuery}/>} />
+                <Route
+                  path="/bloghome"
+                  element={
+                    <BlogPro
+                      searchQuery={searchQuery}
+                      setSearchQuery={setSearchQuery}
+                    />
+                  }
+                />
+                {/* <Route path="/product/:id/variants" element={<ProductVariantsPage />} />
+               <Route path="/product/:id/variant/:variantId" element={<SinglePro />} /> */}
+
+            
+
                 <Route path="/buycontact" element={<BuyContact />} />
                 <Route path="/product-sample" element={<ProductCart />} />
                 <Route
@@ -316,18 +385,23 @@ function App() {
                   path="/products/show"
                   element={
                     <CartProvider>
-                      <Header  searchQuery={searchQuery} setSearchQuery={setSearchQuery}/>
-                
-                      <ProductsShow/>
+                      <Header
+                        searchQuery={searchQuery}
+                        setSearchQuery={setSearchQuery}
+                      />
+
+                      <ProductsShow />
                     </CartProvider>
-                    
                   }
                 />
                 <Route
                   path="/product/:id"
                   element={
                     <CartProvider>
-                      <Header  searchQuery={searchQuery} setSearchQuery={setSearchQuery}/>
+                      <Header
+                        searchQuery={searchQuery}
+                        setSearchQuery={setSearchQuery}
+                      />
                       <SinglePro />
                     </CartProvider>
                   }
@@ -337,7 +411,10 @@ function App() {
                   element={
                     <PrivateRoute>
                       <CartProvider>
-                        <Header  searchQuery={searchQuery} setSearchQuery={setSearchQuery}/>
+                        <Header
+                          searchQuery={searchQuery}
+                          setSearchQuery={setSearchQuery}
+                        />
                         <CartComponent />
                       </CartProvider>
                     </PrivateRoute>
@@ -349,6 +426,17 @@ function App() {
                   element={
                     <AdminRoute>
                       <AdminDashboardHOC />
+                    </AdminRoute>
+                  }
+                />
+
+                <Route path="/bashundhara-sales-dashboard" element={<BashundharaDashboard />} />
+                <Route path="/shop-stock-report" element={<ShopStockReport />} />
+                <Route
+                  path="/admin/bashundhara-sales-dashboard"
+                  element={
+                    <AdminRoute>
+                      <BashundharaDashboardHOC />
                     </AdminRoute>
                   }
                 />

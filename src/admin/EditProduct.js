@@ -80,6 +80,7 @@ export default function EditProduct() {
         },
       ],
     },
+     enableReinitialize: true, 
     validationSchema,
     onSubmit: async (values) => {
       try {
@@ -131,6 +132,8 @@ export default function EditProduct() {
         const productRes = await axiosInstance.get(
           `${process.env.REACT_APP_API_URL}/api/product/${id}`
         );
+        console.log(productRes);
+         console.log("Product response:", productRes.data);
         const product = productRes.data.product;
 
         setProductData(product);
@@ -181,7 +184,7 @@ export default function EditProduct() {
         setFilteredSubcategories(subsRes.data || []);
       } catch (err) {
         console.error(err);
-        toast.error("Error fetching product data.");
+        toast.error("Error fetching product data from update Product.");
       }
     };
 
@@ -195,40 +198,7 @@ export default function EditProduct() {
     setFilteredSubcategories(filtered);
   };
 
-  // const handleBarcodeChange = (e) => {
-  //   const value = e.target.value;
-  //   setBarcode(value);
-  //   setFieldValue("barcode", value);
-
-  //   const index = values.variants.length;
-  //   let updatedVariants = values.variants.map((variant, idx) => ({
-  //     ...variant,
-  //     // subBarcode: value ? `${value}${String.fromCharCode(97 + idx)}` : "",
-  //     subBarcode: barcode ? `${barcode}${String.fromCharCode(97 + index)}` : "",
-  //   }));
-
-  //   updatedVariants = generateSubBarcodeSvgs(updatedVariants); // only return updated variants
-  //   setFieldValue("variants", updatedVariants); // set Formik once
-  // };
-
-  // const generateSubBarcodeSvgs = (variantsToUpdate) => {
-  //   return variantsToUpdate.map((variant) => {
-  //     if (!variant.subBarcode) return { ...variant, subBarcodeSvg: "" }; // skip empty barcodes
-  //     const canvas = document.createElement("canvas");
-  //     try {
-  //       JsBarcode(canvas, variant.subBarcode, {
-  //         format: "CODE128",
-  //         displayValue: true,
-  //         fontSize: 14,
-  //         height: 40,
-  //       });
-  //     } catch (err) {
-  //       console.error("Invalid subBarcode:", variant.subBarcode, err);
-  //       return { ...variant, subBarcodeSvg: "" };
-  //     }
-  //     return { ...variant, subBarcodeSvg: canvas.toDataURL() };
-  //   });
-  // };
+  
   const handleBarcodeChange = (e) => {
     const mainBarcode = e.target.value;
     setBarcode(mainBarcode);
@@ -261,14 +231,6 @@ export default function EditProduct() {
     });
   };
 
-  // const handleVariantChange = (index, field, value) => {
-  //   const updatedVariants = [...values.variants];
-  //   updatedVariants[index][field] = value;
-  //   if (field === "size" || field === "color") {
-  //     generateSubBarcodeSvgs(updatedVariants);
-  //   }
-  //   setFieldValue("variants", updatedVariants);
-  // };
 
   const handleVariantChange = (index, field, value) => {
   const updatedVariants = [...values.variants];
@@ -302,46 +264,6 @@ export default function EditProduct() {
     }
   };
 
-  // const addVariant = () => {
-  //   const updated = [
-  //     ...values.variants,
-  //     {
-  //       size: "",
-  //       color: "",
-  //       quantity: 1,
-  //       description: "",
-  //       productLength: null,
-  //       subBarcode: "",
-  //       subBarcodeSvg: "",
-  //       imageUrl: "",
-  //     },
-  //   ];
-  //   setFieldValue("variants", updated);
-  // };
-
-  // const addVariant = () => {
-  //   const updatedExisting = values.variants.map((v, idx) => ({
-  //     ...v,
-  //     subBarcode: v.subBarcode || `${barcode}${String.fromCharCode(97 + idx)}`,
-  //   }));
-
-  //   const newIndex = updatedExisting.length;
-  //   const newVariant = {
-  //     size: "",
-  //     color: "",
-  //     quantity: 1,
-  //     description: "",
-  //     productLength: null,
-  //     subBarcode: `${barcode}${String.fromCharCode(97 + newIndex)}`, // ✅ next subBarcode
-  //     subBarcodeSvg: "",
-  //     imageUrl: "",
-  //   };
-
-  //   const allVariants = [...updatedExisting, newVariant];
-  //   const withSvg = generateSubBarcodeSvgs(allVariants);
-
-  //   setFieldValue("variants", withSvg); // ✅ update Formik properly
-  // };
 
   const addVariant = () => {
     const updatedExisting = values.variants.map((v, idx) => ({
@@ -570,13 +492,6 @@ export default function EditProduct() {
               sx={{ mb: 1 }}
             />
 
-            {/* <TextField
-              fullWidth
-              label={`Sub Barcode ${index + 1}`}
-              value={variant.subBarcode || ""}
-              InputProps={{ readOnly: true }}
-              sx={{ mb: 2 }}
-            /> */}
 
             <TextField
               fullWidth
@@ -636,3 +551,58 @@ export default function EditProduct() {
     </Box>
   );
 }
+
+
+// import React, { useEffect, useState } from "react";
+// import { useParams } from "react-router-dom";
+// import axiosInstance from "../pages/axiosInstance";
+
+// const EditProduct = () => {
+//   const { id } = useParams();
+//   const [product, setProduct] = useState(null);
+//   const [loading, setLoading] = useState(true);
+//   const [error, setError] = useState(null);
+
+//   // Fetch product by ID
+//   useEffect(() => {
+//     const fetchData = async () => {
+//       try {
+//         console.log("Fetching product with ID:", id);
+//         const res = await axiosInstance.get(`${process.env.REACT_APP_API_URL}/api/product/${id}`);
+
+//         console.log("Raw API Response:", res); // log the full axios response
+//         console.log("Product data from backend:", res.data);
+
+//         setProduct(res.data);
+//         setLoading(false);
+//       } catch (err) {
+//         console.error("Error fetching product:", err);
+//         if (err.response) {
+//           console.error("Backend error response:", err.response.data);
+//         }
+//         setError(err.message);
+//         setLoading(false);
+//       }
+//     };
+
+//     if (id) {
+//       fetchData();
+//     }
+//   }, [id]);
+
+//   if (loading) return <p>Loading product...</p>;
+//   if (error) return <p>Error: {error}</p>;
+
+//   return (
+//     <div>
+//       <h2>Edit Product</h2>
+//       {product ? (
+//         <pre>{JSON.stringify(product, null, 2)}</pre> // show raw product data
+//       ) : (
+//         <p>No product found</p>
+//       )}
+//     </div>
+//   );
+// };
+
+// export default EditProduct;

@@ -529,7 +529,7 @@ const CreateProduct = () => {
                 ))
               )}
             </TextField>
-            <Select
+            {/* <Select
               sx={{ mb: 3, width: "100%" }}
               id="categories"
               name="categories"
@@ -553,7 +553,34 @@ const CreateProduct = () => {
                   {category}
                 </MenuItem>
               ))}
-            </Select>
+            </Select> */}
+
+            <Select
+  multiple
+  value={values.categories}
+  onChange={(e) => {
+    const selected = typeof e.target.value === "string" ? e.target.value.split(",") : e.target.value;
+    setFieldValue("categories", selected.length ? selected : ["All"]);
+  }}
+  onBlur={handleBlur}
+  renderValue={(selected) => (
+    <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}>
+      {selected.map((value) => (
+        <Chip key={value} label={value} />
+      ))}
+    </Box>
+  )}
+  error={touched.categories && Boolean(errors.categories)}
+>
+  {categoriesList.map((category) => (
+    <MenuItem key={category} value={category}>
+      {category}
+    </MenuItem>
+  ))}
+</Select>
+
+
+
             <Box sx={{ mb: 3 }}>
               <Typography variant="h6">Variants</Typography>
 

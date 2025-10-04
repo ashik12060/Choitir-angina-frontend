@@ -14,7 +14,7 @@ const ProductsShow = () => {
     const fetchProducts = async () => {
       setLoading(true);
       try {
-        const res = await axiosInstance.get(`/api/products/show`);
+        const res = await axiosInstance.get(`/api/products/pages`);
         const products = res.data.products;
 
         const titleMap = new Map();

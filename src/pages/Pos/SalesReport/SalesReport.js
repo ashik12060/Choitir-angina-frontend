@@ -1,3 +1,5 @@
+
+
 import React, { useEffect, useState, useRef } from "react";
 import axiosInstance from "../../axiosInstance";
 
@@ -42,111 +44,120 @@ const SalesReport = () => {
     fetchData(fromDate, toDate);
   };
 
+  const handlePrint = () => {
+    if (!printRef.current) return;
 
-const handlePrint = () => {
-  if (!printRef.current) return;
+    const content = printRef.current.innerHTML;
+    const printWindow = window.open("", "_blank", "width=800,height=600");
 
-  const content = printRef.current.innerHTML;
-  const printWindow = window.open('', '_blank', 'width=800,height=600');
+    if (!printWindow) {
+      alert("Pop-up blocked! Please allow pop-ups for this site to print.");
+      return;
+    }
 
-  if (!printWindow) {
-    alert('Pop-up blocked! Please allow pop-ups for this site to print.');
-    return;
-  }
+    printWindow.document.open();
+    printWindow.document.write(`
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <title>Print Report</title>
+          <style>
+            @page {
+              size: auto;
+              margin: 0;
+            }
+            html, body {
+              margin: 0;
+              padding: 5mm 10mm; 
+              font-family: Arial, sans-serif;
+            }
+            h3, h4 {
+              margin: 0;
+              padding: 0;
+              text-align: center;
+            }
+            .header {
+              margin: 0;
+              padding: 10px 10;
+            }
+            table {
+              width: 100%;
+              border-collapse: collapse;
+              margin-top: 10px;
+              text-align: left;
+            }
+            th, td {
+              border: 1px solid #000;
+              padding: 8px;
+            }
+            th {
+              background-color: #f0f0f0;
+            }
+            tfoot td {
+              font-weight: 700;
+              background-color: #e0ffe0;
+            }
+          </style>
+        </head>
+        <body>
+          <div class="header mb-5">
+            <h3>Chaityr Angina</h3>
+            <h4>Sales and Orders Report</h4>
+          </div>
+          <div>${content}</div>
+        </body>
+      </html>
+    `);
+    printWindow.document.close();
 
-  printWindow.document.open();
-  printWindow.document.write(`
-    <!DOCTYPE html>
-    <html>
-      <head>
-        <title>Print Report</title>
-        <style>
-          @page {
-            size: auto;
-            margin: 0;
-          }
-          html, body {
-            margin: 0;
-            padding: 5mm 10mm; 
-            font-family: Arial, sans-serif;
-          }
-          h3, h4 {
-            margin: 0;
-            padding: 0;
-            text-align: center;
-          }
-          .header {
-            margin: 0;
-            padding: 10px 10;
-          }
-          table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 10px;
-           margin-start:10px;
-            text-align: left;
-          }
-          th, td {
-            border: 1px solid #000;
-            padding: 8px;
-          }
-          th {
-            background-color: #f0f0f0;
-          }
-          tfoot td {
-            font-weight: 700;
-            background-color: #e0ffe0;
-          }
-        </style>
-      </head>
-      <body>
-        <div class="header mb-5">
-          <h3>Chaityr Angina</h3>
-          <h4>Sales and Orders Report</h4>
-        </div>
-        <div>${content}</div>
-      </body>
-    </html>
-  `);
-  printWindow.document.close();
-
-  printWindow.onload = () => {
-    setTimeout(() => {
-      printWindow.focus();
-      printWindow.print();
-      printWindow.close();
-    }, 500);
+    printWindow.onload = () => {
+      setTimeout(() => {
+        printWindow.focus();
+        printWindow.print();
+        printWindow.close();
+      }, 500);
+    };
   };
-};
-
 
   const deliveredOrders = orderData.filter((order) => order.status === "Delivered");
 
+  // Prepare combined rows
   const salesRows = salesData.flatMap((sale) =>
-    sale.products.map((product, idx) => ({
-      id: `${sale._id}-${idx}`,
-      rawDate: sale.timestamp,
-      date: new Date(sale.timestamp).toLocaleDateString(),
-      items: product.title,
-       discount: product.discountAmount || 0,
-      quantity: product.quantity,
-      price: product.price ? product.price * product.quantity : 0,
-      payment: sale.paymentMethod,
-      type: "Sale",
-    }))
+    sale.products.map((product, idx) => {
+      const price = product.price ? product.price * product.quantity : 0;
+      const discountPerProduct = sale.discountAmount ? sale.discountAmount / sale.products.length : 0;
+      return {
+        id: `${sale._id}-${idx}`,
+        rawDate: sale.timestamp,
+        date: new Date(sale.timestamp).toLocaleDateString(),
+        items: product.title,
+        quantity: product.quantity,
+        price,
+        discount: discountPerProduct,
+        netPrice: price - discountPerProduct,
+        payment: sale.paymentMethod,
+        type: "Sale",
+      };
+    })
   );
 
   const orderRows = deliveredOrders.flatMap((order) =>
-    order.orderItems.map((item, idx) => ({
-      id: `${order._id}-${idx}`,
-      rawDate: order.orderDate,
-      date: new Date(order.orderDate).toLocaleDateString(),
-      items: item.title,
-      quantity: item.quantity,
-      price: item.price * item.quantity,
-      payment: order.customerDetails?.paymentMethod || "N/A",
-      type: "Order",
-    }))
+    order.orderItems.map((item, idx) => {
+      const price = item.price * item.quantity;
+      const discountPerProduct = order.discountAmount ? order.discountAmount / order.orderItems.length : 0;
+      return {
+        id: `${order._id}-${idx}`,
+        rawDate: order.orderDate,
+        date: new Date(order.orderDate).toLocaleDateString(),
+        items: item.title,
+        quantity: item.quantity,
+        price,
+        discount: discountPerProduct,
+        netPrice: price - discountPerProduct,
+        payment: order.customerDetails?.paymentMethod || "N/A",
+        type: "Order",
+      };
+    })
   );
 
   const combinedRows = [...salesRows, ...orderRows].sort(
@@ -157,9 +168,11 @@ const handlePrint = () => {
     (acc, row) => {
       acc.totalQuantity += row.quantity;
       acc.totalPrice += row.price;
+      acc.totalDiscount += row.discount;
+      acc.totalNetPrice += row.netPrice;
       return acc;
     },
-    { totalQuantity: 0, totalPrice: 0 }
+    { totalQuantity: 0, totalPrice: 0, totalDiscount: 0, totalNetPrice: 0 }
   );
 
   return (
@@ -202,52 +215,50 @@ const handlePrint = () => {
         </button>
       </div>
 
-
       {combinedRows.length ? (
-  <div ref={printRef}>
-    <div className="text-center mb-4">
-    </div>
-    <table className="min-w-full border border-gray-300  ">
-      <thead className="bg-gray-100">
-        <tr>
-          <th className="p-2 border">#</th>
-          <th className="p-2 border">Date</th>
-          <th className="p-2 border">Items</th>
-          <th className="p-2 border">Quantity</th>
-          <th className="p-2 border">Discount</th>
-          <th className="p-2 border">Price</th>
-          <th className="p-2 border">Payment</th>
-        </tr>
-      </thead>
-      <tbody>
-        {combinedRows.map((row, index) => (
-          <tr key={row.id} className="border-t">
-            <td className="p-2 border">{index + 1}</td>
-            <td className="p-2 border">{row.date}</td>
-            <td className="p-2 border">{row.items}</td>
-            <td className="p-2 border">{row.quantity}</td>
-            <td className="p-2 border">৳{(row.discount || 0).toLocaleString()}</td>
-            <td className="p-2 border">৳{row.price.toLocaleString()}</td>
-            <td className="p-2 border">{row.payment}</td>
-          </tr>
-        ))}
-        <tr className="totals-row bg-gray-300 font-bold">
-          <td colSpan="3" className="p-2 border text-right">Total:</td>
-          <td className="p-2 border">{totals.totalQuantity}</td>
-          
-          <td className="p-2 border">৳{totals.totalPrice.toLocaleString()}</td>
-          <td className="p-2 border"></td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
-) : (
-  <p className="mt-6">No sales or orders data available for this date range.</p>
-)}
-
+        <div ref={printRef}>
+          <table className="min-w-full border border-gray-300">
+            <thead className="bg-gray-100">
+              <tr>
+                <th className="p-2 border">#</th>
+                <th className="p-2 border">Date</th>
+                <th className="p-2 border">Items</th>
+                <th className="p-2 border">Quantity</th>
+                <th className="p-2 border">Discount</th>
+                <th className="p-2 border">Price</th>
+                <th className="p-2 border">Net Price</th>
+                <th className="p-2 border">Payment</th>
+              </tr>
+            </thead>
+            <tbody>
+              {combinedRows.map((row, index) => (
+                <tr key={row.id} className="border-t">
+                  <td className="p-2 border">{index + 1}</td>
+                  <td className="p-2 border">{row.date}</td>
+                  <td className="p-2 border">{row.items}</td>
+                  <td className="p-2 border">{row.quantity}</td>
+                  <td className="p-2 border">৳{row.discount.toLocaleString()}</td>
+                  <td className="p-2 border">৳{row.price.toLocaleString()}</td>
+                  <td className="p-2 border">৳{row.netPrice.toLocaleString()}</td>
+                  <td className="p-2 border">{row.payment}</td>
+                </tr>
+              ))}
+              <tr className="totals-row bg-gray-300 font-bold">
+                <td colSpan="3" className="p-2 border text-right">Total:</td>
+                <td className="p-2 border">{totals.totalQuantity}</td>
+                <td className="p-2 border">৳{totals.totalDiscount.toLocaleString()}</td>
+                <td className="p-2 border">৳{totals.totalPrice.toLocaleString()}</td>
+                <td className="p-2 border">৳{totals.totalNetPrice.toLocaleString()}</td>
+                <td className="p-2 border"></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      ) : (
+        <p className="mt-6">No sales or orders data available for this date range.</p>
+      )}
     </div>
   );
 };
 
 export default SalesReport;
-

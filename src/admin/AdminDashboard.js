@@ -23,6 +23,7 @@ import ShopProductList from "./ShopProductList";
 import WarehouseProductsTable from "./WarehouseProductsTable";
 import WarehouseSales from "./WarehouseSales";
 import ShopProducts from "./ShopProducts";
+import BashundharaDashboard from "./BashundharaDashboard";
 
 const AdminDashboard = () => {
   const [posts, setPosts] = useState([]);
@@ -588,6 +589,18 @@ const AdminDashboard = () => {
           >
             Dashboard
           </button>
+          {/* <button
+            class="nav-link active border border-1"
+            id="v-pills-shop-dashboard-tab"
+            data-bs-toggle="pill"
+            data-bs-target="#v-pills-shop-dashboard"
+            type="button"
+            role="tab"
+            aria-controls="v-pills-shop-dashboard"
+            aria-selected="true"
+          >
+            Shop Dashboard
+          </button> */}
 
           <button
             class="nav-link  border border-1"
@@ -702,6 +715,19 @@ const AdminDashboard = () => {
           >
             Top Banner
           </button>
+          
+          <button
+            class="nav-link border border-1 mt-3"
+            id="v-pills-shopdashboard-tab"
+            data-bs-toggle="pill"
+            data-bs-target="#v-pills-shopdashboard"
+            type="button"
+            role="tab"
+            aria-controls="v-pills-shopdashboard"
+            aria-selected="false"
+          >
+            Shop Dashboard
+          </button>
 
           <button
             class="nav-link border border-1 mt-3"
@@ -731,6 +757,15 @@ const AdminDashboard = () => {
         </div>
 
         <div className=" w-75 tab-content" id="v-pills-tabContent">
+          {/* <div
+            class="tab-pane fade show "
+            id="v-pills-shop-dashboard"
+            role="tabpanel"
+            aria-labelledby="v-pills-shop-dashboard-tab"
+            tabindex="0"
+          >
+            <BashundharaDashboard />
+          </div> */}
           <div
             class="tab-pane fade show active"
             id="v-pills-dashboard"
@@ -738,7 +773,7 @@ const AdminDashboard = () => {
             aria-labelledby="v-pills-dashboard-tab"
             tabindex="0"
           >
-            <Dashboard />
+            <Dashboard  />
           </div>
           <div
             class="tab-pane fade "
@@ -946,6 +981,15 @@ const AdminDashboard = () => {
             </Box>
           </div>
 
+          <div
+            class="tab-pane fade show"
+            id="v-pills-shopdashboard"
+            role="tabpanel"
+            aria-labelledby="v-pills-shopdashboard-tab"
+            tabindex="0"
+          >
+            <BashundharaDashboard />
+          </div>
           <div
             class="tab-pane fade show"
             id="v-pills-attendance"
