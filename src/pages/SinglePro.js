@@ -42,25 +42,52 @@ const SinglePro = () => {
   const navigate = useNavigate();
   const { id } = useParams();
 
-  const displaySingleProduct = async () => {
-    setLoading(true);
-    try {
-      const { data } = await axiosInstance.get(
-        `${process.env.REACT_APP_API_URL}/api/product/${id}`
-      );
-      setProduct(data.product);
+  // const displaySingleProduct = async () => {
+  //   setLoading(true);
+  //   try {
+  //     const { data } = await axiosInstance.get(
+  //       `${process.env.REACT_APP_API_URL}/api/product/${id}`
+  //     );
+  //     // setProduct(data.product);
+  //      setProduct({
+  //     ...data.product,
+  //     totalQuantityAcrossShops: data.totalQuantityAcrossShops, // ✅ store total shop quantity
+  //   });
 
-      // Set the first variant's image as the main image
-      const firstVariantImage = data.product.variants[0]?.imageUrl;
-      setMainImage(firstVariantImage);
-      setLoading(false);
+  //     // Set the first variant's image as the main image
+  //     const firstVariantImage = data.product.variants[0]?.imageUrl;
+  //     setMainImage(firstVariantImage);
+  //     setLoading(false);
      
-    } catch (error) {
-      console.log(error);
-    }
-  };
+  //   } catch (error) {
+  //     console.log(error);
+  //   }
+  // };
 
-  useEffect(() => {
+  // useEffect(() => {
+  //   displaySingleProduct();
+  // }, []);
+
+  const displaySingleProduct = async () => {
+  setLoading(true);
+  try {
+    const { data } = await axiosInstance.get(
+      `${process.env.REACT_APP_API_URL}/api/product/${id}`
+    );
+    setProduct({
+      ...data.product,
+      totalQuantityAcrossShops: data.totalQuantityAcrossShops,
+    });
+
+    const firstVariantImage = data.product.variants[0]?.imageUrl;
+    setMainImage(firstVariantImage);
+  } catch (error) {
+    console.log(error);
+  } finally {
+    setLoading(false);
+  }
+};
+ useEffect(() => {
     displaySingleProduct();
   }, []);
 
@@ -294,13 +321,20 @@ const SinglePro = () => {
               </h2>
 
               <p className="text-lg  font-serif">
-                <span className="text-sm   font-serif">
+                {/* <span className="text-sm   font-serif">
                   Quantity available:
                 </span>{" "}
                 {product.variants.reduce(
                   (total, variant) => total + variant.quantity,
                   0
-                )}
+                )} */}
+
+                <span className="text-sm font-serif">
+  Quantity available (all shops):
+</span>{" "}
+{product.totalQuantityAcrossShops ??
+  product.variants.reduce((total, variant) => total + variant.quantity, 0)}
+
               </p>
 
               <div className="mt-2">

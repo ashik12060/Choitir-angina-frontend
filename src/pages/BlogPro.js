@@ -24,37 +24,63 @@ const BlogPro = ({ searchQuery, setSearchQuery }) => {
     if (page < totalPages) setPage(page + 1);
   };
 
+// original code 
+  //e const fetchProducts = async (page = 1) => {
+  //   setLoading(true);
+  //   setProgress(0);
+  //   try {
+  //     const { data } = await axiosInstance.get(
+  //       `${process.env.REACT_APP_API_URL}/api/products/paginated?page=${page}&limit=${itemsPerPage}`
+  //     );
 
-  const fetchProducts = async (page = 1) => {
-    setLoading(true);
-    setProgress(0);
-    try {
-      const { data } = await axiosInstance.get(
-        `${process.env.REACT_APP_API_URL}/api/products/paginated?page=${page}&limit=${itemsPerPage}`
-      );
+  //     if (data.success) {
+  //       // Make sure backend returns only needed fields to reduce payload size
+  //       setProducts(data.products);
+  //       setTotalPages(data.totalPages);
+  //       setCurrentPage(data.currentPage);
 
-      if (data.success) {
-        // Make sure backend returns only needed fields to reduce payload size
-        setProducts(data.products);
-        setTotalPages(data.totalPages);
-        setCurrentPage(data.currentPage);
+  //       setProgress(
+  //         Math.round((data.products.length / data.totalProducts) * 100)
+  //       );
+  //     }
+  //   } 
+  //   catch (error) {
+  //     console.error("Error fetching products", error);
+  //   } 
+  //   finally {
+  //     setLoading(false);
+  //   }
+  // };
 
-        setProgress(
-          Math.round((data.products.length / data.totalProducts) * 100)
-        );
-      }
-    } 
-    catch (error) {
-      console.error("Error fetching products", error);
-    } 
-    finally {
-      setLoading(false);
+  //newly added for searching
+  const fetchProducts = async (page = 1, search = "") => {
+  setLoading(true);
+  try {
+    const { data } = await axiosInstance.get(
+      `${process.env.REACT_APP_API_URL}/api/products/paginated?page=${page}&limit=${itemsPerPage}&search=${search}`
+    );
+
+    if (data.success) {
+      setProducts(data.products);
+      setTotalPages(data.totalPages);
+      setCurrentPage(data.currentPage);
     }
-  };
+  } catch (error) {
+    console.error("Error fetching products", error);
+  } finally {
+    setLoading(false);
+  }
+};
 
-  useEffect(() => {
-    fetchProducts(currentPage);
-  }, [currentPage]);
+
+  // useEffect(() => {
+  //   fetchProducts(currentPage);
+  // }, [currentPage]);
+useEffect(() => {
+  fetchProducts(currentPage, searchQuery);
+}, [currentPage, searchQuery]);
+
+
 
   const displayedProducts = searchQuery
     ? products.filter((p) =>
